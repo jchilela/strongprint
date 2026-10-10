@@ -1,0 +1,30 @@
+{% extends "portal/base.html" %}{% load i18n portal %}
+{% block title %}{% translate "Payment reference" %} · StrongPrint{% endblock %}
+{% block head %}{% if topup.status == 'pending' %}<meta http-equiv="refresh" content="10">{% endif %}{% endblock %}
+{% block content %}
+<h1>{% translate "Payment reference" %}</h1>
+{% if topup.status == 'paid' %}
+  <div class="card"><span class="pill ok">{% translate "Paid" %}</span>
+    <p>{% blocktranslate with amount=topup.paid_amount_kz|default:topup.amount_kz|kz %}{{ amount }} was added to your wallet.{% endblocktranslate %}</p></div>
+  <a class="btn block" href="{% url 'portal:home' %}">{% translate "Back to start" %}</a>
+{% elif topup.status == 'pending' %}
+  <div class="card">
+    <dl class="ref">
+      <dt>{% translate "Entity" %}</dt><dd>{{ topup.entity }}</dd>
+      <dt>{% translate "Reference" %}</dt><dd>{{ topup.reference }}</dd>
+      <dt>{% translate "Amount" %}</dt><dd>{{ topup.amount_kz|kz }}</dd>
+    </dl>
+    {% if topup.expires_at %}<p class="muted small">{% blocktranslate with time=topup.expires_at|time:"H:i" %}Pay by {{ time }}. This page updates automatically.{% endblocktranslate %}</p>{% endif %}
+  </div>
+  <p class="muted small">{% translate "Pay at a Multicaixa ATM or in your banking app: Payments → Payment by reference." %}</p>
+  {% if can_simulate %}
+  <form method="post" action="{% url 'portal:topup_simulate' topup.pk %}">{% csrf_token %}
+    <button class="btn secondary block">{% translate "Simulate payment (test mode)" %}</button>
+  </form>
+  {% endif %}
+{% else %}
+  <div class="card"><span class="pill bad">{{ topup.get_status_display }}</span>
+    <p>{% translate "This reference can no longer be paid." %}</p></div>
+  <a class="btn block" href="{% url 'portal:topup_new' %}">{% translate "New top-up" %}</a>
+{% endif %}
+{% endblock %}

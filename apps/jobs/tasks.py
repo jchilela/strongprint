@@ -16,7 +16,7 @@ from domain.jobs.state_machine import InvalidTransition, JobState
 from domain.pricing.service import InvalidOptions, PrintOptions
 
 from . import printing, services
-from .models import Job
+from .models import Document, Job
 
 log = structlog.get_logger(__name__)
 
@@ -205,3 +205,52 @@ def resume_stuck_printing() -> int:
     for job_id in ids:
         print_job.delay(str(job_id))
     return len(ids)
+
+
+@shared_task(
+    queue="analysis",
+    autoretry_for=(BotoCoreError, ClientError),
+    retry_backoff=True,
+    retry_jitter=True,
+    max_retries=5,
+)
+def analyze_document(document_id: str) -> str:
+    """Analisa um documento da biblioteca (páginas, cor) para o cliente ver antes."""
+    doc = Document.objects.filter(pk=document_id).first()
+    if doc is None or doc.state != Document.State.PENDING:
+        return doc.state if doc else "missing"
+    with tempfile.TemporaryDirectory(prefix="sp-doc-") as tmp:
+        workdir = Path(tmp)
+        source = workdir / "source"
+        storage.download_file(doc.file_key, source)
+        try:
+            pdf, analysis = analyzer().analyze(source, doc.original_filename, workdir)
+        except AnalysisError as exc:
+            Document.objects.filter(pk=doc.pk).update(
+                state=Document.State.REJECTED, failure_reason=exc.code
+            )
+            log.warning("document.rejected", document_id=str(doc.pk), code=exc.code)
+            return Document.State.REJECTED
+        storage.upload_file(pdf, doc.document_key, "application/pdf")
+    Document.objects.filter(pk=doc.pk).update(
+        state=Document.State.READY,
+        pages=analysis.page_count,
+        color_pages=analysis.color_pages,
+        analysis=analysis.to_dict(),
+    )
+    return Document.State.READY
+
+
+@shared_task(
+    queue="default", autoretry_for=(BotoCoreError, ClientError), retry_backoff=True, max_retries=3
+)
+def purge_documents() -> int:
+    """Apaga documentos da biblioteca que passaram o prazo de retenção."""
+    count = 0
+    for doc in Document.objects.filter(expires_at__lt=timezone.now())[:500]:
+        storage.delete_prefix(f"documents/{doc.pk}/")
+        doc.delete()
+        count += 1
+    if count:
+        log.info("documents.purged", count=count)
+    return count

@@ -1,0 +1,34 @@
+{% extends "portal/base.html" %}{% load i18n portal %}
+{% block title %}{% translate "My files" %} · StrongPrint{% endblock %}
+{% block head %}{% if pending %}<meta http-equiv="refresh" content="5">{% endif %}{% endblock %}
+{% block content %}{% translate "No file chosen" as no_file %}
+<h1>{% translate "My files" %}</h1>
+<p class="muted small">{% blocktranslate %}Send files now and print them later at any kiosk. PDF, Word, Excel, PowerPoint and images up to {{ max_mb }} MB. Files are kept for {{ retention_days }} days.{% endblocktranslate %}</p>
+<form method="post" enctype="multipart/form-data" class="card" novalidate>{% csrf_token %}
+  <div class="field">
+    <input class="visually-hidden" type="file" name="file" id="id_file" accept=".pdf,.doc,.docx,.odt,.rtf,.txt,.xls,.xlsx,.ods,.csv,.ppt,.pptx,.odp,.jpg,.jpeg,.png" required
+      onchange="document.getElementById('file-name').textContent = this.files[0] ? this.files[0].name : '{{ no_file|escapejs }}'">
+    <label class="file-pick" for="id_file"><span class="btn secondary">{% translate "Choose file" %}</span><span id="file-name" class="muted small">{{ no_file }}</span></label>
+    {{ form.file.errors }}
+  </div>
+  <button class="btn block">{% translate "Upload" %}</button>
+</form>
+<div class="card">
+  {% if documents %}<ul class="list">
+    {% for d in documents %}
+    <li>
+      <div>
+        <div class="title">{{ d.original_filename }}</div>
+        <div class="muted small">
+          {% if d.state == 'READY' %}
+            {% blocktranslate count n=d.pages %}{{ n }} page{% plural %}{{ n }} pages{% endblocktranslate %}{% if d.color_pages %} · {% blocktranslate count c=d.color_pages %}{{ c }} in colour{% plural %}{{ c }} in colour{% endblocktranslate %}{% endif %}{% if d.estimate_kz %} · {% blocktranslate with price=d.estimate_kz|kz %}B&amp;W from {{ price }}{% endblocktranslate %}{% endif %}
+          {% elif d.state == 'PENDING' %}<span class="pill warn">{% translate "Checking…" %}</span>
+          {% else %}<span class="pill bad">{% translate "Cannot be printed" %}</span>{% endif %}
+        </div>
+      </div>
+      <form method="post" action="{% url 'portal:document_delete' d.pk %}">{% csrf_token %}<button class="btn danger" aria-label="{% translate 'Delete' %} {{ d.original_filename }}">{% translate "Delete" %}</button></form>
+    </li>
+    {% endfor %}
+  </ul>{% else %}<p class="empty">{% translate "No files yet." %}</p>{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "portal/base.html" %}{% load i18n portal %}
+{% block title %}{% translate "Wallet" %} · StrongPrint{% endblock %}
+{% block content %}
+<h1>{% translate "Wallet" %}</h1>
+<section class="card balance">
+  <div class="label">{% translate "Available balance" %}</div>
+  <div class="amount">{{ wallet.available_kz|kz }}</div>
+  <div class="sub">{% blocktranslate with total=wallet.balance_kz|kz held=wallet.held_kz|kz %}Total {{ total }} · reserved {{ held }}{% endblocktranslate %}</div>
+</section>
+<a class="btn block" href="{% url 'portal:topup_new' %}">{% translate "Top up wallet" %}</a>
+<h2>{% translate "Top-ups" %}</h2>
+<div class="card">
+  {% if topups %}<ul class="list">
+    {% for t in topups %}
+    <li><a href="{% url 'portal:topup' t.pk %}"><div class="title">{{ t.amount_kz|kz }}</div><div class="muted small">{{ t.created_at|date:"d/m/Y H:i" }} · {{ t.entity }}/{{ t.reference }}</div></a>
+      <span class="pill {% if t.status == 'paid' %}ok{% elif t.status == 'pending' %}warn{% else %}bad{% endif %}">{{ t.get_status_display }}</span></li>
+    {% endfor %}
+  </ul>{% else %}<p class="empty">{% translate "No top-ups yet." %}</p>{% endif %}
+</div>
+<h2>{% translate "Movements" %}</h2>
+<div class="card">
+  {% if entries %}<ul class="list">
+    {% for e in entries %}
+    <li><div><div class="title">{{ e.get_kind_display }}</div><div class="muted small">{{ e.created_at|date:"d/m/Y H:i" }}{% if e.kiosk %} · {{ e.kiosk.code }}{% endif %}</div></div>
+      <span class="num {% if e.amount_kz > 0 %}plus{% endif %}">{{ e.amount_kz|signed_kz }}</span></li>
+    {% endfor %}
+  </ul>{% else %}<p class="empty">{% translate "No movements yet." %}</p>{% endif %}
+</div>
+{% endblock %}

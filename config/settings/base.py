@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "apps.jobs",
     "apps.payments",
     "apps.monitoring",
+    "apps.portal",
 ]
 
 MIDDLEWARE = [
@@ -56,6 +57,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.i18n",
             ],
         },
     },
@@ -134,6 +136,29 @@ PRINT_RETRY_SECONDS = env.int("PRINT_RETRY_SECONDS", default=30)
 KIOSK_OFFLINE_AFTER_SECONDS = env.int("KIOSK_OFFLINE_AFTER_SECONDS", default=90)
 TONER_LOW_PCT = env.int("TONER_LOW_PCT", default=10)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+
+LIBRARY_RETENTION_DAYS = env.int("LIBRARY_RETENTION_DAYS", default=7)
+
+# Códigos de acesso por telefone: console (log; desenvolvimento) | http (gateway SMS/WhatsApp)
+OTP_SENDER = env("OTP_SENDER", default="console")
+OTP_HTTP_URL = env("OTP_HTTP_URL", default="")
+OTP_HTTP_TOKEN = env("OTP_HTTP_TOKEN", default="")
+# Mostra o código no ecrã — SÓ em desenvolvimento, enquanto não há envio real.
+OTP_SHOW_CODE = env.bool("OTP_SHOW_CODE", default=DEBUG)
+OTP_TTL_MINUTES = env.int("OTP_TTL_MINUTES", default=10)
+OTP_MAX_ATTEMPTS = env.int("OTP_MAX_ATTEMPTS", default=5)
+
+LOGIN_URL = "portal:login"
+LOGIN_REDIRECT_URL = "portal:home"
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 30
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": REDIS_URL,
+        "KEY_PREFIX": "strongprint",
+    }
+}
 
 # Pagamentos (carregamento da carteira): mock | strongpay
 PAYMENT_PROVIDER = env("PAYMENT_PROVIDER", default="mock")

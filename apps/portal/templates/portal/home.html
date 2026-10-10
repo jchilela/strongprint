@@ -1,0 +1,31 @@
+{% extends "portal/base.html" %}{% load i18n portal %}
+{% block content %}
+<h1>{% blocktranslate with name=user.full_name|default:user.phone %}Hello, {{ name }}{% endblocktranslate %}</h1>
+<section class="card balance">
+  <div class="label">{% translate "Available balance" %}</div>
+  <div class="amount">{{ wallet.available_kz|kz }}</div>
+  {% if wallet.held_kz %}<div class="sub">{% blocktranslate with held=wallet.held_kz|kz %}{{ held }} reserved for a print in progress{% endblocktranslate %}</div>{% endif %}
+</section>
+<div class="btn-row">
+  <a class="btn" href="{% url 'portal:topup_new' %}">{% translate "Top up" %}</a>
+  <a class="btn secondary" href="{% url 'portal:documents' %}">{% translate "My files" %}</a>
+</div>
+{% for t in pending_topups %}
+<a class="card" style="display:block" href="{% url 'portal:topup' t.pk %}">
+  <span class="pill warn">{% translate "Awaiting payment" %}</span>
+  <div class="small" style="margin-top:6px">{% blocktranslate with amount=t.amount_kz|kz entity=t.entity reference=t.reference %}{{ amount }} · entity {{ entity }} · reference {{ reference }}{% endblocktranslate %}</div>
+</a>
+{% endfor %}
+<h2>{% translate "Recent activity" %}</h2>
+<div class="card">
+  {% if entries %}
+  <ul class="list">
+    {% for e in entries %}
+    <li><div><div class="title">{{ e.get_kind_display }}</div><div class="muted small">{{ e.created_at|date:"d/m/Y H:i" }}{% if e.kiosk %} · {{ e.kiosk.code }}{% endif %}</div></div>
+      <span class="num {% if e.amount_kz > 0 %}plus{% endif %}">{{ e.amount_kz|signed_kz }}</span></li>
+    {% endfor %}
+  </ul>
+  {% else %}<p class="empty">{% translate "No activity yet. Top up your wallet to start printing." %}</p>{% endif %}
+</div>
+<form method="post" action="{% url 'portal:logout' %}" style="text-align:center;margin-top:16px">{% csrf_token %}<button class="btn link">{% translate "Sign out" %}</button></form>
+{% endblock %}

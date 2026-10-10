@@ -1,0 +1,15 @@
+{% extends "portal/base.html" %}{% load i18n portal %}
+{% block title %}{% translate "Top up" %} · StrongPrint{% endblock %}
+{% block content %}
+<h1>{% translate "Top up wallet" %}</h1>
+<p class="muted">{% translate "You will get a Multicaixa reference to pay at an ATM or in your banking app." %}</p>
+<form method="post" class="card" novalidate>{% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="presets">
+    {% for p in presets %}<button type="button" onclick="document.getElementById('id_amount_kz').value={{ p }}">{{ p|kz }}</button>{% endfor %}
+  </div>
+  <div class="field">{{ form.amount_kz.label_tag }}{{ form.amount_kz }}{{ form.amount_kz.errors }}</div>
+  <input type="hidden" name="idempotency_key" value="{% now 'U' %}-{{ csrf_token|slice:':8' }}">
+  <button class="btn block">{% translate "Get payment reference" %}</button>
+</form>
+{% endblock %}

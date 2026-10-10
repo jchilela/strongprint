@@ -1,0 +1,14 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block content %}
+<section class="hero">
+  <h1>{% translate "Print at any StrongPrint kiosk" %}</h1>
+  <p>{% translate "Top up your wallet once and print or copy on campus — from your phone, a pen drive or WhatsApp." %}</p>
+</section>
+<ol class="steps card">
+  <li>{% translate "Create your account with your phone number." %}</li>
+  <li>{% translate "Top up your wallet with a Multicaixa reference." %}</li>
+  <li>{% translate "Choose your file at the kiosk and print. You only pay for the pages that come out." %}</li>
+</ol>
+<a class="btn block" href="{% url 'portal:login' %}">{% translate "Sign in or create account" %}</a>
+<footer>StrongPrint · Angola</footer>
+{% endblock %}

@@ -1,0 +1,1407 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-10 14:52+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: pt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/accounts/admin.py:32
+msgid "Profile"
+msgstr "Perfil"
+
+#: apps/accounts/admin.py:34
+msgid "Permissions"
+msgstr "Permissões"
+
+#: apps/accounts/admin.py:37
+msgid "Dates"
+msgstr "Datas"
+
+#: apps/accounts/apps.py:8
+msgid "Accounts"
+msgstr "Contas"
+
+#: apps/accounts/models.py:45 apps/accounts/models.py:77
+msgid "phone number"
+msgstr "número de telefone"
+
+#: apps/accounts/models.py:46
+msgid "full name"
+msgstr "nome completo"
+
+#: apps/accounts/models.py:47
+msgid "email"
+msgstr "e-mail"
+
+#: apps/accounts/models.py:49
+msgid "language"
+msgstr "idioma"
+
+#: apps/accounts/models.py:51
+msgid "phone verified at"
+msgstr "telefone verificado em"
+
+#: apps/accounts/models.py:52 apps/devices/models.py:40
+#: apps/partners/models.py:34 apps/partners/models.py:101
+#: apps/partners/models.py:151
+msgid "active"
+msgstr "ativo"
+
+#: apps/accounts/models.py:53
+msgid "StrongPrint staff"
+msgstr "equipa StrongPrint"
+
+#: apps/accounts/models.py:54
+msgid "date joined"
+msgstr "data de registo"
+
+#: apps/accounts/models.py:62
+msgid "user"
+msgstr "utilizador"
+
+#: apps/accounts/models.py:63
+msgid "users"
+msgstr "utilizadores"
+
+#: apps/accounts/models.py:79
+msgid "channel"
+msgstr "canal"
+
+#: apps/accounts/models.py:86
+msgid "login code"
+msgstr "código de acesso"
+
+#: apps/accounts/models.py:87
+msgid "login codes"
+msgstr "códigos de acesso"
+
+#: apps/accounts/phone.py:13 apps/accounts/phone.py:15
+msgid "Invalid phone number."
+msgstr "Número de telefone inválido."
+
+#: apps/devices/admin.py:10
+#, python-format
+msgid ""
+"Device token for %(name)s (shown only once, copy it to the Pi now): %(token)s"
+msgstr "Token do dispositivo %(name)s (só é mostrado agora, copie-o para o Pi): %(token)s"
+
+#: apps/devices/admin.py:64 apps/partners/models.py:154
+msgid "kiosk"
+msgstr "kiosk"
+
+#: apps/devices/admin.py:74
+msgid "Regenerate device token"
+msgstr "Gerar novo token do dispositivo"
+
+#: apps/devices/admin.py:90
+msgid "Pi (create it under Edge devices to get the token)"
+msgstr "Pi (crie-o em Dispositivos para obter o token)"
+
+#: apps/devices/admin.py:116
+msgid "Network"
+msgstr "Rede"
+
+#: apps/devices/admin.py:118
+msgid "Capabilities"
+msgstr "Capacidades"
+
+#: apps/devices/admin.py:130
+msgid "Live status"
+msgstr "Estado em tempo real"
+
+#: apps/devices/apps.py:8
+msgid "Devices"
+msgstr "Dispositivos"
+
+#: apps/devices/models.py:20
+msgid "None"
+msgstr "Nenhum"
+
+#: apps/devices/models.py:21
+msgid "Reload screen"
+msgstr "Recarregar ecrã"
+
+#: apps/devices/models.py:22
+msgid "Reboot"
+msgstr "Reiniciar"
+
+#: apps/devices/models.py:23 apps/partners/models.py:132
+msgid "Out of service"
+msgstr "Fora de serviço"
+
+#: apps/devices/models.py:27 apps/devices/models.py:135
+#: apps/partners/admin.py:137
+msgid "printer"
+msgstr "impressora"
+
+#: apps/devices/models.py:30 apps/devices/models.py:94
+#: apps/partners/models.py:22 apps/partners/models.py:82
+#: apps/partners/models.py:146
+msgid "name"
+msgstr "nome"
+
+#: apps/devices/models.py:30
+msgid "Generated from the printer's kiosk."
+msgstr "Gerado a partir do kiosk da impressora."
+
+#: apps/devices/models.py:33
+msgid "token prefix"
+msgstr "prefixo do token"
+
+#: apps/devices/models.py:34 apps/devices/models.py:103
+msgid "VPN IP"
+msgstr "IP da VPN"
+
+#: apps/devices/models.py:35 apps/partners/admin.py:146
+msgid "last heartbeat"
+msgstr "último sinal"
+
+#: apps/devices/models.py:36
+msgid "software version"
+msgstr "versão do software"
+
+#: apps/devices/models.py:38
+msgid "pending command"
+msgstr "comando pendente"
+
+#: apps/devices/models.py:43
+msgid "edge device (Pi)"
+msgstr "dispositivo (Pi)"
+
+#: apps/devices/models.py:44
+msgid "edge devices (Pi)"
+msgstr "dispositivos (Pi)"
+
+#: apps/devices/models.py:78
+msgid "Unknown"
+msgstr "Desconhecido"
+
+#: apps/devices/models.py:79 apps/jobs/models.py:117
+msgid "Ready"
+msgstr "Pronto"
+
+#: apps/devices/models.py:80
+msgid "Busy"
+msgstr "Ocupada"
+
+#: apps/devices/models.py:81 apps/monitoring/models.py:20
+msgid "Warning"
+msgstr "Aviso"
+
+#: apps/devices/models.py:82
+msgid "Error"
+msgstr "Erro"
+
+#: apps/devices/models.py:83 apps/partners/models.py:131
+msgid "Offline"
+msgstr "Offline"
+
+#: apps/devices/models.py:86
+msgid "Default (from settings)"
+msgstr "Por omissão (configuração)"
+
+#: apps/devices/models.py:87
+msgid "Fake (tests)"
+msgstr "Simulada (testes)"
+
+#: apps/devices/models.py:88
+msgid "IPP (real printer)"
+msgstr "IPP (impressora real)"
+
+#: apps/devices/models.py:97
+msgid ""
+"Generated when the printer is in a kiosk; otherwise a name for the spare."
+msgstr "Gerado quando a impressora está num kiosk; caso contrário, o nome da impressora de reserva."
+
+#: apps/devices/models.py:100
+msgid "model"
+msgstr "modelo"
+
+#: apps/devices/models.py:102
+msgid "serial number"
+msgstr "número de série"
+
+#: apps/devices/models.py:105
+msgid "IPP URI"
+msgstr "URI IPP"
+
+#: apps/devices/models.py:105
+msgid "Empty = ipp://<VPN IP>/ipp/print"
+msgstr "Vazio = ipp://<IP da VPN>/ipp/print"
+
+#: apps/devices/models.py:107
+msgid "SNMP community"
+msgstr "comunidade SNMP"
+
+#: apps/devices/models.py:109
+msgid "gateway"
+msgstr "gateway"
+
+#: apps/devices/models.py:112
+msgid "colour"
+msgstr "cor"
+
+#: apps/devices/models.py:113
+msgid "duplex"
+msgstr "frente e verso"
+
+#: apps/devices/models.py:114
+msgid "A3"
+msgstr "A3"
+
+#: apps/devices/models.py:115
+msgid "ADF"
+msgstr "ADF"
+
+#: apps/devices/models.py:117
+msgid "front panel enabled"
+msgstr "painel da impressora ativo"
+
+#: apps/devices/models.py:120
+msgid ""
+"Walk-up use of the printer panel (copy/USB). Off by default because it "
+"affects the page counter used to verify jobs."
+msgstr "Uso direto do painel da impressora (cópia/USB). Desligado por omissão porque afeta o contador de páginas usado para verificar os trabalhos."
+
+#: apps/devices/models.py:126 apps/monitoring/admin.py:9
+#: apps/partners/models.py:149 apps/payments/models.py:23
+#: apps/wallets/models.py:103
+msgid "status"
+msgstr "estado"
+
+#: apps/devices/models.py:128
+msgid "status detail"
+msgstr "detalhe do estado"
+
+#: apps/devices/models.py:130
+msgid "last page counter"
+msgstr "último contador de páginas"
+
+#: apps/devices/models.py:132
+msgid "last polled at"
+msgstr "última leitura"
+
+#: apps/devices/models.py:136
+msgid "printers"
+msgstr "impressoras"
+
+#: apps/devices/models.py:152
+msgid "A printer outside a kiosk needs a name."
+msgstr "Uma impressora fora de um kiosk precisa de nome."
+
+#: apps/jobs/admin.py:48
+msgid "ID"
+msgstr "ID"
+
+#: apps/jobs/apps.py:8
+msgid "Print jobs"
+msgstr "Trabalhos de impressão"
+
+#: apps/jobs/models.py:17
+msgid "Created"
+msgstr "Criado"
+
+#: apps/jobs/models.py:18
+msgid "File received"
+msgstr "Ficheiro recebido"
+
+#: apps/jobs/models.py:19
+msgid "Ready to confirm"
+msgstr "Pronto a confirmar"
+
+#: apps/jobs/models.py:20
+msgid "Reserved"
+msgstr "Valor cativo"
+
+#: apps/jobs/models.py:21
+msgid "Queued"
+msgstr "Em fila"
+
+#: apps/jobs/models.py:22
+msgid "Printing"
+msgstr "A imprimir"
+
+#: apps/jobs/models.py:23
+msgid "Printed"
+msgstr "Impresso"
+
+#: apps/jobs/models.py:24
+msgid "Partially printed"
+msgstr "Impresso em parte"
+
+#: apps/jobs/models.py:25 apps/payments/models.py:15
+msgid "Failed"
+msgstr "Falhou"
+
+#: apps/jobs/models.py:26
+msgid "File rejected"
+msgstr "Ficheiro recusado"
+
+#: apps/jobs/models.py:27 apps/payments/models.py:16
+msgid "Cancelled"
+msgstr "Cancelado"
+
+#: apps/jobs/models.py:28 apps/payments/models.py:17
+msgid "Expired"
+msgstr "Expirado"
+
+#: apps/jobs/models.py:36
+msgid "USB pen drive"
+msgstr "Pen USB"
+
+#: apps/jobs/models.py:37
+msgid "Web upload"
+msgstr "Envio pela web"
+
+#: apps/jobs/models.py:38
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: apps/jobs/models.py:46 apps/jobs/models.py:132
+msgid "state"
+msgstr "estado"
+
+#: apps/jobs/models.py:49 apps/jobs/models.py:125
+msgid "source"
+msgstr "origem"
+
+#: apps/jobs/models.py:52
+msgid "original filename"
+msgstr "nome do ficheiro"
+
+#: apps/jobs/models.py:53 apps/jobs/models.py:128
+msgid "storage key"
+msgstr "chave de armazenamento"
+
+#: apps/jobs/models.py:54 apps/jobs/models.py:129
+msgid "file size"
+msgstr "tamanho do ficheiro"
+
+#: apps/jobs/models.py:55 apps/jobs/models.py:130
+msgid "MIME type"
+msgstr "tipo MIME"
+
+#: apps/jobs/models.py:57 apps/jobs/models.py:134
+msgid "pages"
+msgstr "páginas"
+
+#: apps/jobs/models.py:58 apps/jobs/models.py:136
+msgid "analysis"
+msgstr "análise"
+
+#: apps/jobs/models.py:59
+msgid "options"
+msgstr "opções"
+
+#: apps/jobs/models.py:60
+msgid "price breakdown"
+msgstr "detalhe do preço"
+
+#: apps/jobs/models.py:61
+msgid "total (Kz)"
+msgstr "total (Kz)"
+
+#: apps/jobs/models.py:66
+msgid "printer job ID"
+msgstr "ID do trabalho na impressora"
+
+#: apps/jobs/models.py:67
+msgid "counter before"
+msgstr "contador antes"
+
+#: apps/jobs/models.py:68
+msgid "counter after"
+msgstr "contador depois"
+
+#: apps/jobs/models.py:69
+msgid "faces printed"
+msgstr "faces impressas"
+
+#: apps/jobs/models.py:70 apps/jobs/models.py:137
+msgid "failure reason"
+msgstr "motivo da falha"
+
+#: apps/jobs/models.py:72 apps/jobs/models.py:138 apps/payments/models.py:30
+msgid "expires at"
+msgstr "expira em"
+
+#: apps/jobs/models.py:73 apps/jobs/models.py:101 apps/jobs/models.py:139
+#: apps/payments/models.py:40 apps/wallets/models.py:22
+#: apps/wallets/models.py:69 apps/wallets/models.py:105 common/models.py:6
+msgid "created at"
+msgstr "criado em"
+
+#: apps/jobs/models.py:74 apps/payments/models.py:41 apps/wallets/models.py:23
+#: common/models.py:7
+msgid "updated at"
+msgstr "atualizado em"
+
+#: apps/jobs/models.py:75
+msgid "finished at"
+msgstr "terminado em"
+
+#: apps/jobs/models.py:76
+msgid "file purged at"
+msgstr "ficheiro apagado em"
+
+#: apps/jobs/models.py:79
+msgid "print job"
+msgstr "trabalho de impressão"
+
+#: apps/jobs/models.py:80
+msgid "print jobs"
+msgstr "trabalhos de impressão"
+
+#: apps/jobs/models.py:95
+msgid "from"
+msgstr "de"
+
+#: apps/jobs/models.py:96
+msgid "to"
+msgstr "para"
+
+#: apps/jobs/models.py:98 apps/wallets/models.py:67
+msgid "actor"
+msgstr "autor"
+
+#: apps/jobs/models.py:98
+msgid "e.g. system, user:<id>, task:print"
+msgstr "ex.: system, user:<id>, task:print"
+
+#: apps/jobs/models.py:100 apps/monitoring/models.py:30
+msgid "data"
+msgstr "dados"
+
+#: apps/jobs/models.py:104
+msgid "job event"
+msgstr "evento do trabalho"
+
+#: apps/jobs/models.py:105
+msgid "job events"
+msgstr "eventos do trabalho"
+
+#: apps/jobs/models.py:116
+msgid "Analysing"
+msgstr "A analisar"
+
+#: apps/jobs/models.py:118
+msgid "Rejected"
+msgstr "Recusado"
+
+#: apps/jobs/models.py:127
+msgid "filename"
+msgstr "nome do ficheiro"
+
+#: apps/jobs/models.py:135
+msgid "colour pages"
+msgstr "páginas a cores"
+
+#: apps/jobs/models.py:142
+msgid "document"
+msgstr "documento"
+
+#: apps/jobs/models.py:143
+msgid "documents"
+msgstr "documentos"
+
+#: apps/monitoring/admin.py:13 apps/partners/admin.py:117
+msgid "Open"
+msgstr "Abrir"
+
+#: apps/monitoring/admin.py:13
+msgid "Resolved"
+msgstr "Resolvido"
+
+#: apps/monitoring/admin.py:45
+msgid "Mark as resolved"
+msgstr "Marcar como resolvido"
+
+#: apps/monitoring/apps.py:8
+msgid "Monitoring"
+msgstr "Monitorização"
+
+#: apps/monitoring/models.py:11
+msgid "Out of paper"
+msgstr "Sem papel"
+
+#: apps/monitoring/models.py:12
+msgid "Toner low"
+msgstr "Toner baixo"
+
+#: apps/monitoring/models.py:13
+msgid "Printer error"
+msgstr "Erro na impressora"
+
+#: apps/monitoring/models.py:14
+msgid "Printer offline"
+msgstr "Impressora offline"
+
+#: apps/monitoring/models.py:15
+msgid "Kiosk offline"
+msgstr "Kiosk offline"
+
+#: apps/monitoring/models.py:16
+msgid "Pages printed outside StrongPrint"
+msgstr "Páginas impressas fora do StrongPrint"
+
+#: apps/monitoring/models.py:19
+msgid "Info"
+msgstr "Informação"
+
+#: apps/monitoring/models.py:21
+msgid "Critical"
+msgstr "Crítico"
+
+#: apps/monitoring/models.py:23 apps/wallets/models.py:55
+msgid "kind"
+msgstr "tipo"
+
+#: apps/monitoring/models.py:24
+msgid "severity"
+msgstr "gravidade"
+
+#: apps/monitoring/models.py:29
+msgid "message"
+msgstr "mensagem"
+
+#: apps/monitoring/models.py:31
+msgid "opened at"
+msgstr "aberto em"
+
+#: apps/monitoring/models.py:32
+msgid "last seen at"
+msgstr "visto pela última vez"
+
+#: apps/monitoring/models.py:33
+msgid "resolved at"
+msgstr "resolvido em"
+
+#: apps/monitoring/models.py:36
+msgid "alert"
+msgstr "alerta"
+
+#: apps/monitoring/models.py:37
+msgid "alerts"
+msgstr "alertas"
+
+#: apps/partners/admin.py:40
+msgid "Price overrides (empty fields inherit)"
+msgstr "Preços próprios (campos vazios herdam)"
+
+#: apps/partners/admin.py:83 apps/partners/models.py:105
+msgid "sites"
+msgstr "locais"
+
+#: apps/partners/admin.py:108 apps/partners/models.py:24
+#: apps/partners/models.py:140
+msgid "code"
+msgstr "código"
+
+#: apps/partners/admin.py:112
+msgid "map"
+msgstr "mapa"
+
+#: apps/partners/admin.py:142
+msgid "open alerts"
+msgstr "alertas abertos"
+
+#: apps/partners/admin.py:174
+msgid "scope"
+msgstr "âmbito"
+
+#: apps/partners/apps.py:8
+msgid "Partners and kiosks"
+msgstr "Parceiros e kiosks"
+
+#: apps/partners/models.py:27
+msgid "Use uppercase letters and digits only."
+msgstr "Use apenas letras maiúsculas e algarismos."
+
+#: apps/partners/models.py:28
+msgid "Short code used in equipment names, e.g. IMETRO."
+msgstr "Código curto usado nos nomes dos equipamentos, ex.: IMETRO."
+
+#: apps/partners/models.py:30
+msgid "tax ID (NIF)"
+msgstr "NIF"
+
+#: apps/partners/models.py:31
+msgid "contact name"
+msgstr "nome do contacto"
+
+#: apps/partners/models.py:32
+msgid "contact phone"
+msgstr "telefone do contacto"
+
+#: apps/partners/models.py:33
+msgid "contact email"
+msgstr "e-mail do contacto"
+
+#: apps/partners/models.py:37
+msgid "partner"
+msgstr "parceiro"
+
+#: apps/partners/models.py:38
+msgid "partners"
+msgstr "parceiros"
+
+#: apps/partners/models.py:55
+msgid "Owner"
+msgstr "Responsável"
+
+#: apps/partners/models.py:56
+msgid "Viewer"
+msgstr "Consulta"
+
+#: apps/partners/models.py:62
+msgid "role"
+msgstr "função"
+
+#: apps/partners/models.py:65
+msgid "partner membership"
+msgstr "acesso de parceiro"
+
+#: apps/partners/models.py:66
+msgid "partner memberships"
+msgstr "acessos de parceiros"
+
+#: apps/partners/models.py:80 apps/partners/models.py:137
+msgid "number"
+msgstr "número"
+
+#: apps/partners/models.py:80
+msgid "Empty = next available (S01, S02, ...)."
+msgstr "Vazio = próximo disponível (S01, S02, ...)."
+
+#: apps/partners/models.py:82
+msgid "Empty = Site-NN."
+msgstr "Vazio = Site-NN."
+
+#: apps/partners/models.py:83
+msgid "city"
+msgstr "cidade"
+
+#: apps/partners/models.py:84
+msgid "address"
+msgstr "morada"
+
+#: apps/partners/models.py:86
+msgid "latitude"
+msgstr "latitude"
+
+#: apps/partners/models.py:94
+msgid "longitude"
+msgstr "longitude"
+
+#: apps/partners/models.py:104
+msgid "site"
+msgstr "local"
+
+#: apps/partners/models.py:130
+msgid "Online"
+msgstr "Online"
+
+#: apps/partners/models.py:133
+msgid "Maintenance"
+msgstr "Manutenção"
+
+#: apps/partners/models.py:137
+msgid "Empty = next available in the site (K01, K02, ...)."
+msgstr "Vazio = próximo disponível no local (K01, K02, ...)."
+
+#: apps/partners/models.py:144
+msgid "Generated: <PARTNER>-S<nn>-K<nn>, e.g. IMETRO-S01-K01."
+msgstr "Gerado: <PARCEIRO>-S<nn>-K<nn>, ex.: IMETRO-S01-K01."
+
+#: apps/partners/models.py:146
+msgid "Empty = Kiosk-NN."
+msgstr "Vazio = Kiosk-NN."
+
+#: apps/partners/models.py:147
+msgid "location hint"
+msgstr "indicação do local"
+
+#: apps/partners/models.py:155
+msgid "kiosks"
+msgstr "kiosks"
+
+#: apps/partners/models.py:197
+msgid "B&W page (Kz)"
+msgstr "página P&B (Kz)"
+
+#: apps/partners/models.py:199
+msgid "colour, low coverage (Kz)"
+msgstr "cor, pouca cobertura (Kz)"
+
+#: apps/partners/models.py:202
+msgid "colour, mid coverage (Kz)"
+msgstr "cor, cobertura média (Kz)"
+
+#: apps/partners/models.py:205
+msgid "colour, high coverage (Kz)"
+msgstr "cor, muita cobertura (Kz)"
+
+#: apps/partners/models.py:208
+msgid "low coverage up to (%)"
+msgstr "pouca cobertura até (%)"
+
+#: apps/partners/models.py:211
+msgid "mid coverage up to (%)"
+msgstr "cobertura média até (%)"
+
+#: apps/partners/models.py:214
+msgid "minimum per transaction (Kz)"
+msgstr "mínimo por transação (Kz)"
+
+#: apps/partners/models.py:228
+msgid "price table"
+msgstr "tabela de preços"
+
+#: apps/partners/models.py:229
+msgid "price tables"
+msgstr "tabelas de preços"
+
+#: apps/partners/models.py:257
+msgid "Price table"
+msgstr "Tabela de preços"
+
+#: apps/partners/models.py:273
+msgid "A price table applies to only one partner, site or kiosk."
+msgstr "Uma tabela de preços aplica-se a um só parceiro, local ou kiosk."
+
+#: apps/partners/models.py:277
+msgid "The global price table must define every field."
+msgstr "A tabela global tem de definir todos os campos."
+
+#: apps/partners/models.py:280
+msgid "Coverage thresholds must satisfy 0 < low < mid ≤ 100."
+msgstr "Os limites de cobertura têm de cumprir 0 < baixo < médio ≤ 100."
+
+#: apps/payments/admin.py:37
+msgid "Simulate payment (mock provider only)"
+msgstr "Simular pagamento (só fornecedor simulado)"
+
+#: apps/payments/apps.py:8
+msgid "Payments"
+msgstr "Pagamentos"
+
+#: apps/payments/models.py:13
+msgid "Pending"
+msgstr "Pendente"
+
+#: apps/payments/models.py:14 apps/portal/templates/portal/topup_detail.html:7
+msgid "Paid"
+msgstr "Pago"
+
+#: apps/payments/models.py:21 apps/wallets/models.py:56
+msgid "amount (Kz)"
+msgstr "valor (Kz)"
+
+#: apps/payments/models.py:25
+msgid "provider"
+msgstr "fornecedor"
+
+#: apps/payments/models.py:26
+msgid "provider payment ID"
+msgstr "ID do pagamento no fornecedor"
+
+#: apps/payments/models.py:27
+msgid "transaction ID"
+msgstr "ID da transação"
+
+#: apps/payments/models.py:28
+msgid "entity"
+msgstr "entidade"
+
+#: apps/payments/models.py:29 apps/wallets/models.py:65
+msgid "reference"
+msgstr "referência"
+
+#: apps/payments/models.py:32
+msgid "paid amount (Kz)"
+msgstr "valor pago (Kz)"
+
+#: apps/payments/models.py:33
+msgid "paid at"
+msgstr "pago em"
+
+#: apps/payments/models.py:37
+msgid "provider response"
+msgstr "resposta do fornecedor"
+
+#: apps/payments/models.py:38
+msgid "provider events"
+msgstr "eventos do fornecedor"
+
+#: apps/payments/models.py:39
+msgid "created by"
+msgstr "criado por"
+
+#: apps/payments/models.py:44
+msgid "wallet top-up"
+msgstr "carregamento da carteira"
+
+#: apps/payments/models.py:45
+msgid "wallet top-ups"
+msgstr "carregamentos da carteira"
+
+#: apps/payments/models.py:68
+msgid "webhook event"
+msgstr "evento de webhook"
+
+#: apps/payments/models.py:69
+msgid "webhook events"
+msgstr "eventos de webhook"
+
+#: apps/portal/apps.py:8
+msgid "Customer portal"
+msgstr "Portal do cliente"
+
+#: apps/portal/forms.py:11
+msgid "Phone number"
+msgstr "Número de telefone"
+
+#: apps/portal/forms.py:22
+msgid "Enter a valid phone number."
+msgstr "Introduza um número de telefone válido."
+
+#: apps/portal/forms.py:27
+msgid "Code"
+msgstr "Código"
+
+#: apps/portal/forms.py:42
+msgid "Full name"
+msgstr "Nome completo"
+
+#: apps/portal/forms.py:43
+msgid "Language"
+msgstr "Idioma"
+
+#: apps/portal/forms.py:50 apps/wallets/admin.py:14
+msgid "Amount (Kz)"
+msgstr "Valor (Kz)"
+
+#: apps/portal/forms.py:58
+msgid "Document"
+msgstr "Documento"
+
+#: apps/portal/templates/portal/base.html:27
+msgid "Main"
+msgstr "Principal"
+
+#: apps/portal/templates/portal/base.html:29
+#: apps/wallets/templates/admin/wallets/adjust.html:5
+msgid "Home"
+msgstr "Início"
+
+#: apps/portal/templates/portal/base.html:31
+#: apps/portal/templates/portal/wallet.html:2
+#: apps/portal/templates/portal/wallet.html:4
+msgid "Wallet"
+msgstr "Carteira"
+
+#: apps/portal/templates/portal/base.html:33
+msgid "Files"
+msgstr "Ficheiros"
+
+#: apps/portal/templates/portal/base.html:35
+#: apps/portal/templates/portal/history.html:2
+msgid "Prints"
+msgstr "Impressões"
+
+#: apps/portal/templates/portal/documents.html:2
+#: apps/portal/templates/portal/documents.html:5
+#: apps/portal/templates/portal/home.html:11
+msgid "My files"
+msgstr "Meus ficheiros"
+
+#: apps/portal/templates/portal/documents.html:4
+msgid "No file chosen"
+msgstr "Nenhum ficheiro escolhido"
+
+#: apps/portal/templates/portal/documents.html:6
+#, python-format
+msgid ""
+"Send files now and print them later at any kiosk. PDF, Word, Excel, "
+"PowerPoint and images up to %(max_mb)s MB. Files are kept for "
+"%(retention_days)s days."
+msgstr "Envie ficheiros agora e imprima-os depois em qualquer kiosk. PDF, Word, Excel, PowerPoint e imagens até %(max_mb)s MB. Os ficheiros ficam guardados %(retention_days)s dias."
+
+#: apps/portal/templates/portal/documents.html:11
+msgid "Choose file"
+msgstr "Escolher ficheiro"
+
+#: apps/portal/templates/portal/documents.html:14
+msgid "Upload"
+msgstr "Enviar"
+
+#: apps/portal/templates/portal/documents.html:24
+#, python-format
+msgid "%(n)s page"
+msgid_plural "%(n)s pages"
+msgstr[0] "%(n)s página"
+msgstr[1] "%(n)s páginas"
+
+#: apps/portal/templates/portal/documents.html:24
+#, python-format
+msgid "%(c)s in colour"
+msgid_plural "%(c)s in colour"
+msgstr[0] "%(c)s a cores"
+msgstr[1] "%(c)s a cores"
+
+#: apps/portal/templates/portal/documents.html:24
+#, python-format
+msgid "B&amp;W from %(price)s"
+msgstr "P&amp;B desde %(price)s"
+
+#: apps/portal/templates/portal/documents.html:25
+msgid "Checking…"
+msgstr "A verificar…"
+
+#: apps/portal/templates/portal/documents.html:26
+msgid "Cannot be printed"
+msgstr "Não pode ser impresso"
+
+#: apps/portal/templates/portal/documents.html:29
+msgid "Delete"
+msgstr "Apagar"
+
+#: apps/portal/templates/portal/documents.html:32
+msgid "No files yet."
+msgstr "Ainda não tem ficheiros."
+
+#: apps/portal/templates/portal/history.html:4
+msgid "My prints"
+msgstr "As minhas impressões"
+
+#: apps/portal/templates/portal/history.html:10
+#, python-format
+msgid "%(n)s page printed"
+msgid_plural "%(n)s pages printed"
+msgstr[0] "%(n)s página impressa"
+msgstr[1] "%(n)s páginas impressas"
+
+#: apps/portal/templates/portal/history.html:17
+msgid "You have not printed anything yet."
+msgstr "Ainda não imprimiu nada."
+
+#: apps/portal/templates/portal/home.html:3
+#, python-format
+msgid "Hello, %(name)s"
+msgstr "Olá, %(name)s"
+
+#: apps/portal/templates/portal/home.html:5
+#: apps/portal/templates/portal/wallet.html:6
+msgid "Available balance"
+msgstr "Saldo disponível"
+
+#: apps/portal/templates/portal/home.html:7
+#, python-format
+msgid "%(held)s reserved for a print in progress"
+msgstr "%(held)s cativos para uma impressão em curso"
+
+#: apps/portal/templates/portal/home.html:10
+#: apps/portal/templates/portal/topup_new.html:2
+msgid "Top up"
+msgstr "Carregar"
+
+#: apps/portal/templates/portal/home.html:15
+msgid "Awaiting payment"
+msgstr "A aguardar pagamento"
+
+#: apps/portal/templates/portal/home.html:16
+#, python-format
+msgid "%(amount)s · entity %(entity)s · reference %(reference)s"
+msgstr "%(amount)s · entidade %(entity)s · referência %(reference)s"
+
+#: apps/portal/templates/portal/home.html:19
+msgid "Recent activity"
+msgstr "Atividade recente"
+
+#: apps/portal/templates/portal/home.html:28
+msgid "No activity yet. Top up your wallet to start printing."
+msgstr "Ainda sem movimentos. Carregue a carteira para começar a imprimir."
+
+#: apps/portal/templates/portal/home.html:30
+msgid "Sign out"
+msgstr "Sair"
+
+#: apps/portal/templates/portal/landing.html:4
+msgid "Print at any StrongPrint kiosk"
+msgstr "Imprima em qualquer kiosk StrongPrint"
+
+#: apps/portal/templates/portal/landing.html:5
+msgid ""
+"Top up your wallet once and print or copy on campus — from your phone, a pen "
+"drive or WhatsApp."
+msgstr "Carregue a carteira uma vez e imprima ou copie no campus — a partir do telemóvel, de uma pen ou do WhatsApp."
+
+#: apps/portal/templates/portal/landing.html:8
+msgid "Create your account with your phone number."
+msgstr "Crie a sua conta com o número de telefone."
+
+#: apps/portal/templates/portal/landing.html:9
+msgid "Top up your wallet with a Multicaixa reference."
+msgstr "Carregue a carteira com uma referência Multicaixa."
+
+#: apps/portal/templates/portal/landing.html:10
+msgid ""
+"Choose your file at the kiosk and print. You only pay for the pages that "
+"come out."
+msgstr "Escolha o ficheiro no kiosk e imprima. Só paga as páginas que saírem."
+
+#: apps/portal/templates/portal/landing.html:12
+#: apps/portal/templates/portal/login_phone.html:4
+msgid "Sign in or create account"
+msgstr "Entrar ou criar conta"
+
+#: apps/portal/templates/portal/login_code.html:2
+msgid "Enter code"
+msgstr "Introduzir código"
+
+#: apps/portal/templates/portal/login_code.html:4
+msgid "Enter the code"
+msgstr "Introduza o código"
+
+#: apps/portal/templates/portal/login_code.html:5
+#, python-format
+msgid "Sent to %(phone)s."
+msgstr "Enviado para %(phone)s."
+
+#: apps/portal/templates/portal/login_code.html:5
+msgid "Change number"
+msgstr "Mudar número"
+
+#: apps/portal/templates/portal/login_code.html:8
+msgid "Continue"
+msgstr "Continuar"
+
+#: apps/portal/templates/portal/login_code.html:11
+msgid "Send a new code"
+msgstr "Enviar novo código"
+
+#: apps/portal/templates/portal/login_phone.html:2
+msgid "Sign in"
+msgstr "Entrar"
+
+#: apps/portal/templates/portal/login_phone.html:5
+msgid "We will send a 6-digit code to your phone."
+msgstr "Vamos enviar um código de 6 algarismos para o seu telefone."
+
+#: apps/portal/templates/portal/login_phone.html:8
+msgid "Send code"
+msgstr "Enviar código"
+
+#: apps/portal/templates/portal/register.html:2
+#: apps/portal/templates/portal/register.html:9
+msgid "Create account"
+msgstr "Criar conta"
+
+#: apps/portal/templates/portal/register.html:4
+msgid "Create your account"
+msgstr "Crie a sua conta"
+
+#: apps/portal/templates/portal/register.html:5
+#, python-format
+msgid "Number %(phone)s confirmed."
+msgstr "Número %(phone)s confirmado."
+
+#: apps/portal/templates/portal/topup_detail.html:2
+#: apps/portal/templates/portal/topup_detail.html:5
+msgid "Payment reference"
+msgstr "Referência de pagamento"
+
+#: apps/portal/templates/portal/topup_detail.html:8
+#, python-format
+msgid "%(amount)s was added to your wallet."
+msgstr "%(amount)s foram adicionados à sua carteira."
+
+#: apps/portal/templates/portal/topup_detail.html:9
+msgid "Back to start"
+msgstr "Voltar ao início"
+
+#: apps/portal/templates/portal/topup_detail.html:13
+msgid "Entity"
+msgstr "Entidade"
+
+#: apps/portal/templates/portal/topup_detail.html:14
+msgid "Reference"
+msgstr "Referência"
+
+#: apps/portal/templates/portal/topup_detail.html:15
+msgid "Amount"
+msgstr "Valor"
+
+#: apps/portal/templates/portal/topup_detail.html:17
+#, python-format
+msgid "Pay by %(time)s. This page updates automatically."
+msgstr "Pague até às %(time)s. Esta página atualiza-se sozinha."
+
+#: apps/portal/templates/portal/topup_detail.html:19
+msgid ""
+"Pay at a Multicaixa ATM or in your banking app: Payments → Payment by "
+"reference."
+msgstr "Pague num Multicaixa ou na app do seu banco: Pagamentos → Pagamento por referência."
+
+#: apps/portal/templates/portal/topup_detail.html:22
+msgid "Simulate payment (test mode)"
+msgstr "Simular pagamento (modo de teste)"
+
+#: apps/portal/templates/portal/topup_detail.html:27
+msgid "This reference can no longer be paid."
+msgstr "Esta referência já não pode ser paga."
+
+#: apps/portal/templates/portal/topup_detail.html:28
+msgid "New top-up"
+msgstr "Novo carregamento"
+
+#: apps/portal/templates/portal/topup_new.html:4
+#: apps/portal/templates/portal/wallet.html:10
+msgid "Top up wallet"
+msgstr "Carregar carteira"
+
+#: apps/portal/templates/portal/topup_new.html:5
+msgid ""
+"You will get a Multicaixa reference to pay at an ATM or in your banking app."
+msgstr "Vai receber uma referência Multicaixa para pagar no multibanco ou na app do banco."
+
+#: apps/portal/templates/portal/topup_new.html:13
+msgid "Get payment reference"
+msgstr "Obter referência de pagamento"
+
+#: apps/portal/templates/portal/wallet.html:8
+#, python-format
+msgid "Total %(total)s · reserved %(held)s"
+msgstr "Total %(total)s · cativo %(held)s"
+
+#: apps/portal/templates/portal/wallet.html:11
+msgid "Top-ups"
+msgstr "Carregamentos"
+
+#: apps/portal/templates/portal/wallet.html:18
+msgid "No top-ups yet."
+msgstr "Ainda sem carregamentos."
+
+#: apps/portal/templates/portal/wallet.html:20
+msgid "Movements"
+msgstr "Movimentos"
+
+#: apps/portal/templates/portal/wallet.html:27
+msgid "No movements yet."
+msgstr "Ainda sem movimentos."
+
+#: apps/portal/views.py:91 apps/portal/views.py:145
+#, python-format
+msgid "Development mode — your code is %(code)s"
+msgstr "Modo de desenvolvimento — o seu código é %(code)s"
+
+#: apps/portal/views.py:109
+msgid "Wrong code. Try again."
+msgstr "Código errado. Tente de novo."
+
+#: apps/portal/views.py:115
+msgid "This account is disabled."
+msgstr "Esta conta está desativada."
+
+#: apps/portal/views.py:143
+msgid "We sent you a new code."
+msgstr "Enviámos-lhe um novo código."
+
+#: apps/portal/views.py:178
+msgid "Please wait a minute before asking for a new code."
+msgstr "Aguarde um minuto antes de pedir um novo código."
+
+#: apps/portal/views.py:179
+msgid "Too many codes requested. Try again later."
+msgstr "Pediu demasiados códigos. Tente mais tarde."
+
+#: apps/portal/views.py:180
+msgid "The code expired. Ask for a new one."
+msgstr "O código expirou. Peça um novo."
+
+#: apps/portal/views.py:181
+msgid "Too many attempts. Ask for a new code."
+msgstr "Demasiadas tentativas. Peça um novo código."
+
+#: apps/portal/views.py:182
+msgid "We could not send the code. Try again."
+msgstr "Não foi possível enviar o código. Tente de novo."
+
+#: apps/portal/views.py:215
+msgid "The payment service is unavailable. Try again shortly."
+msgstr "O serviço de pagamentos está indisponível. Tente daqui a pouco."
+
+#: apps/portal/views.py:241
+msgid "Simulation is not available."
+msgstr "A simulação não está disponível."
+
+#: apps/portal/views.py:266
+msgid "This file type is not supported."
+msgstr "Este tipo de ficheiro não é suportado."
+
+#: apps/portal/views.py:267
+#, python-format
+msgid "The file is too large (max %(mb)s MB)."
+msgstr "O ficheiro é demasiado grande (máx. %(mb)s MB)."
+
+#: apps/portal/views.py:272
+msgid "File saved. We are checking it now."
+msgstr "Ficheiro guardado. Estamos a verificá-lo."
+
+#: apps/portal/views.py:295
+msgid "File deleted."
+msgstr "Ficheiro apagado."
+
+#: apps/wallets/admin.py:14
+msgid "Positive to credit, negative to debit."
+msgstr "Positivo para creditar, negativo para debitar."
+
+#: apps/wallets/admin.py:16
+msgid "Reason"
+msgstr "Motivo"
+
+#: apps/wallets/admin.py:21
+msgid "Amount cannot be zero."
+msgstr "O valor não pode ser zero."
+
+#: apps/wallets/admin.py:60
+msgid "available (Kz)"
+msgstr "disponível (Kz)"
+
+#: apps/wallets/admin.py:67 apps/wallets/templates/admin/wallets/adjust.html:8
+msgid "Adjust"
+msgstr "Ajustar"
+
+#: apps/wallets/admin.py:81
+msgid "Only superadmins can adjust wallets."
+msgstr "Só o superadmin pode ajustar carteiras."
+
+#: apps/wallets/admin.py:96
+msgid "Wallet adjusted."
+msgstr "Carteira ajustada."
+
+#: apps/wallets/admin.py:100
+#, python-format
+msgid "Adjust wallet: %s"
+msgstr "Ajustar carteira: %s"
+
+#: apps/wallets/apps.py:8
+msgid "Wallets"
+msgstr "Carteiras"
+
+#: apps/wallets/models.py:20
+msgid "balance (Kz)"
+msgstr "saldo (Kz)"
+
+#: apps/wallets/models.py:21 apps/wallets/models.py:100
+msgid "held (Kz)"
+msgstr "cativo (Kz)"
+
+#: apps/wallets/models.py:26
+msgid "wallet"
+msgstr "carteira"
+
+#: apps/wallets/models.py:27
+msgid "wallets"
+msgstr "carteiras"
+
+#: apps/wallets/models.py:50
+msgid "Top-up"
+msgstr "Carregamento"
+
+#: apps/wallets/models.py:51
+msgid "Print charge"
+msgstr "Impressão"
+
+#: apps/wallets/models.py:52
+msgid "Manual adjustment"
+msgstr "Ajuste manual"
+
+#: apps/wallets/models.py:56
+msgid "Positive = credit."
+msgstr "Positivo = crédito."
+
+#: apps/wallets/models.py:57
+msgid "balance after (Kz)"
+msgstr "saldo após (Kz)"
+
+#: apps/wallets/models.py:68
+msgid "memo"
+msgstr "nota"
+
+#: apps/wallets/models.py:72
+msgid "ledger entry"
+msgstr "movimento"
+
+#: apps/wallets/models.py:73
+msgid "ledger entries"
+msgstr "movimentos"
+
+#: apps/wallets/models.py:95
+msgid "Active"
+msgstr "Ativa"
+
+#: apps/wallets/models.py:96
+msgid "Settled"
+msgstr "Liquidada"
+
+#: apps/wallets/models.py:101
+msgid "captured (Kz)"
+msgstr "debitado (Kz)"
+
+#: apps/wallets/models.py:106
+msgid "settled at"
+msgstr "liquidada em"
+
+#: apps/wallets/models.py:109
+msgid "wallet hold"
+msgstr "valor cativo"
+
+#: apps/wallets/models.py:110
+msgid "wallet holds"
+msgstr "valores cativos"
+
+#: apps/wallets/templates/admin/wallets/adjust.html:12
+msgid "Balance"
+msgstr "Saldo"
+
+#: apps/wallets/templates/admin/wallets/adjust.html:13
+msgid "Held"
+msgstr "Cativo"
+
+#: apps/wallets/templates/admin/wallets/adjust.html:14
+msgid "Available"
+msgstr "Disponível"
+
+#: apps/wallets/templates/admin/wallets/adjust.html:17
+msgid "Apply adjustment"
+msgstr "Aplicar ajuste"
+
+#: config/settings/base.py:80
+msgid "Portuguese"
+msgstr "Português"
+
+#: config/settings/base.py:80
+msgid "English"
+msgstr "Inglês"
+
+#: config/urls.py:6
+msgid "StrongPrint — Superadmin"
+msgstr "StrongPrint — Superadmin"
+
+#: config/urls.py:8
+msgid "Administration"
+msgstr "Administração"

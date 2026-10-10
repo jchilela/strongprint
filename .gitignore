@@ -7,7 +7,6 @@ htmlcov/
 .ruff_cache/
 staticfiles/
 media/
-*.mo
 .DS_Store
 .dev-credentials
 celerybeat-schedule*

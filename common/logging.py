@@ -43,6 +43,9 @@ def configure_logging(debug: bool = False) -> None:
             "loggers": {
                 "django.db.backends": {"level": "INFO"},
                 "botocore": {"level": "WARNING"},
+                "django.utils.autoreload": {"level": "INFO"},
+                "PIL": {"level": "INFO"},
+                "s3transfer": {"level": "INFO"},
             },
         }
     )

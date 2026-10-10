@@ -1,0 +1,19 @@
+{% extends "portal/base.html" %}{% load i18n portal %}
+{% block title %}{% translate "Prints" %} · StrongPrint{% endblock %}
+{% block content %}
+<h1>{% translate "My prints" %}</h1>
+<div class="card">
+  {% if jobs %}<ul class="list">
+    {% for j in jobs %}
+    <li>
+      <div><div class="title">{{ j.original_filename|default:"—" }}</div>
+        <div class="muted small">{{ j.created_at|date:"d/m/Y H:i" }} · {{ j.kiosk.site.partner.name }}{% if j.pages_printed %} · {% blocktranslate count n=j.pages_printed %}{{ n }} page printed{% plural %}{{ n }} pages printed{% endblocktranslate %}{% endif %}</div></div>
+      <div style="text-align:right">
+        <span class="pill {% if j.state == 'COMPLETED' %}ok{% elif j.state == 'PARTIAL' %}warn{% elif j.state in 'FAILED REJECTED EXPIRED CANCELLED' %}bad{% endif %}">{{ j.get_state_display }}</span>
+        {% if j.total_kz %}<div class="num small muted">{{ j.total_kz|kz }}</div>{% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>{% else %}<p class="empty">{% translate "You have not printed anything yet." %}</p>{% endif %}
+</div>
+{% endblock %}

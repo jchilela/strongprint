@@ -1,0 +1,10 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% translate "Sign in" %} · StrongPrint{% endblock %}
+{% block content %}
+<h1>{% translate "Sign in or create account" %}</h1>
+<p class="muted">{% translate "We will send a 6-digit code to your phone." %}</p>
+<form method="post" class="card" novalidate>{% csrf_token %}
+  <div class="field">{{ form.phone.label_tag }}{{ form.phone }}{{ form.phone.errors }}</div>
+  <button class="btn block">{% translate "Send code" %}</button>
+</form>
+{% endblock %}

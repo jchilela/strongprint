@@ -69,3 +69,23 @@ class User(AbstractBaseUser, PermissionsMixin):
         super().clean()
         if self.phone:
             self.phone = normalize_phone(self.phone)
+
+
+class PhoneOTP(models.Model):
+    """Código de acesso enviado por SMS/WhatsApp. Só o hash fica guardado."""
+
+    phone = models.CharField(_("phone number"), max_length=20, db_index=True)
+    code_hash = models.CharField(max_length=64)
+    channel = models.CharField(_("channel"), max_length=12, default="sms")
+    attempts = models.PositiveSmallIntegerField(default=0)
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("login code")
+        verbose_name_plural = _("login codes")
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.phone} @ {self.created_at:%Y-%m-%d %H:%M}"

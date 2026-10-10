@@ -13,8 +13,24 @@ def default_options() -> dict:
     return {"color": False, "duplex": False, "copies": 1, "page_range": None}
 
 
+STATE_LABELS = {
+    JobState.CREATED: _("Created"),
+    JobState.FILE_RECEIVED: _("File received"),
+    JobState.ANALYZED: _("Ready to confirm"),
+    JobState.RESERVED: _("Reserved"),
+    JobState.QUEUED: _("Queued"),
+    JobState.PRINTING: _("Printing"),
+    JobState.COMPLETED: _("Printed"),
+    JobState.PARTIAL: _("Partially printed"),
+    JobState.FAILED: _("Failed"),
+    JobState.REJECTED: _("File rejected"),
+    JobState.CANCELLED: _("Cancelled"),
+    JobState.EXPIRED: _("Expired"),
+}
+
+
 class Job(models.Model):
-    State = models.TextChoices("State", [(s.value, s.value) for s in JobState])
+    State = models.TextChoices("State", [(s.name, (s.value, STATE_LABELS[s])) for s in JobState])
 
     class Source(models.TextChoices):
         USB = "USB", _("USB pen drive")
@@ -91,3 +107,45 @@ class JobEvent(models.Model):
 
     def __str__(self):
         return f"{self.from_state or '∅'} → {self.to_state}"
+
+
+class Document(models.Model):
+    """Ficheiro guardado pelo cliente ("Meus ficheiros") para imprimir em qualquer kiosk."""
+
+    class State(models.TextChoices):
+        PENDING = "PENDING", _("Analysing")
+        READY = "READY", _("Ready")
+        REJECTED = "REJECTED", _("Rejected")
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="documents"
+    )
+    source = models.CharField(
+        _("source"), max_length=10, choices=Job.Source.choices, default=Job.Source.UPLOAD
+    )
+    original_filename = models.CharField(_("filename"), max_length=255)
+    file_key = models.CharField(_("storage key"), max_length=500)
+    file_size = models.PositiveBigIntegerField(_("file size"), default=0)
+    mime_type = models.CharField(_("MIME type"), max_length=120, blank=True)
+    state = models.CharField(
+        _("state"), max_length=10, choices=State.choices, default=State.PENDING
+    )
+    pages = models.PositiveIntegerField(_("pages"), null=True, blank=True)
+    color_pages = models.PositiveIntegerField(_("colour pages"), null=True, blank=True)
+    analysis = models.JSONField(_("analysis"), default=dict, blank=True)
+    failure_reason = models.CharField(_("failure reason"), max_length=60, blank=True)
+    expires_at = models.DateTimeField(_("expires at"))
+    created_at = models.DateTimeField(_("created at"), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("document")
+        verbose_name_plural = _("documents")
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.original_filename
+
+    @property
+    def document_key(self) -> str:
+        return f"documents/{self.id}/document.pdf"

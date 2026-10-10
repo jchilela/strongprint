@@ -1,0 +1,13 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% translate "Enter code" %} · StrongPrint{% endblock %}
+{% block content %}
+<h1>{% translate "Enter the code" %}</h1>
+<p class="muted">{% blocktranslate %}Sent to {{ phone }}.{% endblocktranslate %} <a href="{% url 'portal:login' %}">{% translate "Change number" %}</a></p>
+<form method="post" class="card" novalidate>{% csrf_token %}
+  <div class="field"><label for="id_code">{{ form.code.label }}</label><input class="code" type="text" name="code" id="id_code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="000000" autofocus required>{{ form.code.errors }}</div>
+  <button class="btn block">{% translate "Continue" %}</button>
+</form>
+<form method="post" action="{% url 'portal:resend_code' %}">{% csrf_token %}
+  <button class="btn link">{% translate "Send a new code" %}</button>
+</form>
+{% endblock %}
