@@ -115,4 +115,4 @@ certbot --nginx --non-interactive --agree-tos --redirect --expand --cert-name "$
 REMOTE
 fi
 
-echo "Deploy de $REV concluído: https://$DOMAIN/admin/"
+echo "Deploy de $REV concluído: https://client.$DOMAIN/ · admin https://administ.$DOMAIN/"
