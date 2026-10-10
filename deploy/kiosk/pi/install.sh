@@ -9,6 +9,7 @@
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)
 KIOSK_USER=${KIOSK_USER:-${SUDO_USER:-pi}}
+PRINTER_IFACE=${PRINTER_IFACE:-}
 CONFIG=$(cat)
 get() { python3 -c 'import json,sys; print(json.loads(sys.argv[1]).get(sys.argv[2]) or "")' "$CONFIG" "$1"; }
 
@@ -27,8 +28,9 @@ if ((${#need[@]})); then apt-get update -q && apt-get install -y -q "${need[@]}"
 
 echo "==> Configuração"
 install -d -m 755 /etc/strongprint
-if [[ -z $TOKEN && -f /etc/strongprint/agent.env ]]; then
-    TOKEN=$(sed -n 's/^DEVICE_TOKEN=//p' /etc/strongprint/agent.env)
+if [[ -f /etc/strongprint/agent.env ]]; then
+    [[ -n $TOKEN ]] || TOKEN=$(sed -n 's/^DEVICE_TOKEN=//p' /etc/strongprint/agent.env)
+    [[ -n $PRINTER_IFACE ]] || PRINTER_IFACE=$(sed -n 's/^PRINTER_IFACE=//p' /etc/strongprint/agent.env)
 fi
 [[ -n $TOKEN ]] || { echo "falta o token do dispositivo" >&2; exit 1; }
 umask 077
@@ -39,6 +41,7 @@ DEVICE_TOKEN=$TOKEN
 VPN_IP=$PI_VPN_IP
 PRINTER_VPN_IP=$PRINTER_VPN_IP
 PRINTER_LAN_IP=$PRINTER_LAN_IP
+PRINTER_IFACE=$PRINTER_IFACE
 ENV
 # O ecrã (utilizador do ambiente gráfico) só lê o endereço e o token.
 printf 'SCREEN_URL=%s\nDEVICE_TOKEN=%s\n' "$SCREEN_URL" "$TOKEN" > /etc/strongprint/screen.env

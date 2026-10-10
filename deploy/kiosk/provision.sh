@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Instala (ou reinstala) um Raspberry Pi de kiosk StrongPrint. Corre no computador do admin.
 #
-#   deploy/kiosk/provision.sh <PI> <utilizador@ip-do-pi> [--printer-lan-ip IP] [--kiosk-user U] [--rotate-token]
+#   deploy/kiosk/provision.sh <PI> <utilizador@ip-do-pi> [--printer-lan-ip IP] [--printer-iface eth0]
+#                             [--kiosk-user U] [--rotate-token]
+#   --printer-iface: a impressora está ligada por cabo diretamente ao Pi nessa interface.
 #   ex.: deploy/kiosk/provision.sh IMETRO-S01-K01-PI julio@192.168.1.238 --printer-lan-ip 192.168.1.50
 #
 # Requisitos: acesso SSH por chave ao Pi (ssh-copy-id) e ao servidor; o Pi tem de
@@ -16,11 +18,12 @@ APP_DIR=/opt/strongprint
 DEVICE=${1:?nome do Pi, ex. IMETRO-S01-K01-PI}
 TARGET=${2:?utilizador@ip do Pi}
 shift 2
-PRINTER_LAN_IP="" ROTATE=0 KIOSK_USER=""
+PRINTER_LAN_IP="" ROTATE=0 KIOSK_USER="" PRINTER_IFACE=""
 while (($#)); do
     case $1 in
         --printer-lan-ip) PRINTER_LAN_IP=$2; shift 2 ;;
         --kiosk-user) KIOSK_USER=$2; shift 2 ;;
+        --printer-iface) PRINTER_IFACE=$2; shift 2 ;;
         --rotate-token) ROTATE=1; shift ;;
         *) echo "opção desconhecida: $1" >&2; exit 1 ;;
     esac
@@ -62,7 +65,7 @@ COPYFILE_DISABLE=1 tar --no-xattrs -C "$HERE/pi" -czf "$TMP/pi.tgz" . 2>/dev/nul
     || COPYFILE_DISABLE=1 tar -C "$HERE/pi" -czf "$TMP/pi.tgz" .
 scp -q -o BatchMode=yes "$TMP/pi.tgz" "$TARGET:/tmp/strongprint-pi.tgz"
 "${SSH_PI[@]}" "rm -rf /tmp/strongprint-pi && mkdir -p /tmp/strongprint-pi && tar -C /tmp/strongprint-pi -xzf /tmp/strongprint-pi.tgz && rm /tmp/strongprint-pi.tgz"
-"${SSH_PI[@]}" "sudo KIOSK_USER=$(printf '%q' "$KIOSK_USER") bash /tmp/strongprint-pi/install.sh; rm -rf /tmp/strongprint-pi" < "$TMP/config.json"
+"${SSH_PI[@]}" "sudo KIOSK_USER=$(printf '%q' "$KIOSK_USER") PRINTER_IFACE=$(printf '%q' "$PRINTER_IFACE") bash /tmp/strongprint-pi/install.sh; rm -rf /tmp/strongprint-pi" < "$TMP/config.json"
 
 echo "==> 6/6 Verificação"
 sleep 5
