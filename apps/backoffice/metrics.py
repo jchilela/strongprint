@@ -12,7 +12,7 @@ from django.utils import timezone
 
 from apps.accounts.models import User
 from apps.jobs.models import Job
-from apps.monitoring.models import Alert
+from apps.monitoring.models import Alert, Downtime, format_duration
 from apps.partners import reports
 from apps.partners.models import Kiosk, Partner
 from apps.payments.models import TopUp
@@ -142,6 +142,7 @@ def kiosk_rows() -> list[dict]:
         ):
             revenue.setdefault(row["kiosk"], {})[key] = -row["kz"]
 
+    availability = availability_7d(ids)
     rows = []
     for kiosk in kiosks:
         printer = getattr(kiosk, "printer", None)
@@ -162,6 +163,7 @@ def kiosk_rows() -> list[dict]:
                 "open_alerts": kiosk.open_alerts,
                 "today": revenue.get(kiosk.pk, {}).get("today", 0),
                 "month": revenue.get(kiosk.pk, {}).get("month", 0),
+                "availability": availability.get(kiosk.pk),
             }
         )
     return rows
@@ -208,3 +210,27 @@ def top_wallets(limit: int = 10):
         .filter(balance_kz__gt=0)
         .order_by("-balance_kz")[:limit]
     )
+
+
+def recent_downtimes(limit: int = 12):
+    return Downtime.objects.select_related("kiosk").order_by("-started_at")[:limit]
+
+
+def availability_7d(kiosk_ids) -> dict[int, dict]:
+    """% do tempo disponível nos últimos 7 dias e tempo total indisponível, por kiosk."""
+    now = timezone.now()
+    start = now - timedelta(days=7)
+    window = (now - start).total_seconds()
+    lost: dict[int, float] = {}
+    for d in Downtime.objects.filter(kiosk__in=kiosk_ids).filter(
+        Q(ended_at__isnull=True) | Q(ended_at__gt=start)
+    ):
+        begin, end = max(d.started_at, start), d.ended_at or now
+        lost[d.kiosk_id] = lost.get(d.kiosk_id, 0) + max((end - begin).total_seconds(), 0)
+    return {
+        pk: {
+            "pct": round(100 * (1 - seconds / window), 1),
+            "lost": format_duration(timedelta(seconds=seconds)),
+        }
+        for pk, seconds in lost.items()
+    }

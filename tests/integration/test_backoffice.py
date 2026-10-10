@@ -1,10 +1,12 @@
+from datetime import timedelta
+
 import pytest
 from django.urls import reverse
 from django.utils import timezone
 
 from apps.accounts.models import User
 from apps.jobs.models import Job
-from apps.monitoring.models import Alert
+from apps.monitoring.models import Alert, Downtime
 from apps.payments.models import TopUp
 from apps.wallets import services as wallet
 from common.auth import kiosk_activity, mark_kiosk_active
@@ -58,9 +60,18 @@ def owner(client):
 def test_dashboard_shows_business(owner, business):
     kiosk, customer = business
     mark_kiosk_active(kiosk.pk, customer.pk)
+    Downtime.objects.create(
+        kiosk=kiosk,
+        reason="paper_out",
+        detail={"reasons": ["media-empty-error"]},
+        started_at=timezone.now() - timedelta(hours=7),
+        ended_at=timezone.now() - timedelta(hours=1, minutes=24),
+    )
     response = owner.get(reverse("strongprint-dashboard"))
     assert response.status_code == 200
     ctx = response.context
+    assert b"media-empty-error" in response.content
+    assert ctx["downtimes"][0].duration_text == "5 h 36 min"
     assert ctx["sales"]["today"]["revenue_kz"] == 700 and ctx["sales"]["all"]["faces"] == 7
     assert ctx["sales"]["month"]["topups_kz"] == 5000
     assert ctx["wallets"]["balance_kz"] == 4300 and ctx["wallets"]["with_balance"] == 1
@@ -68,6 +79,7 @@ def test_dashboard_shows_business(owner, business):
     assert (
         row["in_use"] and row["toner_min"] == 8 and row["open_alerts"] == 1 and row["today"] == 700
     )
+    assert row["availability"]["pct"] == round(100 * (1 - 5.6 / 168), 1)
     partner = next(p for p in ctx["partners"] if p["partner"] == kiosk.site.partner)
     assert partner["today"] == 700 and partner["kiosks"] == 1
     assert ctx["daily"][-1]["kz"] == 700

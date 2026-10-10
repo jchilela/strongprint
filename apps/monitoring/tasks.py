@@ -28,6 +28,7 @@ def poll_printers() -> int:
 @shared_task(queue="monitoring")
 def mark_offline_kiosks() -> int:
     count = services.mark_offline_kiosks()
+    services.record_all_availability()
     if count:
         log.warning("monitor.kiosks_offline", count=count)
     return count

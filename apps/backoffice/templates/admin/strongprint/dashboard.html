@@ -99,7 +99,7 @@
     <table>
       <thead><tr>
         <th>{% translate "Kiosk" %}</th><th>{% translate "Partner" %}</th><th>{% translate "Status" %}</th><th>{% translate "In use" %}</th>
-        <th>{% translate "Printer" %}</th><th>{% translate "Toner" %}</th><th>{% translate "Alerts" %}</th><th>{% translate "Last signal" %}</th>
+        <th>{% translate "Printer" %}</th><th>{% translate "Toner" %}</th><th>{% translate "Alerts" %}</th><th>{% translate "Available (7 days)" %}</th><th>{% translate "Last signal" %}</th>
         <th class="r">{% translate "Today" %}</th><th class="r">{% translate "Month" %}</th>
       </tr></thead>
       <tbody>
@@ -112,11 +112,28 @@
           <td>{% if r.printer %}<span class="{% if r.printer.status == 'READY' or r.printer.status == 'BUSY' %}sp-ok{% elif r.printer.status == 'WARNING' %}sp-warn{% else %}sp-bad{% endif %}">{{ r.printer.get_status_display }}</span>{% if r.reasons %}<div class="sp-sub">{{ r.reasons|join:", " }}</div>{% endif %}{% if r.printer.last_page_counter is not None %}<div class="sp-sub">{% translate "counter" %} {{ r.printer.last_page_counter }}</div>{% endif %}{% else %}—{% endif %}</td>
           <td>{% if r.toner %}<div class="sp-toner" title="{% for c, v in r.toner %}{{ c }}: {{ v }}% {% endfor %}">{% for c, v in r.toner %}<span><i style="height:{% if v >= 0 %}{{ v }}{% else %}0{% endif %}%;background:{% if 'cyan' in c %}#00a3e0{% elif 'magenta' in c %}#d6007e{% elif 'yellow' in c %}#f5c400{% else %}#333{% endif %}"></i></span>{% endfor %}</div>{% if r.toner_min is not None and r.toner_min < 15 %}<div class="sp-sub sp-bad">{{ r.toner_min }}%</div>{% endif %}{% else %}<span class="sp-muted">—</span>{% endif %}</td>
           <td>{% if r.open_alerts %}<a class="sp-bad" href="{% url 'admin:monitoring_alert_changelist' %}?open=1&kiosk__id__exact={{ r.kiosk.pk }}">{{ r.open_alerts }} ⚠</a>{% else %}<span class="sp-muted">—</span>{% endif %}</td>
+          <td>{% if r.availability %}<a class="{% if r.availability.pct >= 98 %}sp-ok{% elif r.availability.pct >= 90 %}sp-warn{% else %}sp-bad{% endif %}" href="{% url 'admin:monitoring_downtime_changelist' %}?kiosk__id__exact={{ r.kiosk.pk }}">{{ r.availability.pct }}%</a><div class="sp-sub">{% translate "down" %} {{ r.availability.lost }}</div>{% else %}<span class="sp-ok">100%</span>{% endif %}</td>
           <td class="sp-sub">{% if r.device.last_heartbeat %}{{ r.device.last_heartbeat|timesince }}{% else %}—{% endif %}</td>
           <td class="r">{{ r.today|kz }}</td><td class="r">{{ r.month|kz }}</td>
         </tr>
-      {% empty %}<tr><td colspan="10" class="sp-muted">{% translate "No kiosks yet." %}</td></tr>{% endfor %}
+      {% empty %}<tr><td colspan="11" class="sp-muted">{% translate "No kiosks yet." %}</td></tr>{% endfor %}
       </tbody>
+    </table>
+  </div>
+
+  {# ------------------------------------------------ indisponibilidades #}
+  <h2>{% translate "Unavailability history" %} <a class="sp-sub" style="font-weight:normal" href="{% url 'admin:monitoring_downtime_changelist' %}">{% translate "see all" %} →</a></h2>
+  <div class="sp-card" style="padding:0;overflow-x:auto">
+    <table>
+      <thead><tr><th>{% translate "Started" %}</th><th>{% translate "Kiosk" %}</th><th>{% translate "Reason" %}</th><th>{% translate "Printer said" %}</th><th>{% translate "Ended" %}</th><th class="r">{% translate "Duration" %}</th></tr></thead>
+      <tbody>{% for d in downtimes %}<tr>
+        <td>{{ d.started_at|date:"d/m H:i" }}</td>
+        <td><strong>{{ d.kiosk.code }}</strong></td>
+        <td><span class="sp-pill {% if d.is_open %}sp-bad{% else %}sp-muted{% endif %}">{{ d.get_reason_display }}</span></td>
+        <td class="sp-sub">{{ d.detail.reasons|join:", "|default:"—" }}</td>
+        <td>{% if d.is_open %}<strong class="sp-bad">{% translate "still unavailable" %}</strong>{% else %}{{ d.ended_at|date:"d/m H:i" }}{% endif %}</td>
+        <td class="r">{{ d.duration_text }}</td>
+      </tr>{% empty %}<tr><td colspan="6" class="sp-ok">✓ {% translate "No unavailability recorded." %}</td></tr>{% endfor %}</tbody>
     </table>
   </div>
 

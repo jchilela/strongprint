@@ -50,3 +50,70 @@ class Alert(models.Model):
     @property
     def is_open(self) -> bool:
         return self.resolved_at is None
+
+
+def format_duration(delta) -> str:
+    seconds = int(delta.total_seconds())
+    if seconds < 60:
+        return f"{seconds} s"
+    hours, minutes = divmod(seconds // 60, 60)
+    days, hours = divmod(hours, 24)
+    if days:
+        return f"{days} d {hours} h"
+    return f"{hours} h {minutes:02d} min" if hours else f"{minutes} min"
+
+
+class Downtime(models.Model):
+    """Período em que um kiosk não pôde atender clientes, e porquê.
+
+    Há no máximo um período aberto por kiosk; mudar de motivo fecha o atual e abre outro.
+    """
+
+    class Reason(models.TextChoices):
+        MAINTENANCE = "maintenance", _("Maintenance / out of service")
+        KIOSK_OFFLINE = "kiosk_offline", _("Kiosk offline (no signal)")
+        NO_PRINTER = "no_printer", _("No printer")
+        OFFLINE = "offline", _("Printer off or unreachable")
+        PAPER_OUT = "paper_out", _("Out of paper")
+        PAPER_JAM = "paper_jam", _("Paper jam")
+        DOOR_OPEN = "door_open", _("Printer door open")
+        TONER_EMPTY = "toner_empty", _("Toner empty")
+        ERROR = "error", _("Printer error")
+
+    kiosk = models.ForeignKey(Kiosk, on_delete=models.CASCADE, related_name="downtimes")
+    printer = models.ForeignKey(
+        Printer, null=True, blank=True, on_delete=models.SET_NULL, related_name="downtimes"
+    )
+    reason = models.CharField(_("reason"), max_length=20, choices=Reason.choices)
+    detail = models.JSONField(_("printer detail"), default=dict, blank=True)
+    started_at = models.DateTimeField(_("started at"), db_index=True)
+    ended_at = models.DateTimeField(_("ended at"), null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("unavailability")
+        verbose_name_plural = _("unavailability history")
+        ordering = ["-started_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["kiosk"],
+                condition=Q(ended_at__isnull=True),
+                name="uniq_open_downtime",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.kiosk} — {self.get_reason_display()}"
+
+    @property
+    def is_open(self) -> bool:
+        return self.ended_at is None
+
+    @property
+    def duration(self):
+        from django.utils import timezone
+
+        return (self.ended_at or timezone.now()) - self.started_at
+
+    @property
+    def duration_text(self) -> str:
+        return format_duration(self.duration)

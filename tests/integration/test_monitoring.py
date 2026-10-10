@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 
 from apps.devices.models import EdgeDevice, Printer
 from apps.monitoring import services, tasks
-from apps.monitoring.models import Alert
+from apps.monitoring.models import Alert, Downtime
 from apps.partners.models import Kiosk
 from domain.printing.fake import FakePrinterGateway
 from domain.printing.gateway import PrinterState
@@ -180,3 +180,48 @@ def test_open_alert_is_deduplicated(kiosk):
     assert second.message == "b" and second.is_open
     assert services.resolve_alert(K.TONER_LOW, kiosk) == 1
     assert services.resolve_alert(K.TONER_LOW, kiosk) == 0
+
+
+def test_downtime_history(device, kiosk):
+    device.last_heartbeat = timezone.now()
+    device.save()
+    Kiosk.objects.filter(pk=kiosk.pk).update(status=Kiosk.Status.ONLINE)
+    printer = kiosk.printer
+    key = str(printer.pk)
+    services.poll_printer(printer)
+    assert not Downtime.objects.exists()
+
+    FakePrinterGateway.configure(key, paper_out=True, reasons=["media-empty-error"])
+    services.poll_printer(printer)
+    services.poll_printer(printer)  # o mesmo problema não abre outro período
+    down = Downtime.objects.get()
+    assert (down.reason, down.is_open, down.detail["reasons"]) == (
+        "paper_out",
+        True,
+        ["media-empty-error"],
+    )
+
+    FakePrinterGateway.configure(key, paper_out=False, reasons=["media-jam-error"])
+    services.poll_printer(printer)
+    assert list(Downtime.objects.order_by("started_at").values_list("reason", flat=True)) == [
+        "paper_out",
+        "paper_jam",
+    ]
+    down.refresh_from_db()
+    assert down.ended_at is not None
+
+    FakePrinterGateway.configure(key, reasons=[], state=PrinterState.READY)
+    services.poll_printer(printer)
+    assert not Downtime.objects.filter(ended_at__isnull=True).exists()
+
+    Kiosk.objects.filter(pk=kiosk.pk).update(status=Kiosk.Status.MAINTENANCE)
+    assert tasks.mark_offline_kiosks() == 0
+    assert Downtime.objects.get(ended_at__isnull=True).reason == "maintenance"
+    assert Downtime.objects.first().duration_text.endswith(" s")
+
+
+def test_kiosk_offline_downtime(device, kiosk):
+    device.last_heartbeat = timezone.now() - timedelta(minutes=10)
+    device.save()
+    tasks.mark_offline_kiosks()
+    assert Downtime.objects.get(ended_at__isnull=True).reason == "kiosk_offline"

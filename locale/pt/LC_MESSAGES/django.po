@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-10 20:51+0100\n"
+"POT-Creation-Date: 2026-10-10 21:21+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -152,7 +152,7 @@ msgstr "Vendas (dinheiro gasto em impressões e cópias)"
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:43
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:59
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:103
-#: apps/backoffice/templates/admin/strongprint/dashboard.html:127
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:144
 #: apps/partner_portal/templates/partner/_period.html:4
 msgid "Today"
 msgstr "Hoje"
@@ -195,7 +195,7 @@ msgstr "cópias"
 
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:47
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:63
-#: apps/backoffice/templates/admin/strongprint/dashboard.html:127
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:144
 msgid "Since the start"
 msgstr "Desde o início"
 
@@ -306,6 +306,7 @@ msgid "Kiosks right now"
 msgstr "Kiosks neste momento"
 
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:101
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:128
 #: apps/partner_portal/templates/partner/_jobs_table.html:5
 #: apps/partner_portal/templates/partner/dashboard.html:18
 #: apps/partner_portal/templates/partner/jobs.html:6
@@ -314,7 +315,7 @@ msgid "Kiosk"
 msgstr "Kiosk"
 
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:101
-#: apps/backoffice/templates/admin/strongprint/dashboard.html:127
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:144
 #: apps/partner_portal/templates/partner/base.html:31
 msgid "Partner"
 msgstr "Parceiro"
@@ -349,17 +350,21 @@ msgid "Alerts"
 msgstr "Alertas"
 
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:102
+msgid "Available (7 days)"
+msgstr "Disponível (7 dias)"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:102
 #: apps/partner_portal/templates/partner/kiosk.html:14
 msgid "Last signal"
 msgstr "Último sinal"
 
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:103
-#: apps/backoffice/templates/admin/strongprint/dashboard.html:127
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:144
 msgid "Month"
 msgstr "Mês"
 
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:108
-#: apps/backoffice/templates/admin/strongprint/dashboard.html:129
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:146
 msgid "inactive"
 msgstr "inativo"
 
@@ -375,53 +380,95 @@ msgstr "cliente"
 msgid "counter"
 msgstr "contador"
 
-#: apps/backoffice/templates/admin/strongprint/dashboard.html:118
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:115
+msgid "down"
+msgstr "parado"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:119
 msgid "No kiosks yet."
 msgstr "Ainda não há kiosks."
 
-#: apps/backoffice/templates/admin/strongprint/dashboard.html:124
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:125
+msgid "Unavailability history"
+msgstr "Histórico de indisponibilidades"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:125
+msgid "see all"
+msgstr "ver tudo"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:128
+msgid "Started"
+msgstr "Início"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:128
+#: apps/wallets/admin.py:16
+msgid "Reason"
+msgstr "Motivo"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:128
+msgid "Printer said"
+msgstr "A impressora disse"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:128
+#: apps/monitoring/admin.py:55
+msgid "Ended"
+msgstr "Terminado"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:128
+msgid "Duration"
+msgstr "Duração"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:134
+msgid "still unavailable"
+msgstr "ainda indisponível"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:136
+msgid "No unavailability recorded."
+msgstr "Nenhuma indisponibilidade registada."
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:141
 #: apps/partner_portal/templates/partner/base.html:8
 #: apps/partner_portal/templates/partner/base.html:14
 msgid "Partners"
 msgstr "Parceiros"
 
-#: apps/backoffice/templates/admin/strongprint/dashboard.html:127
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:144
 #: apps/partner_portal/templates/partner/dashboard.html:13
 msgid "Kiosks"
 msgstr "Kiosks"
 
-#: apps/backoffice/templates/admin/strongprint/dashboard.html:127
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:144
 #: apps/partners/models.py:130
 msgid "Online"
 msgstr "Online"
 
-#: apps/backoffice/templates/admin/strongprint/dashboard.html:127
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:144
 msgid "Year"
 msgstr "Ano"
 
-#: apps/backoffice/templates/admin/strongprint/dashboard.html:131
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:148
 msgid "No partners yet."
 msgstr "Ainda não há parceiros."
 
-#: apps/backoffice/templates/admin/strongprint/dashboard.html:138
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:155
 #: apps/partner_portal/templates/partner/kiosk.html:30
 msgid "Open alerts"
 msgstr "Alertas abertos"
 
-#: apps/backoffice/templates/admin/strongprint/dashboard.html:141
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:158
 #: apps/partner_portal/templates/partner/alerts.html:8
 msgid "Everything is working. No open alerts."
 msgstr "Está tudo a funcionar. Não há alertas abertos."
 
-#: apps/backoffice/templates/admin/strongprint/dashboard.html:143
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:160
 msgid "Latest top-ups"
 msgstr "Últimos carregamentos"
 
-#: apps/backoffice/templates/admin/strongprint/dashboard.html:147
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:164
 msgid "Latest print and copy jobs"
 msgstr "Últimos trabalhos de impressão e cópia"
 
-#: apps/backoffice/views.py:31
+#: apps/backoffice/views.py:32
 #, python-format
 msgid "No customer found for “%(q)s”."
 msgstr "Nenhum cliente encontrado para «%(q)s»."
@@ -639,8 +686,8 @@ msgid ""
 msgstr "Uso direto do painel da impressora (cópia/USB). Desligado por omissão porque afeta o contador de páginas usado para verificar os trabalhos."
 
 #: apps/devices/models.py:153 apps/monitoring/admin.py:9
-#: apps/partners/models.py:149 apps/payments/models.py:23
-#: apps/wallets/models.py:103
+#: apps/monitoring/admin.py:51 apps/partners/models.py:149
+#: apps/payments/models.py:23 apps/wallets/models.py:103
 msgid "status"
 msgstr "estado"
 
@@ -921,11 +968,27 @@ msgstr "Resolvido"
 msgid "Mark as resolved"
 msgstr "Marcar como resolvido"
 
+#: apps/monitoring/admin.py:55
+msgid "Still unavailable"
+msgstr "Ainda indisponível"
+
+#: apps/monitoring/admin.py:79
+msgid "printer said"
+msgstr "a impressora disse"
+
+#: apps/monitoring/admin.py:83
+msgid "duration"
+msgstr "duração"
+
+#: apps/monitoring/admin.py:86
+msgid "ongoing"
+msgstr "a decorrer"
+
 #: apps/monitoring/apps.py:8
 msgid "Monitoring"
 msgstr "Monitorização"
 
-#: apps/monitoring/models.py:11
+#: apps/monitoring/models.py:11 apps/monitoring/models.py:77
 msgid "Out of paper"
 msgstr "Sem papel"
 
@@ -933,7 +996,7 @@ msgstr "Sem papel"
 msgid "Toner low"
 msgstr "Toner baixo"
 
-#: apps/monitoring/models.py:13
+#: apps/monitoring/models.py:13 apps/monitoring/models.py:81
 msgid "Printer error"
 msgstr "Erro na impressora"
 
@@ -988,6 +1051,58 @@ msgstr "alerta"
 #: apps/monitoring/models.py:37
 msgid "alerts"
 msgstr "alertas"
+
+#: apps/monitoring/models.py:73
+msgid "Maintenance / out of service"
+msgstr "Manutenção / fora de serviço"
+
+#: apps/monitoring/models.py:74
+msgid "Kiosk offline (no signal)"
+msgstr "Kiosk desligado (sem sinal)"
+
+#: apps/monitoring/models.py:75
+msgid "No printer"
+msgstr "Sem impressora"
+
+#: apps/monitoring/models.py:76
+msgid "Printer off or unreachable"
+msgstr "Impressora desligada ou sem ligação"
+
+#: apps/monitoring/models.py:78
+msgid "Paper jam"
+msgstr "Papel encravado"
+
+#: apps/monitoring/models.py:79
+msgid "Printer door open"
+msgstr "Porta da impressora aberta"
+
+#: apps/monitoring/models.py:80
+msgid "Toner empty"
+msgstr "Toner esgotado"
+
+#: apps/monitoring/models.py:87
+msgid "reason"
+msgstr "motivo"
+
+#: apps/monitoring/models.py:88
+msgid "printer detail"
+msgstr "detalhe da impressora"
+
+#: apps/monitoring/models.py:89
+msgid "started at"
+msgstr "início"
+
+#: apps/monitoring/models.py:90
+msgid "ended at"
+msgstr "fim"
+
+#: apps/monitoring/models.py:93
+msgid "unavailability"
+msgstr "indisponibilidade"
+
+#: apps/monitoring/models.py:94
+msgid "unavailability history"
+msgstr "histórico de indisponibilidades"
 
 #: apps/partner_portal/apps.py:8
 msgid "Partner portal"
@@ -1858,10 +1973,6 @@ msgstr "Ecrã do kiosk"
 #: apps/wallets/admin.py:14
 msgid "Positive to credit, negative to debit."
 msgstr "Positivo para creditar, negativo para debitar."
-
-#: apps/wallets/admin.py:16
-msgid "Reason"
-msgstr "Motivo"
 
 #: apps/wallets/admin.py:21
 msgid "Amount cannot be zero."

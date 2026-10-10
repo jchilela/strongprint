@@ -20,6 +20,7 @@ def dashboard(request):
         "kiosks": metrics.kiosk_rows(),
         "daily": metrics.daily_series(30),
         "alerts": metrics.open_alerts(),
+        "downtimes": metrics.recent_downtimes(),
         "recent_jobs": metrics.recent_jobs(),
         "recent_topups": metrics.recent_topups(),
         "query": query,

@@ -15,9 +15,10 @@ from apps.devices.models import Printer
 from apps.jobs.models import Job
 from apps.partners.models import Kiosk
 from domain.jobs.state_machine import JobState
+from domain.printing.blocking import block_reason
 from domain.printing.gateway import PrinterState, PrinterUnavailable
 
-from .models import Alert
+from .models import Alert, Downtime
 
 log = structlog.get_logger(__name__)
 K, S = Alert.Kind, Alert.Severity
@@ -90,6 +91,7 @@ def poll_printer(printer: Printer) -> Printer:
             message=f"{printer.name} is unreachable",
             data={"error": str(exc)[:200]},
         )
+        record_availability(kiosk, printer)
         return printer
 
     resolve_alert(K.PRINTER_OFFLINE, kiosk)
@@ -138,6 +140,7 @@ def poll_printer(printer: Printer) -> Printer:
         message=f"{printer.name}: {', '.join(status.reasons) or 'error'}",
         data={"reasons": status.reasons},
     )
+    record_availability(kiosk, printer)
     return printer
 
 
@@ -184,4 +187,65 @@ def mark_offline_kiosks() -> int:
                 data={"last_heartbeat": last.isoformat() if last else None},
             )
             count += 1
+    return count
+
+
+# --- histórico de indisponibilidade --------------------------------------------------
+
+
+def availability_reason(kiosk, printer=None) -> str | None:
+    """Motivo pelo qual o kiosk não atende agora (None = disponível)."""
+    if not kiosk.is_active or kiosk.status in (
+        Kiosk.Status.MAINTENANCE,
+        Kiosk.Status.OUT_OF_SERVICE,
+    ):
+        return Downtime.Reason.MAINTENANCE
+    if kiosk.status == Kiosk.Status.OFFLINE:
+        return Downtime.Reason.KIOSK_OFFLINE
+    printer = printer or getattr(kiosk, "printer", None)
+    if printer is None:
+        return Downtime.Reason.NO_PRINTER
+    return block_reason(printer.status, printer.status_detail)
+
+
+def record_availability(kiosk, printer=None) -> Downtime | None:
+    """Abre/fecha o período de indisponibilidade do kiosk conforme o estado atual."""
+    kiosk.refresh_from_db(fields=["status", "is_active"])
+    printer = printer or getattr(kiosk, "printer", None)
+    reason = availability_reason(kiosk, printer)
+    now = timezone.now()
+    current = Downtime.objects.filter(kiosk=kiosk, ended_at__isnull=True).first()
+    if current and current.reason == reason:
+        return current
+    if current:
+        Downtime.objects.filter(pk=current.pk).update(ended_at=now)
+        log.info("kiosk.available" if not reason else "kiosk.downtime_changed",
+                 kiosk=kiosk.code, previous=current.reason, reason=reason)
+    if not reason:
+        return None
+    detail = {}
+    if printer is not None:
+        detail = {
+            "status": printer.status,
+            "reasons": (printer.status_detail or {}).get("reasons", []),
+        }
+    try:
+        with transaction.atomic():
+            downtime = Downtime.objects.create(
+                kiosk=kiosk, printer=printer, reason=reason, detail=detail, started_at=now
+            )
+    except IntegrityError:
+        return Downtime.objects.filter(kiosk=kiosk, ended_at__isnull=True).first()
+    log.warning("kiosk.unavailable", kiosk=kiosk.code, reason=reason, detail=detail)
+    return downtime
+
+
+def record_all_availability() -> int:
+    count = 0
+    for kiosk in Kiosk.objects.select_related("printer"):
+        try:
+            record_availability(kiosk)
+            count += 1
+        except Exception:
+            log.exception("monitor.availability_failed", kiosk=kiosk.code)
     return count
