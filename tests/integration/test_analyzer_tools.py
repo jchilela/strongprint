@@ -91,3 +91,10 @@ def test_page_limit(tmp_path):
     with pytest.raises(AnalysisError) as exc:
         DocumentAnalyzer(max_pages=2).analyze(pdf, "long.pdf", tmp_path)
     assert exc.value.code == "too_many_pages"
+
+
+def test_same_workdir_can_be_reused(tmp_path, analyzer):
+    two = make_pdf(tmp_path / "two.pdf", [page(), page()])
+    one = make_pdf(tmp_path / "one.pdf", [page()])
+    assert analyzer.analyze(two, "two.pdf", tmp_path)[1].page_count == 2
+    assert analyzer.analyze(one, "one.pdf", tmp_path)[1].page_count == 1

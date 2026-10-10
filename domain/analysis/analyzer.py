@@ -161,8 +161,8 @@ class DocumentAnalyzer:
 
     def color_pixels(self, pdf: Path, workdir: Path) -> list[float]:
         """% de píxeis com cor em cada página (renderização RGB de baixa resolução)."""
-        outdir = workdir / "render"
-        outdir.mkdir(exist_ok=True)
+        outdir = workdir / f"render-{uuid.uuid4().hex}"
+        outdir.mkdir()
         self._gs(
             [
                 "-sDEVICE=png16m",
