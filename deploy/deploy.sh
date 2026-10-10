@@ -67,9 +67,13 @@ EOF
 {"identities":[{"name":"app","credentials":[{"accessKey":"$S3_KEY","secretKey":"$S3_SECRET"}],
   "actions":["Admin","Read","Write","List","Tagging"]}]}
 EOF
-    chmod 600 .env .env.db s3.json
     echo "Segredos gerados em $APP_DIR (.env, .env.db, s3.json)."
 fi
+# A pasta só é acessível ao root; o s3.json tem de ser legível pelo utilizador
+# do contentor SeaweedFS (não corre como root).
+chmod 700 "$APP_DIR"
+chmod 600 .env .env.db
+chmod 644 s3.json
 REMOTE
 fi
 
@@ -81,8 +85,12 @@ ssh "$SERVER" "for i in \$(seq 1 30); do curl -sf http://127.0.0.1:8100/healthz 
     docker compose -f $APP_DIR/docker-compose.prod.yml logs --tail 40 web; exit 1"
 echo
 
-if [[ $BOOTSTRAP == 1 ]]; then
-    echo "==> Bootstrap: nginx e HTTPS (o DNS de $DOMAIN tem de apontar para o servidor)"
+SERVER_IP="${SERVER#*@}"
+if [[ $BOOTSTRAP == 1 ]] && ! dig +short "$DOMAIN" A | grep -qx "$SERVER_IP"; then
+    echo "==> DNS de $DOMAIN ainda não aponta para $SERVER_IP: nginx/HTTPS adiados."
+    echo "    Volte a correr 'deploy/deploy.sh --bootstrap' quando o DNS estiver ativo."
+elif [[ $BOOTSTRAP == 1 ]]; then
+    echo "==> Bootstrap: nginx e HTTPS"
     ssh "$SERVER" DOMAIN="$DOMAIN" CERT_EMAIL="$CERT_EMAIL" APP_DIR="$APP_DIR" bash -s <<'REMOTE'
 set -euo pipefail
 cp "$APP_DIR/deploy/nginx-strongprint.it.ao.conf" "/etc/nginx/sites-available/$DOMAIN"
