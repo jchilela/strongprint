@@ -49,7 +49,8 @@ services:
              python manage.py ensure_bucket &&
              gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --access-logfile -"
     ports:
-      - "127.0.0.1:8100:8000"
+      # WEB_BIND=0.0.0.0 no .env expõe a porta à internet (só em desenvolvimento).
+      - "${WEB_BIND:-127.0.0.1}:8100:8000"
 
   worker:
     <<: *app
