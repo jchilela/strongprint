@@ -89,14 +89,14 @@ ssh "$SERVER" "for i in \$(seq 1 30); do curl -sf http://127.0.0.1:8100/healthz 
 echo
 
 SERVER_IP="${SERVER#*@}"
-if [[ $BOOTSTRAP == 1 ]] && ! dig +short "$DOMAIN" A | grep -qx "$SERVER_IP"; then
+if [[ $BOOTSTRAP == 1 ]] && ! dig +short @1.1.1.1 "$DOMAIN" A | grep -qx "$SERVER_IP"; then
     echo "==> DNS de $DOMAIN ainda não aponta para $SERVER_IP: nginx/HTTPS adiados."
     echo "    Volte a correr 'deploy/deploy.sh --bootstrap' quando o DNS estiver ativo."
 elif [[ $BOOTSTRAP == 1 ]]; then
     # Só nomes que apontam para este servidor: um nome errado faria falhar o certificado todo.
     READY=""
     for d in $DOMAINS; do
-        if dig +short "$d" A | grep -qx "$SERVER_IP"; then READY="$READY $d"; else
+        if dig +short @1.1.1.1 "$d" A | grep -qx "$SERVER_IP"; then READY="$READY $d"; else
             echo "    (ignorado: $d não aponta para $SERVER_IP — ex.: proxy Cloudflare ligado)"; fi
     done
     DOMAINS="${READY# }"
