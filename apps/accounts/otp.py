@@ -49,9 +49,10 @@ def _hit(key: str, limit: int, window: int) -> bool:
 
 
 def message_for(code: str, language: str = "pt") -> str:
+    # Só ASCII (GSM-7): SMS com acentos vão em Unicode, que algumas rotas atrasam ou perdem.
     if language == "en":
         return f"StrongPrint: your code is {code}. It expires in {settings.OTP_TTL_MINUTES} min."
-    return f"StrongPrint: o seu código é {code}. Válido por {settings.OTP_TTL_MINUTES} min."
+    return f"StrongPrint: o seu codigo e {code}. Valido por {settings.OTP_TTL_MINUTES} min."
 
 
 def send_strongx(phone: str, message: str) -> str:

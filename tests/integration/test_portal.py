@@ -142,6 +142,11 @@ def test_code_expiry_and_reuse(client):
         otp.verify_code(phone, code)  # usado
 
 
+def test_sms_text_is_plain_ascii():
+    for language in ("pt", "en"):
+        assert otp.message_for("123456", language).isascii()
+
+
 def test_only_hash_is_stored():
     phone, code = otp.request_code("923456789")
     assert code not in PhoneOTP.objects.get().code_hash
