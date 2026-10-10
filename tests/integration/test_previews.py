@@ -76,7 +76,8 @@ def test_job_previews_survive_file_purge(document, kiosk, customer, client, sett
     job.refresh_from_db()
     assert previews.preview_urls(job) == []
     assert not storage.object_size(f"previews/jobs/{job.pk}/p-001.jpg")
-    assert b"no longer available" in client.get(f"/impressoes/{job.pk}/").content
+    gone = client.get(f"/impressoes/{job.pk}/").content
+    assert b"/api/v1/previews/" not in gone and b"30" in gone
 
 
 def test_preview_tokens_are_checked(client, s3):
