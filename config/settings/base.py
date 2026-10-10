@@ -139,8 +139,11 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 
 LIBRARY_RETENTION_DAYS = env.int("LIBRARY_RETENTION_DAYS", default=7)
 
-# Códigos de acesso por telefone: console (log; desenvolvimento) | http (gateway SMS/WhatsApp)
+# Códigos de acesso por telefone: console (log; desenvolvimento) | strongx (SMS) | http (genérico)
 OTP_SENDER = env("OTP_SENDER", default="console")
+STRONGX_BASE_URL = env("STRONGX_BASE_URL", default="https://api.strongx.it.ao/v1")
+STRONGX_API_KEY = env("STRONGX_API_KEY", default="")
+STRONGX_APPLICATION_ID = env("STRONGX_APPLICATION_ID", default="")
 OTP_HTTP_URL = env("OTP_HTTP_URL", default="")
 OTP_HTTP_TOKEN = env("OTP_HTTP_TOKEN", default="")
 # Mostra o código no ecrã — SÓ em desenvolvimento, enquanto não há envio real.
@@ -164,7 +167,7 @@ CACHES = {
 PAYMENT_PROVIDER = env("PAYMENT_PROVIDER", default="mock")
 PAYMENTS_ALLOW_SIMULATION = env.bool("PAYMENTS_ALLOW_SIMULATION", default=True)
 MOCK_PAYMENT_SECRET = env("MOCK_PAYMENT_SECRET", default="mock-secret")
-STRONGPAY_BASE_URL = env("STRONGPAY_BASE_URL", default="http://strongpay.strongbox.ao")
+STRONGPAY_BASE_URL = env("STRONGPAY_BASE_URL", default="https://strongpay.strongbox.ao")
 STRONGPAY_API_KEY = env("STRONGPAY_API_KEY", default="")
 STRONGPAY_WEBHOOK_SECRET = env("STRONGPAY_WEBHOOK_SECRET", default="")
 TOPUP_MIN_KZ = env.int("TOPUP_MIN_KZ", default=100)

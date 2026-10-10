@@ -142,6 +142,44 @@ def test_http_sender(settings):
     assert exc.value.code == "send_failed"
 
 
+def test_strongx_sender(settings):
+    settings.OTP_SENDER = "strongx"
+    settings.STRONGX_BASE_URL = "https://api.strongx.test/v1"
+    settings.STRONGX_API_KEY = "strx_test_abc"
+    settings.STRONGX_APPLICATION_ID = "app-1"
+    settings.OTP_SHOW_CODE = False
+    with respx.mock:
+        route = respx.post("https://api.strongx.test/v1/sms/send").mock(
+            return_value=httpx.Response(
+                202, json={"success": True, "data": {"messageId": "m1", "status": "queued"}}
+            )
+        )
+        phone, code = otp.request_code("923456789")
+        sent = route.calls.last.request
+        assert sent.headers["authorization"] == "Bearer strx_test_abc"
+        payload = __import__("json").loads(sent.content)
+        assert payload["to"] == "+244923456789" and payload["applicationId"] == "app-1"
+        assert "StrongPrint" in payload["message"] and code is None
+    cache.clear()
+    with respx.mock:
+        respx.post("https://api.strongx.test/v1/sms/send").mock(
+            return_value=httpx.Response(402, json={"error": "insufficient_balance"})
+        )
+        with pytest.raises(otp.OtpError):
+            otp.request_code("923456780")
+    cache.clear()
+    with respx.mock:
+        respx.post("https://api.strongx.test/v1/sms/send").mock(
+            side_effect=httpx.ConnectError("down")
+        )
+        with pytest.raises(otp.OtpError):
+            otp.request_code("923456781")
+    settings.STRONGX_API_KEY = ""
+    cache.clear()
+    with pytest.raises(otp.OtpError):
+        otp.request_code("923456782")
+
+
 def test_resend_and_register_guards(client):
     assert client.post(reverse("portal:resend_code")).url == reverse("portal:login")
     assert client.get(reverse("portal:login_code")).url == reverse("portal:login")

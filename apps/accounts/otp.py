@@ -2,8 +2,8 @@
 
 - 6 dígitos, válidos ``OTP_TTL_MINUTES``, no máximo ``OTP_MAX_ATTEMPTS`` tentativas;
 - limites de envio por telefone (1/min, 5/h) e por IP (20/h);
-- envio por ``OTP_SENDER``: ``console`` (log; desenvolvimento) ou ``http``
-  (POST JSON para um gateway de SMS/WhatsApp configurável).
+- envio por ``OTP_SENDER``: ``console`` (log; desenvolvimento), ``strongx``
+  (SMS pela API StrongX) ou ``http`` (POST JSON para um gateway genérico).
 """
 
 import hashlib
@@ -54,8 +54,40 @@ def message_for(code: str, language: str = "pt") -> str:
     return f"StrongPrint: o seu código é {code}. Válido por {settings.OTP_TTL_MINUTES} min."
 
 
+def send_strongx(phone: str, message: str) -> str:
+    """POST /v1/sms/send — devolve o messageId. Chave ``strx_test_`` simula o envio."""
+    if not settings.STRONGX_API_KEY:
+        raise OtpError("send_failed", "STRONGX_API_KEY is not configured")
+    body = {"to": phone, "message": message}
+    if settings.STRONGX_APPLICATION_ID:
+        body["applicationId"] = settings.STRONGX_APPLICATION_ID
+    try:
+        response = httpx.post(
+            f"{settings.STRONGX_BASE_URL.rstrip('/')}/sms/send",
+            json=body,
+            headers={"Authorization": f"Bearer {settings.STRONGX_API_KEY}"},
+            timeout=15,
+        )
+    except httpx.HTTPError as exc:
+        log.error("otp.send_failed", provider="strongx", reason=str(exc))
+        raise OtpError("send_failed", "Could not send the code") from exc
+    if response.status_code >= 400:
+        try:
+            error = response.json().get("error", "")
+        except ValueError:
+            error = ""
+        log.error("otp.send_failed", provider="strongx", status=response.status_code, error=error)
+        raise OtpError("send_failed", "Could not send the code")
+    message_id = (response.json().get("data") or {}).get("messageId", "")
+    log.info("otp.sent", provider="strongx", message_id=message_id)
+    return message_id
+
+
 def send(phone: str, message: str) -> None:
     sender = settings.OTP_SENDER
+    if sender == "strongx":
+        send_strongx(phone, message)
+        return
     if sender == "http":
         try:
             response = httpx.post(
