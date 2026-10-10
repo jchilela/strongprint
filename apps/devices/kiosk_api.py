@@ -291,6 +291,8 @@ def documents(request):
             {
                 "id": str(d.id),
                 "filename": d.original_filename,
+                "source": d.source,
+                "email_from": d.email_from,
                 "state": d.state,
                 "pages": d.pages,
                 "color_pages": d.color_pages,

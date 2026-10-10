@@ -8,6 +8,22 @@ import sys
 from pathlib import Path
 
 PT = {
+    "E-mail": "E-mail",
+    "sent by (e-mail)": "enviado por (e-mail)",
+    "Files added": "Ficheiros adicionados",
+    "No valid phone number in the subject": "Sem número de telefone válido no assunto",
+    "No printable attachments": "Sem anexos imprimíveis",
+    "Too many e-mails for this number": "Demasiados e-mails para este número",
+    "message ID": "ID da mensagem",
+    "subject": "assunto",
+    "phone": "telefone",
+    "files added": "ficheiros adicionados",
+    "skipped attachments": "anexos ignorados",
+    "received at": "recebido em",
+    "received e-mail": "e-mail recebido",
+    "received e-mails": "e-mails recebidos",
+    "Or send the files by e-mail to <strong>%(inbound_email)s</strong> with your phone number <strong>%(my_phone)s</strong> as the subject.": "Ou envie os ficheiros por e-mail para <strong>%(inbound_email)s</strong> com o seu número <strong>%(my_phone)s</strong> no assunto.",
+    "by e-mail from %(sender)s": "por e-mail de %(sender)s",
     "preview purged at": "imagens apagadas em",
     "See": "Ver",
     "Back": "Voltar",

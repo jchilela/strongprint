@@ -157,6 +157,16 @@ LIBRARY_RETENTION_DAYS = env.int("LIBRARY_RETENTION_DAYS", default=7)
 PREVIEW_MAX_PAGES = env.int("PREVIEW_MAX_PAGES", default=30)
 PREVIEW_RETENTION_DAYS = env.int("PREVIEW_RETENTION_DAYS", default=30)
 
+# Imprimir por e-mail: uma caixa StrongPrint lida por IMAP; o assunto é o telefone do cliente.
+INBOUND_EMAIL_ADDRESS = env("INBOUND_EMAIL_ADDRESS", default="")
+INBOUND_IMAP_HOST = env("INBOUND_IMAP_HOST", default="")
+INBOUND_IMAP_PORT = env.int("INBOUND_IMAP_PORT", default=993)
+INBOUND_IMAP_USER = env("INBOUND_IMAP_USER", default="")
+INBOUND_IMAP_PASSWORD = env("INBOUND_IMAP_PASSWORD", default="")
+INBOUND_IMAP_FOLDER = env("INBOUND_IMAP_FOLDER", default="INBOX")
+INBOUND_MAX_ATTACHMENTS = env.int("INBOUND_MAX_ATTACHMENTS", default=10)
+INBOUND_MAX_PER_HOUR = env.int("INBOUND_MAX_PER_HOUR", default=30)
+
 # VPN WireGuard (servidor = hub). Cada kiosk usa 10.77.N.0/24: Pi .1, impressora .2.
 VPN_PREFIX = env("VPN_PREFIX", default="10.77")
 VPN_SERVER_IP = env("VPN_SERVER_IP", default="10.77.0.1")

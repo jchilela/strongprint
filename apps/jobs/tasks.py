@@ -302,3 +302,11 @@ def scan_batch(job_id: str, source: str = "") -> str:
             lock.release()
         except Exception:
             pass
+
+
+@shared_task(queue="default")
+def fetch_inbound_email() -> int:
+    """A cada 30 s: anexos dos e-mails recebidos → "Meus ficheiros" do telefone do assunto."""
+    from . import inbound_email
+
+    return inbound_email.fetch_mailbox()

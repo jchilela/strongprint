@@ -228,6 +228,8 @@ def documents(request):
             "documents": docs,
             "max_mb": settings.UPLOAD_MAX_MB,
             "retention_days": settings.LIBRARY_RETENTION_DAYS,
+            "inbound_email": settings.INBOUND_EMAIL_ADDRESS,
+            "my_phone": request.user.phone.removeprefix("+244"),
             "pending": any(d.state == Document.State.PENDING for d in docs),
         },
     )

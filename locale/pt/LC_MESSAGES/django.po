@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-10 21:38+0100\n"
+"POT-Creation-Date: 2026-10-10 21:55+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -169,7 +169,7 @@ msgstr "trabalhos"
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:44
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:45
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:47
-#: apps/jobs/models.py:58 apps/jobs/models.py:140
+#: apps/jobs/models.py:59 apps/jobs/models.py:143
 #: apps/portal/templates/portal/preview.html:14
 msgid "pages"
 msgstr "páginas"
@@ -595,7 +595,7 @@ msgstr "dispositivos (Pi)"
 msgid "Unknown"
 msgstr "Desconhecido"
 
-#: apps/devices/models.py:100 apps/jobs/models.py:123
+#: apps/devices/models.py:100 apps/jobs/models.py:124
 msgid "Ready"
 msgstr "Pronto"
 
@@ -607,7 +607,7 @@ msgstr "Ocupada"
 msgid "Warning"
 msgstr "Aviso"
 
-#: apps/devices/models.py:103
+#: apps/devices/models.py:103 apps/jobs/models.py:171
 msgid "Error"
 msgstr "Erro"
 
@@ -686,9 +686,10 @@ msgid ""
 "affects the page counter used to verify jobs."
 msgstr "Uso direto do painel da impressora (cópia/USB). Desligado por omissão porque afeta o contador de páginas usado para verificar os trabalhos."
 
-#: apps/devices/models.py:153 apps/monitoring/admin.py:9
-#: apps/monitoring/admin.py:51 apps/partners/models.py:149
-#: apps/payments/models.py:23 apps/wallets/models.py:103
+#: apps/devices/models.py:153 apps/jobs/models.py:184
+#: apps/monitoring/admin.py:9 apps/monitoring/admin.py:51
+#: apps/partners/models.py:149 apps/payments/models.py:23
+#: apps/wallets/models.py:103
 msgid "status"
 msgstr "estado"
 
@@ -808,156 +809,212 @@ msgstr "WhatsApp"
 msgid "Copy (scanned at the kiosk)"
 msgstr "Cópia (digitalizada no kiosk)"
 
-#: apps/jobs/models.py:47 apps/jobs/models.py:138
+#: apps/jobs/models.py:40
+msgid "E-mail"
+msgstr "E-mail"
+
+#: apps/jobs/models.py:48 apps/jobs/models.py:141
 msgid "state"
 msgstr "estado"
 
-#: apps/jobs/models.py:50 apps/jobs/models.py:131
+#: apps/jobs/models.py:51 apps/jobs/models.py:132
 msgid "source"
 msgstr "origem"
 
-#: apps/jobs/models.py:53
+#: apps/jobs/models.py:54
 msgid "original filename"
 msgstr "nome do ficheiro"
 
-#: apps/jobs/models.py:54 apps/jobs/models.py:134
+#: apps/jobs/models.py:55 apps/jobs/models.py:137
 msgid "storage key"
 msgstr "chave de armazenamento"
 
-#: apps/jobs/models.py:55 apps/jobs/models.py:135
+#: apps/jobs/models.py:56 apps/jobs/models.py:138
 msgid "file size"
 msgstr "tamanho do ficheiro"
 
-#: apps/jobs/models.py:56 apps/jobs/models.py:136
+#: apps/jobs/models.py:57 apps/jobs/models.py:139
 msgid "MIME type"
 msgstr "tipo MIME"
 
-#: apps/jobs/models.py:59 apps/jobs/models.py:142
+#: apps/jobs/models.py:60 apps/jobs/models.py:145
 msgid "analysis"
 msgstr "análise"
 
-#: apps/jobs/models.py:61
+#: apps/jobs/models.py:62
 msgid "scan"
 msgstr "digitalização"
 
-#: apps/jobs/models.py:62
+#: apps/jobs/models.py:63
 msgid "options"
 msgstr "opções"
 
-#: apps/jobs/models.py:63
+#: apps/jobs/models.py:64
 msgid "price breakdown"
 msgstr "detalhe do preço"
 
-#: apps/jobs/models.py:64
+#: apps/jobs/models.py:65
 msgid "total (Kz)"
 msgstr "total (Kz)"
 
-#: apps/jobs/models.py:69
+#: apps/jobs/models.py:70
 msgid "printer job ID"
 msgstr "ID do trabalho na impressora"
 
-#: apps/jobs/models.py:70
+#: apps/jobs/models.py:71
 msgid "counter before"
 msgstr "contador antes"
 
-#: apps/jobs/models.py:71
+#: apps/jobs/models.py:72
 msgid "counter after"
 msgstr "contador depois"
 
-#: apps/jobs/models.py:72
+#: apps/jobs/models.py:73
 msgid "faces printed"
 msgstr "faces impressas"
 
-#: apps/jobs/models.py:73 apps/jobs/models.py:143
+#: apps/jobs/models.py:74 apps/jobs/models.py:146
 msgid "failure reason"
 msgstr "motivo da falha"
 
-#: apps/jobs/models.py:75 apps/jobs/models.py:144 apps/payments/models.py:30
+#: apps/jobs/models.py:76 apps/jobs/models.py:147 apps/payments/models.py:30
 msgid "expires at"
 msgstr "expira em"
 
-#: apps/jobs/models.py:76 apps/jobs/models.py:107 apps/jobs/models.py:145
+#: apps/jobs/models.py:77 apps/jobs/models.py:108 apps/jobs/models.py:148
 #: apps/payments/models.py:40 apps/wallets/models.py:22
 #: apps/wallets/models.py:69 apps/wallets/models.py:105 common/models.py:6
 msgid "created at"
 msgstr "criado em"
 
-#: apps/jobs/models.py:77 apps/payments/models.py:41 apps/wallets/models.py:23
+#: apps/jobs/models.py:78 apps/payments/models.py:41 apps/wallets/models.py:23
 #: common/models.py:7
 msgid "updated at"
 msgstr "atualizado em"
 
-#: apps/jobs/models.py:78
+#: apps/jobs/models.py:79
 msgid "finished at"
 msgstr "terminado em"
 
-#: apps/jobs/models.py:79
+#: apps/jobs/models.py:80
 msgid "file purged at"
 msgstr "ficheiro apagado em"
 
-#: apps/jobs/models.py:81
+#: apps/jobs/models.py:82
 msgid "preview purged at"
 msgstr "imagens apagadas em"
 
-#: apps/jobs/models.py:85
+#: apps/jobs/models.py:86
 msgid "print job"
 msgstr "trabalho de impressão"
 
-#: apps/jobs/models.py:86
+#: apps/jobs/models.py:87
 msgid "print jobs"
 msgstr "trabalhos de impressão"
 
-#: apps/jobs/models.py:101
+#: apps/jobs/models.py:102 apps/jobs/models.py:174
 msgid "from"
 msgstr "de"
 
-#: apps/jobs/models.py:102
+#: apps/jobs/models.py:103
 msgid "to"
 msgstr "para"
 
-#: apps/jobs/models.py:104 apps/wallets/models.py:67
+#: apps/jobs/models.py:105 apps/wallets/models.py:67
 msgid "actor"
 msgstr "autor"
 
-#: apps/jobs/models.py:104
+#: apps/jobs/models.py:105
 msgid "e.g. system, user:<id>, task:print"
 msgstr "ex.: system, user:<id>, task:print"
 
-#: apps/jobs/models.py:106 apps/monitoring/models.py:30
+#: apps/jobs/models.py:107 apps/monitoring/models.py:30
 msgid "data"
 msgstr "dados"
 
-#: apps/jobs/models.py:110
+#: apps/jobs/models.py:111
 msgid "job event"
 msgstr "evento do trabalho"
 
-#: apps/jobs/models.py:111
+#: apps/jobs/models.py:112
 msgid "job events"
 msgstr "eventos do trabalho"
 
-#: apps/jobs/models.py:122
+#: apps/jobs/models.py:123
 msgid "Analysing"
 msgstr "A analisar"
 
-#: apps/jobs/models.py:124
+#: apps/jobs/models.py:125
 msgid "Rejected"
 msgstr "Recusado"
 
-#: apps/jobs/models.py:133
+#: apps/jobs/models.py:134
 msgid "filename"
 msgstr "nome do ficheiro"
 
-#: apps/jobs/models.py:141
+#: apps/jobs/models.py:136
+msgid "sent by (e-mail)"
+msgstr "enviado por (e-mail)"
+
+#: apps/jobs/models.py:144
 msgid "colour pages"
 msgstr "páginas a cores"
 
-#: apps/jobs/models.py:148
+#: apps/jobs/models.py:151
 msgid "document"
 msgstr "documento"
 
-#: apps/jobs/models.py:149
+#: apps/jobs/models.py:152
 msgid "documents"
 msgstr "documentos"
+
+#: apps/jobs/models.py:167
+msgid "Files added"
+msgstr "Ficheiros adicionados"
+
+#: apps/jobs/models.py:168
+msgid "No valid phone number in the subject"
+msgstr "Sem número de telefone válido no assunto"
+
+#: apps/jobs/models.py:169
+msgid "No printable attachments"
+msgstr "Sem anexos imprimíveis"
+
+#: apps/jobs/models.py:170
+msgid "Too many e-mails for this number"
+msgstr "Demasiados e-mails para este número"
+
+#: apps/jobs/models.py:173
+msgid "message ID"
+msgstr "ID da mensagem"
+
+#: apps/jobs/models.py:175
+msgid "subject"
+msgstr "assunto"
+
+#: apps/jobs/models.py:176
+msgid "phone"
+msgstr "telefone"
+
+#: apps/jobs/models.py:185
+msgid "files added"
+msgstr "ficheiros adicionados"
+
+#: apps/jobs/models.py:186
+msgid "skipped attachments"
+msgstr "anexos ignorados"
+
+#: apps/jobs/models.py:187
+msgid "received at"
+msgstr "recebido em"
+
+#: apps/jobs/models.py:190
+msgid "received e-mail"
+msgstr "e-mail recebido"
+
+#: apps/jobs/models.py:191
+msgid "received e-mails"
+msgstr "e-mails recebidos"
 
 #: apps/monitoring/admin.py:13
 #: apps/partner_portal/templates/partner/alerts.html:5
@@ -1684,20 +1741,32 @@ msgid ""
 "%(retention_days)s days."
 msgstr "Envie ficheiros agora e imprima-os depois em qualquer kiosk. PDF, Word, Excel, PowerPoint e imagens até %(max_mb)s MB. Os ficheiros ficam guardados %(retention_days)s dias."
 
-#: apps/portal/templates/portal/documents.html:11
+#: apps/portal/templates/portal/documents.html:7
+#, python-format
+msgid ""
+"Or send the files by e-mail to <strong>%(inbound_email)s</strong> with your "
+"phone number <strong>%(my_phone)s</strong> as the subject."
+msgstr "Ou envie os ficheiros por e-mail para <strong>%(inbound_email)s</strong> com o seu número <strong>%(my_phone)s</strong> no assunto."
+
+#: apps/portal/templates/portal/documents.html:12
 msgid "Choose file"
 msgstr "Escolher ficheiro"
 
-#: apps/portal/templates/portal/documents.html:14
+#: apps/portal/templates/portal/documents.html:15
 msgid "Upload"
 msgstr "Enviar"
 
-#: apps/portal/templates/portal/documents.html:20
+#: apps/portal/templates/portal/documents.html:21
 #: apps/portal/templates/portal/history.html:9
 msgid "See"
 msgstr "Ver"
 
-#: apps/portal/templates/portal/documents.html:25
+#: apps/portal/templates/portal/documents.html:24
+#, python-format
+msgid "by e-mail from %(sender)s"
+msgstr "por e-mail de %(sender)s"
+
+#: apps/portal/templates/portal/documents.html:27
 #: apps/portal/templates/portal/preview.html:19
 #, python-format
 msgid "%(n)s page"
@@ -1705,31 +1774,31 @@ msgid_plural "%(n)s pages"
 msgstr[0] "%(n)s página"
 msgstr[1] "%(n)s páginas"
 
-#: apps/portal/templates/portal/documents.html:25
+#: apps/portal/templates/portal/documents.html:27
 #, python-format
 msgid "%(c)s in colour"
 msgid_plural "%(c)s in colour"
 msgstr[0] "%(c)s a cores"
 msgstr[1] "%(c)s a cores"
 
-#: apps/portal/templates/portal/documents.html:25
+#: apps/portal/templates/portal/documents.html:27
 #, python-format
 msgid "B&amp;W from %(price)s"
 msgstr "P&amp;B desde %(price)s"
 
-#: apps/portal/templates/portal/documents.html:26
+#: apps/portal/templates/portal/documents.html:28
 msgid "Checking…"
 msgstr "A verificar…"
 
-#: apps/portal/templates/portal/documents.html:27
+#: apps/portal/templates/portal/documents.html:29
 msgid "Cannot be printed"
 msgstr "Não pode ser impresso"
 
-#: apps/portal/templates/portal/documents.html:30
+#: apps/portal/templates/portal/documents.html:32
 msgid "Delete"
 msgstr "Apagar"
 
-#: apps/portal/templates/portal/documents.html:33
+#: apps/portal/templates/portal/documents.html:35
 msgid "No files yet."
 msgstr "Ainda não tem ficheiros."
 
@@ -1902,6 +1971,7 @@ msgid "One side"
 msgstr "Só frente"
 
 #: apps/portal/templates/portal/preview.html:14
+#, python-format
 msgid "%(n)s copy"
 msgid_plural "%(n)s copies"
 msgstr[0] "%(n)s cópia"
@@ -2050,7 +2120,7 @@ msgstr "O ficheiro é demasiado grande (máx. %(mb)s MB)."
 msgid "File saved. We are checking it now."
 msgstr "Ficheiro guardado. Estamos a verificá-lo."
 
-#: apps/portal/views.py:241
+#: apps/portal/views.py:243
 msgid "File deleted."
 msgstr "Ficheiro apagado."
 

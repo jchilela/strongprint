@@ -71,6 +71,7 @@
       phoneUploadSub: "Do telemóvel, com o QR",
       finish: "Terminar",
       close: "Fechar",
+      fromEmail: "por e-mail de {who}",
       noFiles: "Ainda não tem ficheiros. Use «Enviar agora».",
       checking: "A verificar…",
       pages: "{n} pág.",
@@ -187,6 +188,7 @@
       phoneUploadSub: "From your phone, with the QR",
       finish: "Finish",
       close: "Close",
+      fromEmail: "by e-mail from {who}",
       noFiles: "No files yet. Use “Send now”.",
       checking: "Checking…",
       pages: "{n} p.",
@@ -687,7 +689,9 @@
           : '<span class="pill warn">' + esc(t("checking")) + "</span>";
       return (
         '<button class="item" data-doc="' + esc(d.id) + '"' + (d.state === "READY" ? "" : " disabled") + ">" + thumb((d.preview_urls || [])[0]) +
-        '<div style="flex:1;min-width:0"><div class="t">' + esc(d.filename) + '</div><div class="s">' + meta + '</div></div><span class="pill">›</span></button>'
+        '<div style="flex:1;min-width:0"><div class="t">' + esc(d.filename) + '</div><div class="s">' + meta + "</div>" +
+        (d.email_from ? '<div class="s">✉ ' + esc(t("fromEmail", { who: d.email_from })) + "</div>" : "") +
+        '</div><span class="pill">›</span></button>'
       );
     }).join("");
   }

@@ -15,6 +15,7 @@ app.conf.beat_schedule = {
     "fail-stale-queued-jobs": {"task": "apps.jobs.tasks.fail_stale_queued_jobs", "schedule": 60.0},
     "purge-job-files": {"task": "apps.jobs.tasks.purge_job_files", "schedule": 1800.0},
     "purge-documents": {"task": "apps.jobs.tasks.purge_documents", "schedule": 3600.0},
+    "fetch-inbound-email": {"task": "apps.jobs.tasks.fetch_inbound_email", "schedule": 30.0},
     "purge-previews": {"task": "apps.jobs.tasks.purge_previews", "schedule": 3600.0},
     "reconcile-topups": {"task": "apps.payments.tasks.reconcile_topups", "schedule": 120.0},
     "resume-stuck-printing": {"task": "apps.jobs.tasks.resume_stuck_printing", "schedule": 300.0},

@@ -4,6 +4,7 @@
 {% block content %}{% translate "No file chosen" as no_file %}
 <h1>{% translate "My files" %}</h1>
 <p class="muted small">{% blocktranslate %}Send files now and print them later at any kiosk. PDF, Word, Excel, PowerPoint and images up to {{ max_mb }} MB. Files are kept for {{ retention_days }} days.{% endblocktranslate %}</p>
+{% if inbound_email %}<p class="muted small">✉ {% blocktranslate %}Or send the files by e-mail to <strong>{{ inbound_email }}</strong> with your phone number <strong>{{ my_phone }}</strong> as the subject.{% endblocktranslate %}</p>{% endif %}
 <form method="post" enctype="multipart/form-data" class="card" novalidate>{% csrf_token %}
   <div class="field">
     <input class="visually-hidden" type="file" name="file" id="id_file" accept=".pdf,.doc,.docx,.odt,.rtf,.txt,.xls,.xlsx,.ods,.csv,.ppt,.pptx,.odp,.jpg,.jpeg,.png" required
@@ -20,6 +21,7 @@
       <a class="thumb" href="{% url 'portal:document' d.pk %}" aria-label="{% translate 'See' %} {{ d.original_filename }}">{% if d.thumb %}<img src="{{ d.thumb }}" alt="" loading="lazy">{% else %}<span>📄</span>{% endif %}</a>
       <div class="grow">
         <a class="title" href="{% url 'portal:document' d.pk %}">{{ d.original_filename }}</a>
+        {% if d.email_from %}<div class="muted small">✉ {% blocktranslate with sender=d.email_from %}by e-mail from {{ sender }}{% endblocktranslate %}</div>{% endif %}
         <div class="muted small">
           {% if d.state == 'READY' %}
             {% blocktranslate count n=d.pages %}{{ n }} page{% plural %}{{ n }} pages{% endblocktranslate %}{% if d.color_pages %} · {% blocktranslate count c=d.color_pages %}{{ c }} in colour{% plural %}{{ c }} in colour{% endblocktranslate %}{% endif %}{% if d.estimate_kz %} · {% blocktranslate with price=d.estimate_kz|kz %}B&amp;W from {{ price }}{% endblocktranslate %}{% endif %}

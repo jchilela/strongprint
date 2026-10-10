@@ -37,6 +37,7 @@ class Job(models.Model):
         UPLOAD = "UPLOAD", _("Web upload")
         WHATSAPP = "WHATSAPP", _("WhatsApp")
         COPY = "COPY", _("Copy (scanned at the kiosk)")
+        EMAIL = "EMAIL", _("E-mail")
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     kiosk = models.ForeignKey(Kiosk, on_delete=models.PROTECT, related_name="jobs")
@@ -131,6 +132,8 @@ class Document(models.Model):
         _("source"), max_length=10, choices=Job.Source.choices, default=Job.Source.UPLOAD
     )
     original_filename = models.CharField(_("filename"), max_length=255)
+    # Ficheiros recebidos por e-mail: quem os enviou (para o cliente reconhecer).
+    email_from = models.CharField(_("sent by (e-mail)"), max_length=254, blank=True)
     file_key = models.CharField(_("storage key"), max_length=500)
     file_size = models.PositiveBigIntegerField(_("file size"), default=0)
     mime_type = models.CharField(_("MIME type"), max_length=120, blank=True)
@@ -155,3 +158,38 @@ class Document(models.Model):
     @property
     def document_key(self) -> str:
         return f"documents/{self.id}/document.pdf"
+
+
+class InboundEmail(models.Model):
+    """E-mail recebido na caixa StrongPrint: o assunto é o telefone do cliente."""
+
+    class Status(models.TextChoices):
+        ACCEPTED = "accepted", _("Files added")
+        NO_PHONE = "no_phone", _("No valid phone number in the subject")
+        NO_FILES = "no_files", _("No printable attachments")
+        RATE_LIMITED = "rate_limited", _("Too many e-mails for this number")
+        ERROR = "error", _("Error")
+
+    message_id = models.CharField(_("message ID"), max_length=255, unique=True)
+    sender = models.CharField(_("from"), max_length=254, blank=True)
+    subject = models.CharField(_("subject"), max_length=255, blank=True)
+    phone = models.CharField(_("phone"), max_length=20, blank=True, db_index=True)
+    customer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="inbound_emails",
+    )
+    status = models.CharField(_("status"), max_length=20, choices=Status.choices)
+    files = models.PositiveSmallIntegerField(_("files added"), default=0)
+    skipped = models.JSONField(_("skipped attachments"), default=list, blank=True)
+    received_at = models.DateTimeField(_("received at"), auto_now_add=True, db_index=True)
+
+    class Meta:
+        verbose_name = _("received e-mail")
+        verbose_name_plural = _("received e-mails")
+        ordering = ["-received_at"]
+
+    def __str__(self):
+        return f"{self.sender} → {self.phone or '?'}"

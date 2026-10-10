@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from .models import Job, JobEvent
+from .models import InboundEmail, Job, JobEvent
 
 
 class JobEventInline(admin.TabularInline):
@@ -48,3 +48,18 @@ class JobAdmin(admin.ModelAdmin):
     @admin.display(description=_("ID"))
     def short_id(self, obj):
         return str(obj.id)[:8]
+
+
+@admin.register(InboundEmail)
+class InboundEmailAdmin(admin.ModelAdmin):
+    list_display = ("received_at", "sender", "subject", "phone", "status", "files", "customer")
+    list_filter = ("status",)
+    search_fields = ("sender", "subject", "phone")
+    list_select_related = ("customer",)
+    date_hierarchy = "received_at"
+
+    def get_readonly_fields(self, request, obj=None):
+        return [f.name for f in self.model._meta.fields]
+
+    def has_add_permission(self, request):
+        return False
