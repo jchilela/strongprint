@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+staticfiles/
+media/
+*.mo
+.DS_Store
+.dev-credentials
+celerybeat-schedule*

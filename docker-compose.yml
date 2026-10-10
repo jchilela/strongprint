@@ -1,0 +1,57 @@
+x-app: &app
+  build: .
+  env_file: .env
+  volumes:
+    - .:/app
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_started
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: strongprint
+      POSTGRES_USER: strongprint
+      POSTGRES_PASSWORD: strongprint
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U strongprint"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+
+  s3:
+    # Armazenamento compatível com S3 para desenvolvimento (substitui o MinIO,
+    # cujas imagens deixaram de ser publicadas).
+    image: chrislusf/seaweedfs:4.47
+    command: server -dir=/data -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json
+    ports:
+      - "8333:8333"
+    volumes:
+      - s3data:/data
+      - ./docker/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
+
+  web:
+    <<: *app
+    command: sh -c "python manage.py migrate --noinput && python manage.py ensure_bucket && python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+
+  worker:
+    <<: *app
+    command: celery -A config worker -l info -Q default,analysis,printing,monitoring
+
+  beat:
+    <<: *app
+    command: celery -A config beat -l info
+
+volumes:
+  pgdata:
+  s3data:

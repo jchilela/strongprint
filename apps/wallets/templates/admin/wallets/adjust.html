@@ -1,0 +1,19 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+  &rsaquo; <a href="{% url 'admin:wallets_wallet_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; <a href="{% url 'admin:wallets_wallet_change' wallet.pk %}">{{ wallet.user }}</a>
+  &rsaquo; {% translate 'Adjust' %}
+</div>
+{% endblock %}
+{% block content %}
+<p>{% translate 'Balance' %}: <strong>{{ wallet.balance_kz }} Kz</strong> ·
+   {% translate 'Held' %}: {{ wallet.held_kz }} Kz ·
+   {% translate 'Available' %}: {{ wallet.available_kz }} Kz</p>
+<form method="post">{% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" class="default" value="{% translate 'Apply adjustment' %}">
+</form>
+{% endblock %}
