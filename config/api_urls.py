@@ -1,6 +1,7 @@
 from django.urls import path
 
 from apps.devices import api as devices
+from apps.devices import kiosk_api as screen
 from apps.jobs import api as jobs
 from apps.payments import api as payments
 
@@ -23,4 +24,13 @@ urlpatterns = [
     ),
     path("payments/webhook/<str:provider>", payments.payment_webhook, name="payment-webhook"),
     path("edge/heartbeat", devices.heartbeat, name="edge-heartbeat"),
+    # Ecrã do kiosk
+    path("kiosk/state", screen.kiosk_state, name="kiosk-state"),
+    path("kiosk/pairings", screen.create_pairing, name="kiosk-pairing-create"),
+    path("kiosk/pairings/<uuid:pairing_id>", screen.pairing_status, name="kiosk-pairing"),
+    path("kiosk/upload-qr", screen.upload_qr, name="kiosk-upload-qr"),
+    path("kiosk/login/code", screen.login_request, name="kiosk-login-code"),
+    path("kiosk/login/verify", screen.login_verify, name="kiosk-login-verify"),
+    path("me", screen.me, name="me"),
+    path("documents", screen.documents, name="documents"),
 ]

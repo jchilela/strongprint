@@ -1,8 +1,11 @@
 import hashlib
 import secrets
+import uuid
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from apps.partners.models import Kiosk
@@ -11,6 +14,12 @@ from common.models import TimeStampedModel
 
 def hash_device_token(token: str) -> str:
     return hashlib.sha256(token.encode()).hexdigest()
+
+
+def new_pairing_code() -> str:
+    # Sem caracteres ambíguos (0/O, 1/l): pode ter de ser escrito à mão.
+    alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
+    return "".join(secrets.choice(alphabet) for _ in range(8))
 
 
 class EdgeDevice(TimeStampedModel):
@@ -171,3 +180,41 @@ class Printer(TimeStampedModel):
             "a3": self.supports_a3,
             "adf": self.has_adf,
         }
+
+
+class KioskPairing(models.Model):
+    """Ligação do ecrã do kiosk à conta de um cliente através de um QR.
+
+    O ecrã cria o emparelhamento e mostra o QR; o cliente lê-o no telemóvel
+    (com sessão iniciada no portal) e confirma; o ecrã recebe então, uma única
+    vez, o token de sessão do kiosk.
+    """
+
+    class Status(models.TextChoices):
+        PENDING = "PENDING", _("Waiting for the phone")
+        CLAIMED = "CLAIMED", _("Confirmed on the phone")
+        CONSUMED = "CONSUMED", _("Used by the kiosk")
+        EXPIRED = "EXPIRED", _("Expired")
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    kiosk = models.ForeignKey(Kiosk, on_delete=models.CASCADE, related_name="pairings")
+    code = models.CharField(max_length=16, unique=True, default=new_pairing_code)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE
+    )
+    expires_at = models.DateTimeField()
+    claimed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("kiosk pairing")
+        verbose_name_plural = _("kiosk pairings")
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.kiosk} · {self.status}"
+
+    @property
+    def is_open(self) -> bool:
+        return self.status == self.Status.PENDING and self.expires_at > timezone.now()

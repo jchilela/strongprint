@@ -13,7 +13,7 @@ APP_DIR="/opt/strongprint"
 DOMAIN="strongprint.it.ao"
 # Todos os nomes servidos (certificado único). O nginx do servidor só é tocado no
 # site "$DOMAIN" — os outros sites (OpenClaw, etc.) nunca são alterados.
-DOMAINS="${DOMAINS:-$DOMAIN www.$DOMAIN client.$DOMAIN administ.$DOMAIN api.$DOMAIN app.$DOMAIN partner.$DOMAIN}"
+DOMAINS="${DOMAINS:-$DOMAIN www.$DOMAIN client.$DOMAIN administ.$DOMAIN api.$DOMAIN app.$DOMAIN partner.$DOMAIN ecra.$DOMAIN}"
 CERT_EMAIL="${CERT_EMAIL:-juliochilela@hotmail.com}"
 
 cd "$(git rev-parse --show-toplevel)"

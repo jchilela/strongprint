@@ -18,6 +18,7 @@ HOST_CLIENT = env("HOST_CLIENT", default="")
 HOST_ADMIN = env("HOST_ADMIN", default="")
 HOST_API = env("HOST_API", default="")
 HOST_APP = env("HOST_APP", default="")
+HOST_SCREEN = env("HOST_SCREEN", default="")
 HOST_PARTNER = env("HOST_PARTNER", default="")
 HOST_ROOTS = env.list("HOST_ROOTS", default=[])
 
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     "apps.monitoring",
     "apps.portal",
     "apps.partner_portal",
+    "apps.screen",
 ]
 
 MIDDLEWARE = [
@@ -150,6 +152,10 @@ TONER_LOW_PCT = env.int("TONER_LOW_PCT", default=10)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 
 LIBRARY_RETENTION_DAYS = env.int("LIBRARY_RETENTION_DAYS", default=7)
+
+# Ecrã do kiosk: agente local do Pi (pens USB) e tempo de inatividade da sessão.
+KIOSK_AGENT_URL = env("KIOSK_AGENT_URL", default="http://127.0.0.1:8800")
+KIOSK_IDLE_SECONDS = env.int("KIOSK_IDLE_SECONDS", default=90)
 
 # Códigos de acesso por telefone: console (log; desenvolvimento) | strongx (SMS) | http (genérico)
 OTP_SENDER = env("OTP_SENDER", default="console")

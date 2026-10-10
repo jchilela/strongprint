@@ -19,8 +19,8 @@ from common.auth import issue_kiosk_session, session_kiosk_id
 from domain.analysis.analyzer import SUPPORTED_EXTENSIONS, extension_of
 from domain.jobs.state_machine import JobState
 
-from . import services, tasks
-from .models import Job
+from . import library, services, tasks
+from .models import Document, Job
 
 log = structlog.get_logger(__name__)
 
@@ -75,7 +75,8 @@ class JobSerializer(serializers.ModelSerializer):
 
 
 class CreateJobSerializer(serializers.Serializer):
-    filename = serializers.CharField(max_length=255)
+    filename = serializers.CharField(max_length=255, required=False)
+    document_id = serializers.UUIDField(required=False)
     source = serializers.ChoiceField(choices=Job.Source.choices, default=Job.Source.UPLOAD)
     size = serializers.IntegerField(required=False, min_value=1)
 
@@ -88,6 +89,11 @@ class CreateJobSerializer(serializers.Serializer):
         if value > max_upload_bytes():
             raise serializers.ValidationError("file_too_large")
         return value
+
+    def validate(self, attrs):
+        if not attrs.get("filename") and not attrs.get("document_id"):
+            raise serializers.ValidationError("filename_or_document_required")
+        return attrs
 
 
 class OptionsSerializer(serializers.Serializer):
@@ -165,6 +171,11 @@ def create_job(request, code):
     kiosk = kiosk_for_request(request, code)
     payload = CreateJobSerializer(data=request.data)
     payload.is_valid(raise_exception=True)
+    if document_id := payload.validated_data.get("document_id"):
+        # Ficheiro de "Meus ficheiros": já está guardado, vai direto para análise.
+        doc = get_object_or_404(Document, pk=document_id, owner=request.user)
+        job = library.job_from_document(doc, kiosk, actor=actor_for(request))
+        return Response(job_payload(job, request), status=status.HTTP_201_CREATED)
     filename = payload.validated_data["filename"]
     ext = extension_of(filename)
     job_id = uuid.uuid4()

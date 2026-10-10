@@ -22,4 +22,5 @@ urlpatterns = [
     path("ficheiros/", views.documents, name="documents"),
     path("ficheiros/<uuid:document_id>/apagar/", views.document_delete, name="document_delete"),
     path("impressoes/", views.history, name="history"),
+    path("k/<str:code>/", views.kiosk_pair, name="kiosk_pair"),
 ]

@@ -1,0 +1,136 @@
+/* Ecrã tátil do kiosk: alvos grandes, contraste alto, sem scroll de página. */
+:root {
+  --bg: #0b1724;
+  --panel: #12233a;
+  --panel-2: #183050;
+  --text: #f2f6fa;
+  --muted: #a9b8c8;
+  --brand: #3d9bff;
+  --brand-ink: #04121f;
+  --ok: #43c47a;
+  --warn: #f2b84b;
+  --bad: #ff7a6b;
+  --line: #24405f;
+  --radius: 20px;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 20px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#app { height: 100vh; display: flex; flex-direction: column; }
+
+.bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 14px 28px; border-bottom: 1px solid var(--line); min-height: 72px;
+}
+.brand { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+.brand span { color: var(--brand); }
+.who { color: var(--muted); font-size: 18px; text-align: right; }
+.who strong { color: var(--text); }
+
+.body { flex: 1; display: flex; flex-direction: column; padding: 24px 28px; min-height: 0; overflow: hidden; }
+.center { align-items: center; justify-content: center; text-align: center; }
+h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; letter-spacing: -0.02em; }
+h2 { font-size: 28px; margin: 0 0 10px; }
+p { margin: 0 0 10px; }
+.muted { color: var(--muted); }
+.big { font-size: 28px; }
+.num { font-variant-numeric: tabular-nums; }
+
+.split { flex: 1; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 32px; align-items: center; min-height: 0; }
+.qr { background: #fff; border-radius: var(--radius); padding: 14px; width: min(36vh, 340px); margin: 0 auto; }
+.qr svg { width: 100%; height: auto; display: block; }
+.steps { list-style: none; margin: 18px 0 0; padding: 0; counter-reset: s; }
+.steps li { counter-increment: s; position: relative; padding: 6px 0 14px 58px; font-size: 22px; }
+.steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 42px; height: 42px; border-radius: 50%; background: var(--panel-2); color: var(--brand); display: grid; place-items: center; font-weight: 800; }
+
+button { font: inherit; color: inherit; border: 0; cursor: pointer; touch-action: manipulation; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 76px; padding: 0 30px; border-radius: 18px;
+  background: var(--brand); color: var(--brand-ink); font-size: 24px; font-weight: 700;
+}
+.btn:active { transform: scale(0.98); }
+.btn.ghost { background: var(--panel-2); color: var(--text); }
+.btn.small { min-height: 56px; font-size: 19px; padding: 0 20px; }
+.btn.danger { background: transparent; color: var(--bad); border: 2px solid var(--line); }
+.btn[disabled] { opacity: 0.45; }
+.btn.block { width: 100%; }
+.row { display: flex; gap: 14px; flex-wrap: wrap; }
+.row > .btn { flex: 1; }
+
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 18px; }
+.tile { background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius); padding: 26px 20px; text-align: left; min-height: 170px; display: flex; flex-direction: column; justify-content: space-between; }
+.tile:active { border-color: var(--brand); }
+.tile .icon { font-size: 44px; }
+.tile .t { font-size: 25px; font-weight: 700; }
+.tile .s { color: var(--muted); font-size: 17px; }
+.tile[disabled] { opacity: 0.4; }
+
+.list { flex: 1; overflow-y: auto; margin: 10px 0; display: grid; gap: 12px; align-content: start; -webkit-overflow-scrolling: touch; }
+.item { background: var(--panel); border: 2px solid var(--line); border-radius: 16px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; text-align: left; width: 100%; }
+.item .t { font-size: 22px; font-weight: 600; overflow-wrap: anywhere; }
+.item .s { color: var(--muted); font-size: 17px; }
+.pill { display: inline-block; padding: 4px 14px; border-radius: 999px; font-size: 16px; font-weight: 700; background: var(--panel-2); color: var(--muted); white-space: nowrap; }
+.pill.ok { color: var(--ok); } .pill.warn { color: var(--warn); } .pill.bad { color: var(--bad); }
+
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: min(440px, 100%); margin: 14px auto 0; }
+.keypad button { min-height: 72px; border-radius: 16px; background: var(--panel-2); font-size: 32px; font-weight: 700; }
+.keypad button:active { background: var(--line); }
+.display { font-size: 44px; font-weight: 800; letter-spacing: 0.08em; min-height: 64px; font-variant-numeric: tabular-nums; }
+.display .ph { color: var(--line); }
+
+.kbd { display: grid; gap: 8px; width: min(900px, 100%); margin: 12px auto 0; }
+.kbd .r { display: flex; gap: 8px; justify-content: center; }
+.kbd button { min-width: 64px; min-height: 64px; border-radius: 12px; background: var(--panel-2); font-size: 24px; font-weight: 700; }
+.kbd .wide { min-width: 300px; }
+.input-line { font-size: 36px; font-weight: 700; min-height: 56px; border-bottom: 3px solid var(--brand); padding: 4px 8px; min-width: 60%; display: inline-block; }
+
+.opts { flex: 1; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; min-height: 0; }
+.opt { background: var(--panel); border-radius: 16px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.opt .label { font-size: 22px; font-weight: 600; }
+.seg { display: inline-flex; background: var(--bg); border-radius: 14px; padding: 4px; gap: 4px; }
+.seg button { min-height: 58px; min-width: 120px; padding: 0 16px; border-radius: 11px; font-size: 20px; font-weight: 700; color: var(--muted); background: transparent; }
+.seg button[aria-pressed="true"] { background: var(--brand); color: var(--brand-ink); }
+.stepper { display: inline-flex; align-items: center; gap: 14px; }
+.stepper button { width: 62px; height: 62px; border-radius: 14px; background: var(--panel-2); font-size: 30px; font-weight: 800; }
+.stepper .v { min-width: 44px; text-align: center; font-size: 28px; font-weight: 800; }
+.summary { background: var(--panel); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+.summary .total { font-size: 46px; font-weight: 800; letter-spacing: -0.02em; }
+.summary .line { display: flex; justify-content: space-between; color: var(--muted); font-size: 18px; }
+
+.ref { display: grid; grid-template-columns: auto auto; gap: 10px 28px; justify-content: center; margin: 20px 0; text-align: left; }
+.ref dt { color: var(--muted); font-size: 22px; align-self: center; }
+.ref dd { margin: 0; font-size: 44px; font-weight: 800; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+
+.progress { width: min(640px, 90%); height: 18px; background: var(--panel-2); border-radius: 999px; overflow: hidden; margin: 24px auto; }
+.progress span { display: block; height: 100%; background: var(--brand); border-radius: 999px; transition: width 0.6s ease; }
+.spinner { width: 72px; height: 72px; border-radius: 50%; border: 8px solid var(--panel-2); border-top-color: var(--brand); animation: spin 1s linear infinite; margin: 18px auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.big-icon { font-size: 96px; line-height: 1; margin-bottom: 10px; }
+.error { color: var(--bad); font-size: 20px; min-height: 28px; }
+.lang { display: inline-flex; gap: 6px; }
+.lang button { min-height: 48px; min-width: 64px; border-radius: 12px; background: var(--panel-2); color: var(--muted); font-weight: 700; }
+.lang button[aria-pressed="true"] { background: var(--brand); color: var(--brand-ink); }
+
+#overlay { position: fixed; inset: 0; z-index: 50; background: rgba(4, 12, 20, 0.86); display: grid; place-items: center; text-align: center; padding: 32px; }
+#overlay[hidden] { display: none; }
+#overlay .box { background: var(--panel); border-radius: 24px; padding: 36px; max-width: 760px; }
+
+@media (max-height: 640px) {
+  body { font-size: 17px; }
+  h1 { font-size: 32px; }
+  .btn { min-height: 64px; font-size: 21px; }
+  .keypad button { min-height: 58px; font-size: 26px; }
+  .tile { min-height: 130px; padding: 18px; }
+  .summary .total { font-size: 36px; }
+  .ref dd { font-size: 36px; }
+}

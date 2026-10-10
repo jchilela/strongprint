@@ -1,0 +1,26 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% translate "Connect to kiosk" %} · StrongPrint{% endblock %}
+{% block content %}
+{% if not pairing %}
+  <h1>{% translate "This QR code has expired" %}</h1>
+  <p class="muted">{% translate "Tap the screen of the kiosk to show a new QR code and scan it again." %}</p>
+{% elif done %}
+  <div class="card" style="text-align:center">
+    <div style="font-size:48px" aria-hidden="true">✓</div>
+    <h1>{% translate "Connected!" %}</h1>
+    <p>{% blocktranslate with kiosk=pairing.kiosk.code %}Continue on the screen of kiosk {{ kiosk }}.{% endblocktranslate %}</p>
+  </div>
+{% elif done is False %}
+  <h1>{% translate "This QR code was already used" %}</h1>
+  <p class="muted">{% translate "Tap the screen of the kiosk to show a new QR code." %}</p>
+{% else %}
+  <h1>{% translate "Connect to kiosk" %}</h1>
+  <div class="card">
+    <p class="muted small">{% translate "Kiosk" %}</p>
+    <p style="font-size:22px;font-weight:700;margin:0">{{ pairing.kiosk.code }}</p>
+    <p class="muted">{{ pairing.kiosk.site.partner.name }} · {{ pairing.kiosk.site.name }}{% if pairing.kiosk.location_hint %} · {{ pairing.kiosk.location_hint }}{% endif %}</p>
+  </div>
+  <p class="small muted">{% translate "The kiosk will use your account and wallet until you finish or leave it idle." %}</p>
+  <form method="post">{% csrf_token %}<button class="btn block">{% translate "Yes, use my account on this kiosk" %}</button></form>
+{% endif %}
+{% endblock %}

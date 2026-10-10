@@ -247,3 +247,24 @@ def document_delete(request, document_id):
 def history(request):
     jobs = request.user.print_jobs.select_related("kiosk__site__partner")[:50]
     return render(request, "portal/history.html", {"jobs": jobs, "States": Job.State})
+
+
+# --- ligar ao kiosk (QR do ecrã) ------------------------------------------------
+
+
+@login_required
+def kiosk_pair(request, code):
+    from apps.devices.models import KioskPairing
+
+    pairing = KioskPairing.objects.select_related("kiosk__site").filter(code=code.upper()).first()
+    if pairing is None or not pairing.is_open:
+        return render(request, "portal/kiosk_pair.html", {"pairing": None}, status=410)
+    if request.method == "POST":
+        if needs_name(request.user):
+            return redirect("portal:kiosk_pair", code=code)
+        updated = KioskPairing.objects.filter(
+            pk=pairing.pk, status=KioskPairing.Status.PENDING
+        ).update(status=KioskPairing.Status.CLAIMED, user=request.user, claimed_at=timezone.now())
+        context = {"pairing": pairing, "done": bool(updated)}
+        return render(request, "portal/kiosk_pair.html", context)
+    return render(request, "portal/kiosk_pair.html", {"pairing": pairing})

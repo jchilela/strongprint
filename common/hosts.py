@@ -3,7 +3,8 @@
 - HOST_CLIENT   → portal do cliente (+ API, para o portal/app usarem a mesma origem)
 - HOST_ADMIN    → superadmin (/admin é exclusivo deste subdomínio)
 - HOST_API      → só /api/ (webhooks de pagamento, Pi, apps)
-- HOST_APP      → ecrã do kiosk (Fase G); até lá reencaminha para o portal
+- HOST_SCREEN   → ecrã do kiosk (/ecra/) + API
+- HOST_APP      → nome antigo: reencaminha para HOST_SCREEN
 - HOST_PARTNER  → portal do parceiro (/parceiro/ é exclusivo deste subdomínio)
 - HOST_ROOTS    → domínio principal: reencaminha para o portal (/api/ continua a funcionar)
 
@@ -65,10 +66,15 @@ class HostRoutingMiddleware:
                 return HttpResponseNotFound()
             return self.get_response(request)
 
-        if host == settings.HOST_APP:
-            if is_api_path:
+        if host == settings.HOST_SCREEN:
+            if path == "/":
+                return HttpResponsePermanentRedirect("/ecra/")
+            if is_api_path or path.startswith("/ecra/"):
                 return self.get_response(request)
-            return HttpResponsePermanentRedirect(_url(settings.HOST_CLIENT, path, query))
+            return HttpResponseNotFound()
+
+        if host == settings.HOST_APP and settings.HOST_SCREEN:
+            return HttpResponsePermanentRedirect(_url(settings.HOST_SCREEN, path, query))
 
         if host in settings.HOST_ROOTS:
             if is_api_path:
