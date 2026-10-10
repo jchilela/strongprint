@@ -101,14 +101,15 @@ elif [[ $BOOTSTRAP == 1 ]]; then
     done
     DOMAINS="${READY# }"
     echo "==> Bootstrap: nginx e HTTPS para: $DOMAINS"
-    ssh "$SERVER" DOMAIN="$DOMAIN" DOMAINS="$DOMAINS" CERT_EMAIL="$CERT_EMAIL" APP_DIR="$APP_DIR" bash -s <<'REMOTE'
+    # Vírgulas: o ssh junta os argumentos num só comando e partiria os espaços.
+    ssh "$SERVER" DOMAIN="$DOMAIN" DOMAINS="${DOMAINS// /,}" CERT_EMAIL="$CERT_EMAIL" APP_DIR="$APP_DIR" bash -s <<'REMOTE'
 set -euo pipefail
 cp "$APP_DIR/deploy/nginx-strongprint.it.ao.conf" "/etc/nginx/sites-available/$DOMAIN"
 ln -sf "/etc/nginx/sites-available/$DOMAIN" "/etc/nginx/sites-enabled/$DOMAIN"
 nginx -t
 systemctl reload nginx
 args=()
-for d in $DOMAINS; do args+=(-d "$d"); done
+for d in ${DOMAINS//,/ }; do args+=(-d "$d"); done
 certbot --nginx --non-interactive --agree-tos --redirect --expand --cert-name "$DOMAIN" \
     -m "$CERT_EMAIL" "${args[@]}"
 REMOTE
