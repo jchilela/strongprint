@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-10 18:06+0100\n"
+"POT-Creation-Date: 2026-10-10 20:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -62,7 +62,7 @@ msgstr "idioma"
 msgid "phone verified at"
 msgstr "telefone verificado em"
 
-#: apps/accounts/models.py:52 apps/devices/models.py:49
+#: apps/accounts/models.py:52 apps/devices/models.py:61
 #: apps/partners/models.py:34 apps/partners/models.py:101
 #: apps/partners/models.py:151
 msgid "active"
@@ -135,27 +135,27 @@ msgid ""
 "Device token for %(name)s (shown only once, copy it to the Pi now): %(token)s"
 msgstr "Token do dispositivo %(name)s (só é mostrado agora, copie-o para o Pi): %(token)s"
 
-#: apps/devices/admin.py:64 apps/partners/models.py:154
+#: apps/devices/admin.py:72 apps/partners/models.py:154
 msgid "kiosk"
 msgstr "kiosk"
 
-#: apps/devices/admin.py:74
+#: apps/devices/admin.py:82
 msgid "Regenerate device token"
 msgstr "Gerar novo token do dispositivo"
 
-#: apps/devices/admin.py:90
+#: apps/devices/admin.py:98
 msgid "Pi (create it under Edge devices to get the token)"
 msgstr "Pi (crie-o em Dispositivos para obter o token)"
 
-#: apps/devices/admin.py:116
+#: apps/devices/admin.py:125
 msgid "Network"
 msgstr "Rede"
 
-#: apps/devices/admin.py:118
+#: apps/devices/admin.py:129
 msgid "Capabilities"
 msgstr "Capacidades"
 
-#: apps/devices/admin.py:130
+#: apps/devices/admin.py:141
 msgid "Live status"
 msgstr "Estado em tempo real"
 
@@ -179,12 +179,12 @@ msgstr "Reiniciar"
 msgid "Out of service"
 msgstr "Fora de serviço"
 
-#: apps/devices/models.py:36 apps/devices/models.py:144
+#: apps/devices/models.py:36 apps/devices/models.py:162
 #: apps/partners/admin.py:137
 msgid "printer"
 msgstr "impressora"
 
-#: apps/devices/models.py:39 apps/devices/models.py:103
+#: apps/devices/models.py:39 apps/devices/models.py:115
 #: apps/partners/models.py:22 apps/partners/models.py:82
 #: apps/partners/models.py:146
 msgid "name"
@@ -198,168 +198,196 @@ msgstr "Gerado a partir do kiosk da impressora."
 msgid "token prefix"
 msgstr "prefixo do token"
 
-#: apps/devices/models.py:43 apps/devices/models.py:112
+#: apps/devices/models.py:43 apps/devices/models.py:124
 msgid "VPN IP"
 msgstr "IP da VPN"
 
-#: apps/devices/models.py:44 apps/partners/admin.py:146
+#: apps/devices/models.py:45 apps/devices/models.py:126
+msgid "local network IP"
+msgstr "IP na rede local"
+
+#: apps/devices/models.py:46
+msgid "SSH user"
+msgstr "utilizador SSH"
+
+#: apps/devices/models.py:48
+msgid "VPN slot"
+msgstr "posição na VPN"
+
+#: apps/devices/models.py:52
+msgid "N in 10.77.N.0/24: the Pi is 10.77.N.1 and its printer 10.77.N.2."
+msgstr "N em 10.77.N.0/24: o Pi é 10.77.N.1 e a impressora 10.77.N.2."
+
+#: apps/devices/models.py:54
+msgid "WireGuard public key"
+msgstr "chave pública WireGuard"
+
+#: apps/devices/models.py:55
+msgid "installed at"
+msgstr "instalado em"
+
+#: apps/devices/models.py:56 apps/partners/admin.py:146
 msgid "last heartbeat"
 msgstr "último sinal"
 
-#: apps/devices/models.py:45
+#: apps/devices/models.py:57
 msgid "software version"
 msgstr "versão do software"
 
-#: apps/devices/models.py:47
+#: apps/devices/models.py:59
 msgid "pending command"
 msgstr "comando pendente"
 
-#: apps/devices/models.py:52
+#: apps/devices/models.py:64
 msgid "edge device (Pi)"
 msgstr "dispositivo (Pi)"
 
-#: apps/devices/models.py:53
+#: apps/devices/models.py:65
 msgid "edge devices (Pi)"
 msgstr "dispositivos (Pi)"
 
-#: apps/devices/models.py:87
+#: apps/devices/models.py:99
 msgid "Unknown"
 msgstr "Desconhecido"
 
-#: apps/devices/models.py:88 apps/jobs/models.py:117
+#: apps/devices/models.py:100 apps/jobs/models.py:120
 msgid "Ready"
 msgstr "Pronto"
 
-#: apps/devices/models.py:89
+#: apps/devices/models.py:101
 msgid "Busy"
 msgstr "Ocupada"
 
-#: apps/devices/models.py:90 apps/monitoring/models.py:20
+#: apps/devices/models.py:102 apps/monitoring/models.py:20
 msgid "Warning"
 msgstr "Aviso"
 
-#: apps/devices/models.py:91
+#: apps/devices/models.py:103
 msgid "Error"
 msgstr "Erro"
 
-#: apps/devices/models.py:92 apps/partners/models.py:131
+#: apps/devices/models.py:104 apps/partners/models.py:131
 msgid "Offline"
 msgstr "Offline"
 
-#: apps/devices/models.py:95
+#: apps/devices/models.py:107
 msgid "Default (from settings)"
 msgstr "Por omissão (configuração)"
 
-#: apps/devices/models.py:96
+#: apps/devices/models.py:108
 msgid "Fake (tests)"
 msgstr "Simulada (testes)"
 
-#: apps/devices/models.py:97
+#: apps/devices/models.py:109
 msgid "IPP (real printer)"
 msgstr "IPP (impressora real)"
 
-#: apps/devices/models.py:106
+#: apps/devices/models.py:118
 msgid ""
 "Generated when the printer is in a kiosk; otherwise a name for the spare."
 msgstr "Gerado quando a impressora está num kiosk; caso contrário, o nome da impressora de reserva."
 
-#: apps/devices/models.py:109
+#: apps/devices/models.py:121
 msgid "model"
 msgstr "modelo"
 
-#: apps/devices/models.py:111
+#: apps/devices/models.py:123
 msgid "serial number"
 msgstr "número de série"
 
-#: apps/devices/models.py:114
+#: apps/devices/models.py:129
+msgid "Address in the kiosk network; the Pi forwards the VPN IP to it."
+msgstr "Endereço na rede do kiosk; o Pi encaminha para ele o IP da VPN."
+
+#: apps/devices/models.py:132
 msgid "IPP URI"
 msgstr "URI IPP"
 
-#: apps/devices/models.py:114
+#: apps/devices/models.py:132
 msgid "Empty = ipp://<VPN IP>/ipp/print"
 msgstr "Vazio = ipp://<IP da VPN>/ipp/print"
 
-#: apps/devices/models.py:116
+#: apps/devices/models.py:134
 msgid "SNMP community"
 msgstr "comunidade SNMP"
 
-#: apps/devices/models.py:118
+#: apps/devices/models.py:136
 msgid "gateway"
 msgstr "gateway"
 
-#: apps/devices/models.py:121
+#: apps/devices/models.py:139
 msgid "colour"
 msgstr "cor"
 
-#: apps/devices/models.py:122
+#: apps/devices/models.py:140
 msgid "duplex"
 msgstr "frente e verso"
 
-#: apps/devices/models.py:123
+#: apps/devices/models.py:141
 msgid "A3"
 msgstr "A3"
 
-#: apps/devices/models.py:124
+#: apps/devices/models.py:142
 msgid "ADF"
 msgstr "ADF"
 
-#: apps/devices/models.py:126
+#: apps/devices/models.py:144
 msgid "front panel enabled"
 msgstr "painel da impressora ativo"
 
-#: apps/devices/models.py:129
+#: apps/devices/models.py:147
 msgid ""
 "Walk-up use of the printer panel (copy/USB). Off by default because it "
 "affects the page counter used to verify jobs."
 msgstr "Uso direto do painel da impressora (cópia/USB). Desligado por omissão porque afeta o contador de páginas usado para verificar os trabalhos."
 
-#: apps/devices/models.py:135 apps/monitoring/admin.py:9
+#: apps/devices/models.py:153 apps/monitoring/admin.py:9
 #: apps/partners/models.py:149 apps/payments/models.py:23
 #: apps/wallets/models.py:103
 msgid "status"
 msgstr "estado"
 
-#: apps/devices/models.py:137
+#: apps/devices/models.py:155
 msgid "status detail"
 msgstr "detalhe do estado"
 
-#: apps/devices/models.py:139
+#: apps/devices/models.py:157
 msgid "last page counter"
 msgstr "último contador de páginas"
 
-#: apps/devices/models.py:141
+#: apps/devices/models.py:159
 msgid "last polled at"
 msgstr "última leitura"
 
-#: apps/devices/models.py:145
+#: apps/devices/models.py:163
 msgid "printers"
 msgstr "impressoras"
 
-#: apps/devices/models.py:161
+#: apps/devices/models.py:179
 msgid "A printer outside a kiosk needs a name."
 msgstr "Uma impressora fora de um kiosk precisa de nome."
 
-#: apps/devices/models.py:194
+#: apps/devices/models.py:212
 msgid "Waiting for the phone"
 msgstr "À espera do telemóvel"
 
-#: apps/devices/models.py:195
+#: apps/devices/models.py:213
 msgid "Confirmed on the phone"
 msgstr "Confirmado no telemóvel"
 
-#: apps/devices/models.py:196
+#: apps/devices/models.py:214
 msgid "Used by the kiosk"
 msgstr "Usado pelo kiosk"
 
-#: apps/devices/models.py:197 apps/jobs/models.py:28 apps/payments/models.py:17
+#: apps/devices/models.py:215 apps/jobs/models.py:28 apps/payments/models.py:17
 msgid "Expired"
 msgstr "Expirado"
 
-#: apps/devices/models.py:211
+#: apps/devices/models.py:229
 msgid "kiosk pairing"
 msgstr "ligação ao kiosk"
 
-#: apps/devices/models.py:212
+#: apps/devices/models.py:230
 msgid "kiosk pairings"
 msgstr "ligações ao kiosk"
 
@@ -431,150 +459,158 @@ msgstr "Envio pela web"
 msgid "WhatsApp"
 msgstr "WhatsApp"
 
-#: apps/jobs/models.py:46 apps/jobs/models.py:132
+#: apps/jobs/models.py:39
+msgid "Copy (scanned at the kiosk)"
+msgstr "Cópia (digitalizada no kiosk)"
+
+#: apps/jobs/models.py:47 apps/jobs/models.py:135
 msgid "state"
 msgstr "estado"
 
-#: apps/jobs/models.py:49 apps/jobs/models.py:125
+#: apps/jobs/models.py:50 apps/jobs/models.py:128
 msgid "source"
 msgstr "origem"
 
-#: apps/jobs/models.py:52
+#: apps/jobs/models.py:53
 msgid "original filename"
 msgstr "nome do ficheiro"
 
-#: apps/jobs/models.py:53 apps/jobs/models.py:128
+#: apps/jobs/models.py:54 apps/jobs/models.py:131
 msgid "storage key"
 msgstr "chave de armazenamento"
 
-#: apps/jobs/models.py:54 apps/jobs/models.py:129
+#: apps/jobs/models.py:55 apps/jobs/models.py:132
 msgid "file size"
 msgstr "tamanho do ficheiro"
 
-#: apps/jobs/models.py:55 apps/jobs/models.py:130
+#: apps/jobs/models.py:56 apps/jobs/models.py:133
 msgid "MIME type"
 msgstr "tipo MIME"
 
-#: apps/jobs/models.py:57 apps/jobs/models.py:134
+#: apps/jobs/models.py:58 apps/jobs/models.py:137
 msgid "pages"
 msgstr "páginas"
 
-#: apps/jobs/models.py:58 apps/jobs/models.py:136
+#: apps/jobs/models.py:59 apps/jobs/models.py:139
 msgid "analysis"
 msgstr "análise"
 
-#: apps/jobs/models.py:59
+#: apps/jobs/models.py:61
+msgid "scan"
+msgstr "digitalização"
+
+#: apps/jobs/models.py:62
 msgid "options"
 msgstr "opções"
 
-#: apps/jobs/models.py:60
+#: apps/jobs/models.py:63
 msgid "price breakdown"
 msgstr "detalhe do preço"
 
-#: apps/jobs/models.py:61
+#: apps/jobs/models.py:64
 msgid "total (Kz)"
 msgstr "total (Kz)"
 
-#: apps/jobs/models.py:66
+#: apps/jobs/models.py:69
 msgid "printer job ID"
 msgstr "ID do trabalho na impressora"
 
-#: apps/jobs/models.py:67
+#: apps/jobs/models.py:70
 msgid "counter before"
 msgstr "contador antes"
 
-#: apps/jobs/models.py:68
+#: apps/jobs/models.py:71
 msgid "counter after"
 msgstr "contador depois"
 
-#: apps/jobs/models.py:69
+#: apps/jobs/models.py:72
 msgid "faces printed"
 msgstr "faces impressas"
 
-#: apps/jobs/models.py:70 apps/jobs/models.py:137
+#: apps/jobs/models.py:73 apps/jobs/models.py:140
 msgid "failure reason"
 msgstr "motivo da falha"
 
-#: apps/jobs/models.py:72 apps/jobs/models.py:138 apps/payments/models.py:30
+#: apps/jobs/models.py:75 apps/jobs/models.py:141 apps/payments/models.py:30
 msgid "expires at"
 msgstr "expira em"
 
-#: apps/jobs/models.py:73 apps/jobs/models.py:101 apps/jobs/models.py:139
+#: apps/jobs/models.py:76 apps/jobs/models.py:104 apps/jobs/models.py:142
 #: apps/payments/models.py:40 apps/wallets/models.py:22
 #: apps/wallets/models.py:69 apps/wallets/models.py:105 common/models.py:6
 msgid "created at"
 msgstr "criado em"
 
-#: apps/jobs/models.py:74 apps/payments/models.py:41 apps/wallets/models.py:23
+#: apps/jobs/models.py:77 apps/payments/models.py:41 apps/wallets/models.py:23
 #: common/models.py:7
 msgid "updated at"
 msgstr "atualizado em"
 
-#: apps/jobs/models.py:75
+#: apps/jobs/models.py:78
 msgid "finished at"
 msgstr "terminado em"
 
-#: apps/jobs/models.py:76
+#: apps/jobs/models.py:79
 msgid "file purged at"
 msgstr "ficheiro apagado em"
 
-#: apps/jobs/models.py:79
+#: apps/jobs/models.py:82
 msgid "print job"
 msgstr "trabalho de impressão"
 
-#: apps/jobs/models.py:80
+#: apps/jobs/models.py:83
 msgid "print jobs"
 msgstr "trabalhos de impressão"
 
-#: apps/jobs/models.py:95
+#: apps/jobs/models.py:98
 msgid "from"
 msgstr "de"
 
-#: apps/jobs/models.py:96
+#: apps/jobs/models.py:99
 msgid "to"
 msgstr "para"
 
-#: apps/jobs/models.py:98 apps/wallets/models.py:67
+#: apps/jobs/models.py:101 apps/wallets/models.py:67
 msgid "actor"
 msgstr "autor"
 
-#: apps/jobs/models.py:98
+#: apps/jobs/models.py:101
 msgid "e.g. system, user:<id>, task:print"
 msgstr "ex.: system, user:<id>, task:print"
 
-#: apps/jobs/models.py:100 apps/monitoring/models.py:30
+#: apps/jobs/models.py:103 apps/monitoring/models.py:30
 msgid "data"
 msgstr "dados"
 
-#: apps/jobs/models.py:104
+#: apps/jobs/models.py:107
 msgid "job event"
 msgstr "evento do trabalho"
 
-#: apps/jobs/models.py:105
+#: apps/jobs/models.py:108
 msgid "job events"
 msgstr "eventos do trabalho"
 
-#: apps/jobs/models.py:116
+#: apps/jobs/models.py:119
 msgid "Analysing"
 msgstr "A analisar"
 
-#: apps/jobs/models.py:118
+#: apps/jobs/models.py:121
 msgid "Rejected"
 msgstr "Recusado"
 
-#: apps/jobs/models.py:127
+#: apps/jobs/models.py:130
 msgid "filename"
 msgstr "nome do ficheiro"
 
-#: apps/jobs/models.py:135
+#: apps/jobs/models.py:138
 msgid "colour pages"
 msgstr "páginas a cores"
 
-#: apps/jobs/models.py:142
+#: apps/jobs/models.py:145
 msgid "document"
 msgstr "documento"
 
-#: apps/jobs/models.py:143
+#: apps/jobs/models.py:146
 msgid "documents"
 msgstr "documentos"
 

@@ -19,7 +19,7 @@ from common.auth import issue_kiosk_session, session_kiosk_id
 from domain.analysis.analyzer import SUPPORTED_EXTENSIONS, extension_of
 from domain.jobs.state_machine import JobState
 
-from . import library, services, tasks
+from . import copying, library, services, tasks
 from .models import Document, Job
 
 log = structlog.get_logger(__name__)
@@ -64,6 +64,7 @@ class JobSerializer(serializers.ModelSerializer):
             "progress",
             "pages_printed",
             "failure_reason",
+            "scan",
             "expires_at",
             "created_at",
             "updated_at",
@@ -280,3 +281,50 @@ def job_cancel(request, job_id):
     job = job_for_request(request, job_id)
     job = services.cancel(job.pk, actor=actor_for(request))
     return Response(job_payload(job, request))
+
+
+# --- cópias ---------------------------------------------------------------------
+
+
+class CopyStartSerializer(serializers.Serializer):
+    duplex_original = serializers.BooleanField(default=False)
+    source = serializers.ChoiceField(choices=["", "adf", "platen"], default="")
+
+
+class ScanSerializer(serializers.Serializer):
+    source = serializers.ChoiceField(choices=["", "adf", "platen"], default="")
+
+
+@api_view(["POST"])
+def copy_start(request, code):
+    """Começa uma cópia e digitaliza logo o primeiro lote."""
+    kiosk = kiosk_for_request(request, code)
+    payload = CopyStartSerializer(data=request.data)
+    payload.is_valid(raise_exception=True)
+    job = copying.start_copy(
+        kiosk,
+        request.user,
+        actor=actor_for(request),
+        duplex_original=payload.validated_data["duplex_original"],
+    )
+    structlog.contextvars.bind_contextvars(job_id=str(job.id))
+    job = copying.request_scan(job, payload.validated_data["source"])
+    return Response(job_payload(job, request), status=status.HTTP_201_CREATED)
+
+
+@api_view(["POST"])
+def copy_scan(request, job_id):
+    """Digitaliza mais folhas (vidro ou alimentador) para a mesma cópia."""
+    job = job_for_request(request, job_id)
+    payload = ScanSerializer(data=request.data)
+    payload.is_valid(raise_exception=True)
+    job = copying.request_scan(job, payload.validated_data["source"])
+    return Response(job_payload(job, request), status=status.HTTP_202_ACCEPTED)
+
+
+@api_view(["POST"])
+def copy_finish(request, job_id):
+    """Termina a digitalização: junta as folhas e calcula o preço."""
+    job = job_for_request(request, job_id)
+    job = copying.finish_scan(job, actor=actor_for(request))
+    return Response(job_payload(job, request), status=status.HTTP_202_ACCEPTED)

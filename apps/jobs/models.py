@@ -36,6 +36,7 @@ class Job(models.Model):
         USB = "USB", _("USB pen drive")
         UPLOAD = "UPLOAD", _("Web upload")
         WHATSAPP = "WHATSAPP", _("WhatsApp")
+        COPY = "COPY", _("Copy (scanned at the kiosk)")
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     kiosk = models.ForeignKey(Kiosk, on_delete=models.PROTECT, related_name="jobs")
@@ -56,6 +57,8 @@ class Job(models.Model):
 
     pages = models.PositiveIntegerField(_("pages"), null=True, blank=True)
     analysis = models.JSONField(_("analysis"), default=dict, blank=True)
+    # Cópias: estado da digitalização {status, batches, pages, error, duplex_original}.
+    scan = models.JSONField(_("scan"), default=dict, blank=True)
     options = models.JSONField(_("options"), default=default_options)
     price_breakdown = models.JSONField(_("price breakdown"), default=dict, blank=True)
     total_kz = models.PositiveIntegerField(_("total (Kz)"), null=True, blank=True)

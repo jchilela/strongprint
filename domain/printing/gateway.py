@@ -86,10 +86,3 @@ class PrinterGateway(ABC):
 
     def cancel(self, printer_job_id: str) -> None:  # pragma: no cover - opcional
         return None
-
-
-class ScannerGateway(ABC):
-    """Digitalização via eSCL (AirScan). Fora de âmbito por agora — só a interface."""
-
-    @abstractmethod
-    def scan(self, *, color: bool, resolution: int, source: str) -> bytes: ...

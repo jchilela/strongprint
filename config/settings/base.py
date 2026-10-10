@@ -159,6 +159,10 @@ VPN_SERVER_IP = env("VPN_SERVER_IP", default="10.77.0.1")
 VPN_ENDPOINT = env("VPN_ENDPOINT", default="strongprint.it.ao:51820")
 VPN_SERVER_PUBLIC_KEY = env("VPN_SERVER_PUBLIC_KEY", default="")
 
+# Cópias (digitalização eSCL)
+SCAN_DPI = env.int("SCAN_DPI", default=200)
+SCAN_TIMEOUT_SECONDS = env.int("SCAN_TIMEOUT_SECONDS", default=180)
+
 # Ecrã do kiosk: agente local do Pi (pens USB) e tempo de inatividade da sessão.
 KIOSK_AGENT_URL = env("KIOSK_AGENT_URL", default="http://127.0.0.1:8800")
 KIOSK_IDLE_SECONDS = env.int("KIOSK_IDLE_SECONDS", default=90)

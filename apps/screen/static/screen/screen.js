@@ -37,6 +37,30 @@
       save: "Guardar",
       hello: "Olá, {name}",
       balance: "Saldo",
+      whatToDo: "O que quer fazer?",
+      printTile: "Imprimir",
+      printTileSub: "Um ficheiro seu: telemóvel, pen USB ou Meus ficheiros",
+      copyTile: "Copiar",
+      copyTileSub: "Um documento em papel",
+      copyTitle: "Fazer cópia",
+      adfLoaded: "Documento detetado no alimentador",
+      adfEmpty: "Coloque o documento no alimentador (texto para cima) ou no vidro (texto para baixo)",
+      scannerOff: "O digitalizador não está disponível.",
+      original: "Original",
+      oneSided: "Só frente",
+      twoSided: "Frente e verso",
+      scan: "Digitalizar",
+      scanning: "A digitalizar…",
+      scannedPages: "{n} páginas digitalizadas",
+      scanMore: "Digitalizar mais folhas",
+      scanMoreHint: "Ponha as folhas seguintes no alimentador ou no vidro.",
+      continue: "Continuar",
+      cancel: "Cancelar",
+      tryAgain: "Tentar de novo",
+      errAdfEmpty: "Não há papel no alimentador. Ponha o documento e tente de novo.",
+      errBusy: "O digitalizador está ocupado. Aguarde um pouco.",
+      errScan: "A digitalização falhou. Tente de novo.",
+      blankWarning: "Parece que a cópia está em branco. Confirme o documento.",
       chooseTitle: "O que quer imprimir?",
       myFiles: "Meus ficheiros",
       myFilesSub: "Enviados no portal ou WhatsApp",
@@ -122,6 +146,30 @@
       save: "Save",
       hello: "Hello, {name}",
       balance: "Balance",
+      whatToDo: "What would you like to do?",
+      printTile: "Print",
+      printTileSub: "A file of yours: phone, USB pen drive or My files",
+      copyTile: "Copy",
+      copyTileSub: "A paper document",
+      copyTitle: "Make a copy",
+      adfLoaded: "Document detected in the feeder",
+      adfEmpty: "Put the document in the feeder (face up) or on the glass (face down)",
+      scannerOff: "The scanner is not available.",
+      original: "Original",
+      oneSided: "Single-sided",
+      twoSided: "Double-sided",
+      scan: "Scan",
+      scanning: "Scanning…",
+      scannedPages: "{n} pages scanned",
+      scanMore: "Scan more pages",
+      scanMoreHint: "Put the next pages in the feeder or on the glass.",
+      continue: "Continue",
+      cancel: "Cancel",
+      tryAgain: "Try again",
+      errAdfEmpty: "The feeder is empty. Put the document in and try again.",
+      errBusy: "The scanner is busy. Please wait a moment.",
+      errScan: "Scanning failed. Please try again.",
+      blankWarning: "The copy looks blank. Check the document.",
       chooseTitle: "What do you want to print?",
       myFiles: "My files",
       myFilesSub: "Sent from the portal or WhatsApp",
@@ -539,17 +587,31 @@
   }
 
   function showHome() {
-    ["docs", "job", "wallet"].forEach(clearTimer);
+    ["docs", "job", "wallet", "scanner"].forEach(clearTimer);
     S.job = null;
     refreshMe().catch(function () {});
     render(
       "home",
       frame(
+        "<h1>" + esc(t("whatToDo")) + '</h1><div class="tiles" style="grid-template-columns:1fr 1fr;flex:1">' +
+          '<button class="tile" data-act="printMenu" style="min-height:240px"><div class="icon">🖨️</div><div><div class="t" style="font-size:34px">' + esc(t("printTile")) + '</div><div class="s">' + esc(t("printTileSub")) + "</div></div></button>" +
+          '<button class="tile" data-act="copy" style="min-height:240px"><div class="icon">📠</div><div><div class="t" style="font-size:34px">' + esc(t("copyTile")) + '</div><div class="s">' + esc(t("copyTileSub")) + "</div></div></button>" +
+          '</div><div class="row" style="margin-top:18px"><button class="btn danger" data-act="logout">' + esc(t("finish")) + "</button></div>"
+      )
+    );
+  }
+
+  function showPrintMenu() {
+    ["docs", "job", "wallet", "scanner"].forEach(clearTimer);
+    S.job = null;
+    render(
+      "printMenu",
+      frame(
         "<h1>" + esc(t("chooseTitle")) + '</h1><div class="tiles">' +
           '<button class="tile" data-act="docs"><div class="icon">📄</div><div><div class="t">' + esc(t("myFiles")) + '</div><div class="s">' + esc(t("myFilesSub")) + "</div></div></button>" +
           '<button class="tile" data-act="usb"' + (S.agent ? "" : " disabled") + '><div class="icon">🔌</div><div><div class="t">' + esc(t("usb")) + '</div><div class="s">' + esc(S.agent ? t("usbSub") : t("usbNone")) + "</div></div></button>" +
           '<button class="tile" data-act="upload"><div class="icon">📱</div><div><div class="t">' + esc(t("phoneUpload")) + '</div><div class="s">' + esc(t("phoneUploadSub")) + "</div></div></button>" +
-          '</div><div class="row" style="margin-top:auto"><button class="btn danger" data-act="logout">' + esc(t("finish")) + "</button></div>"
+          '</div><div class="row" style="margin-top:auto"><button class="btn ghost" data-act="home">' + esc(t("back")) + "</button></div>"
       )
     );
   }
@@ -593,7 +655,7 @@
         '</p></div><div style="text-align:center">' + (S.uploadSvg ? '<div class="qr" style="width:min(26vh,240px)">' + S.uploadSvg + "</div>" : "") + "</div></div>"
       : "<h1>" + esc(t("myFiles")) + "</h1>";
     $app.innerHTML = frame(
-      head + '<div class="list">' + docItems() + '</div><div class="row"><button class="btn ghost" data-act="home">' + esc(t("back")) + "</button></div>"
+      head + '<div class="list">' + docItems() + '</div><div class="row"><button class="btn ghost" data-act="printMenu">' + esc(t("back")) + "</button></div>"
     );
   }
 
@@ -642,7 +704,7 @@
           return '<button class="item" data-usb="' + i + '"><div><div class="t">' + esc(f.name) + '</div><div class="s">' + esc(f.dir || "") + "</div></div><span class=\"pill\">›</span></button>";
         }).join("")
       : '<p class="muted big">' + esc(t("usbNone")) + "</p>";
-    $app.innerHTML = frame("<h1>" + esc(t("usb")) + '</h1><div class="list">' + items + '</div><div class="row"><button class="btn ghost" data-act="home">' + esc(t("back")) + "</button></div>");
+    $app.innerHTML = frame("<h1>" + esc(t("usb")) + '</h1><div class="list">' + items + '</div><div class="row"><button class="btn ghost" data-act="printMenu">' + esc(t("back")) + "</button></div>");
   }
 
   function pickUsb(i) {
@@ -661,6 +723,112 @@
         });
       })
       .catch(function () { showMessage("❗", t("error"), true); });
+  }
+
+  // ---------------------------------------------------------------- cópia
+  var copy = { duplex: false, scanner: null };
+
+  function showCopy() {
+    clearTimer("job");
+    copy = { duplex: false, scanner: null };
+    S.screen = "copy";
+    every("scanner", 2000, function () {
+      api("/kiosk/scanner").then(function (st) {
+        copy.scanner = st;
+        if (S.screen === "copy") paintCopy();
+      }).catch(function () {});
+    });
+    paintCopy();
+  }
+
+  function paintCopy() {
+    var st = copy.scanner;
+    var status = !st
+      ? '<div class="spinner"></div>'
+      : !st.available
+        ? '<p class="error big">' + esc(t("scannerOff")) + "</p>"
+        : st.adf_loaded
+          ? '<p class="big" style="color:var(--ok)">✓ ' + esc(t("adfLoaded")) + "</p>"
+          : '<p class="big muted">' + esc(t("adfEmpty")) + "</p>";
+    var duplexRow = !st || st.adf_duplex !== false
+      ? '<div class="opt"><span class="label">' + esc(t("original")) + "</span>" + seg("copyDuplex", copy.duplex, t("oneSided"), t("twoSided")) + "</div>"
+      : "";
+    render(
+      "copy",
+      frame(
+        "<h1>" + esc(t("copyTitle")) + '</h1><div class="summary" style="margin:8px 0 16px">' + status + "</div>" + duplexRow +
+          '<div class="row" style="margin-top:auto"><button class="btn ghost" data-act="home">' + esc(t("back")) +
+          '</button><button class="btn" data-act="scanStart"' + (st && st.available ? "" : " disabled") + ">" + esc(t("scan")) + "</button></div>"
+      )
+    );
+  }
+
+  function startScan() {
+    clearTimer("scanner");
+    showScanning();
+    api("/kiosks/" + encodeURIComponent(S.kiosk.code) + "/copies", { method: "POST", auth: "session", body: { duplex_original: copy.duplex } })
+      .then(function (job) {
+        S.job = job;
+        waitScan();
+      })
+      .catch(function () { showScanError("scan_failed"); });
+  }
+
+  function scanMore() {
+    showScanning();
+    api("/jobs/" + S.job.id + "/scan", { method: "POST", auth: "session", body: {} })
+      .then(function (job) { S.job = job; waitScan(); })
+      .catch(function () { showScanError("scan_failed"); });
+  }
+
+  function showScanning() {
+    render("scanning", frame('<div class="big-icon">📠</div><h1>' + esc(t("scanning")) + '</h1><div class="spinner"></div>', { center: true }));
+  }
+
+  function waitScan() {
+    every("job", 1500, function () {
+      refreshJob().then(function () {
+        var sc = S.job.scan || {};
+        if (sc.status === "scanning") return;
+        clearTimer("job");
+        if (sc.status === "error") showScanError(sc.error);
+        else showScanned();
+      }).catch(function () {});
+    });
+  }
+
+  function showScanned() {
+    var sc = S.job.scan || {};
+    render(
+      "scanned",
+      frame(
+        '<div class="big-icon">📄</div><h1>' + esc(t("scannedPages", { n: sc.pages || 0 })) + '</h1><p class="muted big">' + esc(t("scanMoreHint")) +
+          '</p><div class="row" style="width:min(820px,100%);margin:24px auto 0"><button class="btn ghost" data-act="cancelJob">' + esc(t("cancel")) +
+          '</button><button class="btn ghost" data-act="scanMore">' + esc(t("scanMore")) + '</button><button class="btn" data-act="scanFinish">' + esc(t("continue")) + "</button></div>",
+        { center: true }
+      )
+    );
+  }
+
+  function showScanError(code) {
+    var msg = code === "adf_empty" ? t("errAdfEmpty") : code === "scanner_busy" ? t("errBusy") : t("errScan");
+    var hasPages = S.job && S.job.scan && S.job.scan.pages > 0;
+    render(
+      "scanError",
+      frame(
+        '<div class="big-icon">⚠️</div><h2>' + esc(msg) + '</h2><div class="row" style="width:min(820px,100%);margin:24px auto 0"><button class="btn ghost" data-act="' +
+          (S.job ? "cancelJob" : "home") + '">' + esc(t("cancel")) + '</button><button class="btn" data-act="' + (S.job ? "scanMore" : "copy") + '">' + esc(t("tryAgain")) + "</button>" +
+          (hasPages ? '<button class="btn" data-act="scanFinish">' + esc(t("continue")) + "</button>" : "") + "</div>",
+        { center: true }
+      )
+    );
+  }
+
+  function finishScan() {
+    showPreparing();
+    api("/jobs/" + S.job.id + "/scan/finish", { method: "POST", auth: "session" })
+      .then(function (job) { S.job = job; waitAnalysis(); })
+      .catch(function () { showScanError("scan_failed"); });
   }
 
   // ---------------------------------------------------------------- análise
@@ -729,9 +897,11 @@
     var action = missing > 0
       ? '<p class="error">' + esc(t("topupNeeded", { missing: kz(missing) })) + '</p><button class="btn block" data-act="topup">' + esc(t("topup")) + "</button>"
       : '<button class="btn block" data-act="print">' + esc(t("print", { total: kz(job.total_kz) })) + "</button>";
+    var blank = job.source === "COPY" && (b.pages || []).length && (b.pages || []).every(function (p) { return !p.coverage_pct; });
     render(
       "options",
       frame(
+        (blank ? '<p class="error">' + esc(t("blankWarning")) + "</p>" : "") +
         '<h2 style="overflow-wrap:anywhere">' + esc(job.original_filename) + ' <span class="muted" style="font-size:20px">· ' + esc(t("pages", { n: pages })) + "</span></h2>" +
           '<div class="opts"><div>' + rows + '</div><div class="summary"><div class="muted">' + esc(t("total")) + '</div><div class="total num">' + kz(job.total_kz) +
           '</div><div class="line"><span>' + esc(t("faces", { n: b.faces || 0 })) + "</span><span>" + esc(t("sheets", { n: b.sheets || 0 })) + "</span></div>" +
@@ -908,7 +1078,7 @@
   }
 
   setInterval(function () {
-    if (!S.session || S.screen === "printing" || S.screen === "pay") return;
+    if (!S.session || ["printing", "pay", "scanning"].indexOf(S.screen) !== -1) return;
     var idle = (Date.now() - S.lastTouch) / 1000;
     if (idle > CFG.idleSeconds && $overlay.dataset.kind !== "idle") {
       var left = 15;
@@ -969,6 +1139,11 @@
     if (d.doc) return pickDoc(d.doc);
     if (d.usb !== undefined) return pickUsb(Number(d.usb));
     if (d.amount) return createTopup(Number(d.amount));
+    if (d.opt === "copyDuplex") {
+      copy.duplex = d.val === "1";
+      paintCopy();
+      return;
+    }
     if (d.opt) {
       opts[d.opt] = d.val === "1";
       paintOptions();
@@ -991,6 +1166,11 @@
       case "sendCode": return sendCode();
       case "saveName": return saveName();
       case "home": return showHome();
+      case "printMenu": return showPrintMenu();
+      case "copy": return showCopy();
+      case "scanStart": return startScan();
+      case "scanMore": return scanMore();
+      case "scanFinish": return finishScan();
       case "docs": return showDocs();
       case "upload": return showUpload();
       case "usb": return showUsb();

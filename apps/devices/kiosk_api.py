@@ -163,6 +163,20 @@ def pairing_status(request, pairing_id):
 
 
 @device_view(["GET"])
+def scanner_state(request):
+    """Estado do digitalizador para o ecrã de cópia (há papel no alimentador?)."""
+    from apps.jobs.copying import scanner_for
+    from domain.scanning.gateway import ScannerUnavailable
+
+    _kiosk(request)
+    try:
+        state = scanner_for(request.auth.printer).status()
+    except ScannerUnavailable as exc:
+        return Response({"available": False, "error": exc.code})
+    return Response({"available": True, **state.to_dict()})
+
+
+@device_view(["GET"])
 def upload_qr(request):
     """QR que leva o telemóvel a "Meus ficheiros" do portal, para enviar na hora."""
     url = client_url(request, "/ficheiros/")

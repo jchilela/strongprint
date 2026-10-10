@@ -65,8 +65,10 @@ def analyze_job(job_id: str) -> str:
         workdir = Path(tmp)
         source = workdir / "source"
         storage.download_file(original_key(job), source)
+        # Cópias: o ficheiro é sempre PDF, mesmo que o nome mostrado não tenha extensão.
+        filename = "copy.pdf" if job.source == Job.Source.COPY else job.original_filename
         try:
-            pdf, analysis = analyzer().analyze(source, job.original_filename, workdir)
+            pdf, analysis = analyzer().analyze(source, filename, workdir)
         except AnalysisError as exc:
             log.warning("analysis.rejected", code=exc.code, reason=str(exc))
             try:
@@ -254,3 +256,29 @@ def purge_documents() -> int:
     if count:
         log.info("documents.purged", count=count)
     return count
+
+
+@shared_task(queue="printing")
+def scan_batch(job_id: str, source: str = "") -> str:
+    """Digitaliza um lote de uma cópia (um digitalizador de cada vez)."""
+    from common.locks import redis_client
+
+    from . import copying
+
+    structlog.contextvars.bind_contextvars(job_id=str(job_id))
+    job = Job.objects.select_related("kiosk__printer").get(pk=job_id)
+    lock = redis_client().lock(
+        f"strongprint:scanner:{job.kiosk.printer.pk}", timeout=600, blocking_timeout=30
+    )
+    if not lock.acquire():
+        Job.objects.filter(pk=job.pk).update(
+            scan={**job.scan, "status": "error", "error": "scanner_busy"}
+        )
+        return "busy"
+    try:
+        return copying.run_scan(str(job.pk), source).scan.get("status", "")
+    finally:
+        try:
+            lock.release()
+        except Exception:
+            pass
