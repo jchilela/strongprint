@@ -20,6 +20,56 @@ def s3_client(public: bool = False):
     )
 
 
+def upload_file(path, key: str, content_type: str = "application/octet-stream") -> None:
+    s3_client().upload_file(
+        str(path), settings.S3_BUCKET, key, ExtraArgs={"ContentType": content_type}
+    )
+
+
+def upload_fileobj(fileobj, key: str, content_type: str = "application/octet-stream") -> None:
+    s3_client().upload_fileobj(
+        fileobj, settings.S3_BUCKET, key, ExtraArgs={"ContentType": content_type}
+    )
+
+
+def download_file(key: str, path) -> None:
+    s3_client().download_file(settings.S3_BUCKET, key, str(path))
+
+
+def object_size(key: str) -> int | None:
+    """Tamanho do objeto, ou None se não existir."""
+    try:
+        head = s3_client().head_object(Bucket=settings.S3_BUCKET, Key=key)
+    except ClientError as exc:
+        if exc.response.get("Error", {}).get("Code") in ("404", "NoSuchKey", "NotFound"):
+            return None
+        raise
+    return int(head["ContentLength"])
+
+
+def delete_prefix(prefix: str) -> int:
+    client = s3_client()
+    deleted = 0
+    paginator = client.get_paginator("list_objects_v2")
+    for page in paginator.paginate(Bucket=settings.S3_BUCKET, Prefix=prefix):
+        keys = [{"Key": obj["Key"]} for obj in page.get("Contents", [])]
+        if keys:
+            client.delete_objects(Bucket=settings.S3_BUCKET, Delete={"Objects": keys})
+            deleted += len(keys)
+    return deleted
+
+
+def presigned_put(key: str, content_type: str, expires: int = 900) -> str | None:
+    """URL para o cliente enviar o ficheiro diretamente ao S3 (se houver endpoint público)."""
+    if not settings.S3_PUBLIC_ENDPOINT_URL:
+        return None
+    return s3_client(public=True).generate_presigned_url(
+        "put_object",
+        Params={"Bucket": settings.S3_BUCKET, "Key": key, "ContentType": content_type},
+        ExpiresIn=expires,
+    )
+
+
 def ensure_bucket(client=None, bucket: str | None = None) -> bool:
     """Cria o bucket se não existir. Devolve True se foi criado."""
     client = client or s3_client()

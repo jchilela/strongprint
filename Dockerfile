@@ -4,8 +4,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     UV_SYSTEM_PYTHON=1
 
+# LibreOffice (Office → PDF), Ghostscript (cobertura de tinta) e fontes comuns.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gettext \
+    && apt-get install -y --no-install-recommends \
+        gettext ghostscript \
+        libreoffice-writer-nogui libreoffice-calc-nogui libreoffice-impress-nogui \
+        fonts-dejavu-core fonts-liberation fonts-crosextra-carlito fonts-crosextra-caladea \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=ghcr.io/astral-sh/uv:0.8.4 /uv /usr/local/bin/uv

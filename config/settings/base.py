@@ -26,9 +26,11 @@ INSTALLED_APPS = [
     "apps.devices",
     "apps.wallets",
     "apps.jobs",
+    "apps.payments",
 ]
 
 MIDDLEWARE = [
+    "common.middleware.LogContextMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -94,8 +96,14 @@ CELERY_WORKER_HIJACK_ROOT_LOGGER = False
 
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
-    "DEFAULT_AUTHENTICATION_CLASSES": [],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "common.auth.KioskSessionAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+    ],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "EXCEPTION_HANDLER": "common.api.exception_handler",
+    "UNAUTHENTICATED_USER": "django.contrib.auth.models.AnonymousUser",
 }
 
 # Armazenamento de ficheiros (S3; SeaweedFS em dev)
@@ -110,6 +118,23 @@ S3_REGION = env("S3_REGION", default="us-east-1")
 PRINTER_GATEWAY = env("PRINTER_GATEWAY", default="fake")
 JOB_SESSION_TIMEOUT_MINUTES = env.int("JOB_SESSION_TIMEOUT_MINUTES", default=10)
 FILE_RETENTION_HOURS = env.int("FILE_RETENTION_HOURS", default=24)
+KIOSK_SESSION_MINUTES = env.int("KIOSK_SESSION_MINUTES", default=15)
+UPLOAD_MAX_MB = env.int("UPLOAD_MAX_MB", default=50)
+MAX_DOCUMENT_PAGES = env.int("MAX_DOCUMENT_PAGES", default=300)
+# Página é a cores quando pelo menos esta % de píxeis tem cor real.
+ANALYSIS_COLOR_THRESHOLD_PCT = env.float("ANALYSIS_COLOR_THRESHOLD_PCT", default=0.1)
+PRINT_QUEUE_TIMEOUT_MINUTES = env.int("PRINT_QUEUE_TIMEOUT_MINUTES", default=15)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+
+# Pagamentos (carregamento da carteira): mock | strongpay
+PAYMENT_PROVIDER = env("PAYMENT_PROVIDER", default="mock")
+PAYMENTS_ALLOW_SIMULATION = env.bool("PAYMENTS_ALLOW_SIMULATION", default=True)
+MOCK_PAYMENT_SECRET = env("MOCK_PAYMENT_SECRET", default="mock-secret")
+STRONGPAY_BASE_URL = env("STRONGPAY_BASE_URL", default="http://strongpay.strongbox.ao")
+STRONGPAY_API_KEY = env("STRONGPAY_API_KEY", default="")
+STRONGPAY_WEBHOOK_SECRET = env("STRONGPAY_WEBHOOK_SECRET", default="")
+TOPUP_MIN_KZ = env.int("TOPUP_MIN_KZ", default=100)
+TOPUP_MAX_KZ = env.int("TOPUP_MAX_KZ", default=500_000)
 
 from common.logging import configure_logging  # noqa: E402
 
