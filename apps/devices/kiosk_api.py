@@ -21,6 +21,7 @@ from rest_framework.response import Response
 from apps.accounts import otp
 from apps.accounts.phone import normalize_phone
 from apps.jobs.models import Document
+from apps.jobs.previews import preview_urls
 from apps.partners.services import effective_price_rules
 from apps.wallets.services import wallet_for
 from common.api import error
@@ -294,6 +295,7 @@ def documents(request):
                 "pages": d.pages,
                 "color_pages": d.color_pages,
                 "created_at": d.created_at,
+                "preview_urls": preview_urls(d),
             }
             for d in docs
         ]

@@ -3,6 +3,7 @@ from django.urls import path
 from apps.devices import api as devices
 from apps.devices import kiosk_api as screen
 from apps.jobs import api as jobs
+from apps.jobs import previews
 from apps.payments import api as payments
 
 urlpatterns = [
@@ -37,4 +38,5 @@ urlpatterns = [
     path("kiosk/login/verify", screen.login_verify, name="kiosk-login-verify"),
     path("me", screen.me, name="me"),
     path("documents", screen.documents, name="documents"),
+    path("previews/<str:token>", previews.preview_image, name="preview-image"),
 ]

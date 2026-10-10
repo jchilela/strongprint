@@ -134,3 +134,16 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; touch-action
   .summary .total { font-size: 36px; }
   .ref dd { font-size: 36px; }
 }
+
+/* pré-visualização das páginas */
+.thumb { flex: 0 0 64px; height: 88px; border-radius: 8px; overflow: hidden; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 34px; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.strip { display: flex; gap: 12px; overflow-x: auto; padding: 4px 2px 12px; margin-bottom: 8px; -webkit-overflow-scrolling: touch; align-items: center; }
+.strip .pg { flex: 0 0 auto; position: relative; padding: 0; border: 2px solid var(--line); border-radius: 8px; background: #fff; overflow: hidden; }
+.strip .pg img { display: block; height: 22vh; max-height: 220px; width: auto; }
+.strip .pg span { position: absolute; right: 6px; bottom: 6px; background: rgba(4, 12, 20, 0.75); color: #fff; font-size: 15px; padding: 2px 8px; border-radius: 999px; }
+.strip .pg.off { opacity: 0.3; }
+.strip .more { font-size: 22px; padding: 0 12px; }
+#viewer { position: fixed; inset: 0; z-index: 60; background: rgba(4, 12, 20, 0.94); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 24px; }
+#viewer img { max-height: calc(100vh - 140px); max-width: 100%; background: #fff; border-radius: 6px; }
+#viewer .bar { display: flex; gap: 16px; align-items: center; color: #fff; font-size: 24px; }

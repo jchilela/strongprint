@@ -20,6 +20,7 @@ from domain.analysis.analyzer import SUPPORTED_EXTENSIONS, extension_of
 from domain.jobs.state_machine import JobState
 
 from . import copying, library, services, tasks
+from .previews import preview_urls
 from .models import Document, Job
 
 log = structlog.get_logger(__name__)
@@ -48,6 +49,7 @@ def max_upload_bytes() -> int:
 class JobSerializer(serializers.ModelSerializer):
     kiosk = serializers.CharField(source="kiosk.code")
     progress = serializers.SerializerMethodField()
+    preview_urls = serializers.SerializerMethodField()
 
     class Meta:
         model = Job
@@ -69,10 +71,14 @@ class JobSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "finished_at",
+            "preview_urls",
         ]
 
     def get_progress(self, job) -> int:
         return PROGRESS.get(job.state, 100)
+
+    def get_preview_urls(self, job) -> list[str]:
+        return preview_urls(job)
 
 
 class CreateJobSerializer(serializers.Serializer):

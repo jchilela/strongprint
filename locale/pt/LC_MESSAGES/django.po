@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-10 21:21+0100\n"
+"POT-Creation-Date: 2026-10-10 21:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -169,7 +169,8 @@ msgstr "trabalhos"
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:44
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:45
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:47
-#: apps/jobs/models.py:58 apps/jobs/models.py:137
+#: apps/jobs/models.py:58 apps/jobs/models.py:140
+#: apps/portal/templates/portal/preview.html:14
 msgid "pages"
 msgstr "páginas"
 
@@ -594,7 +595,7 @@ msgstr "dispositivos (Pi)"
 msgid "Unknown"
 msgstr "Desconhecido"
 
-#: apps/devices/models.py:100 apps/jobs/models.py:120
+#: apps/devices/models.py:100 apps/jobs/models.py:123
 msgid "Ready"
 msgstr "Pronto"
 
@@ -807,11 +808,11 @@ msgstr "WhatsApp"
 msgid "Copy (scanned at the kiosk)"
 msgstr "Cópia (digitalizada no kiosk)"
 
-#: apps/jobs/models.py:47 apps/jobs/models.py:135
+#: apps/jobs/models.py:47 apps/jobs/models.py:138
 msgid "state"
 msgstr "estado"
 
-#: apps/jobs/models.py:50 apps/jobs/models.py:128
+#: apps/jobs/models.py:50 apps/jobs/models.py:131
 msgid "source"
 msgstr "origem"
 
@@ -819,19 +820,19 @@ msgstr "origem"
 msgid "original filename"
 msgstr "nome do ficheiro"
 
-#: apps/jobs/models.py:54 apps/jobs/models.py:131
+#: apps/jobs/models.py:54 apps/jobs/models.py:134
 msgid "storage key"
 msgstr "chave de armazenamento"
 
-#: apps/jobs/models.py:55 apps/jobs/models.py:132
+#: apps/jobs/models.py:55 apps/jobs/models.py:135
 msgid "file size"
 msgstr "tamanho do ficheiro"
 
-#: apps/jobs/models.py:56 apps/jobs/models.py:133
+#: apps/jobs/models.py:56 apps/jobs/models.py:136
 msgid "MIME type"
 msgstr "tipo MIME"
 
-#: apps/jobs/models.py:59 apps/jobs/models.py:139
+#: apps/jobs/models.py:59 apps/jobs/models.py:142
 msgid "analysis"
 msgstr "análise"
 
@@ -867,15 +868,15 @@ msgstr "contador depois"
 msgid "faces printed"
 msgstr "faces impressas"
 
-#: apps/jobs/models.py:73 apps/jobs/models.py:140
+#: apps/jobs/models.py:73 apps/jobs/models.py:143
 msgid "failure reason"
 msgstr "motivo da falha"
 
-#: apps/jobs/models.py:75 apps/jobs/models.py:141 apps/payments/models.py:30
+#: apps/jobs/models.py:75 apps/jobs/models.py:144 apps/payments/models.py:30
 msgid "expires at"
 msgstr "expira em"
 
-#: apps/jobs/models.py:76 apps/jobs/models.py:104 apps/jobs/models.py:142
+#: apps/jobs/models.py:76 apps/jobs/models.py:107 apps/jobs/models.py:145
 #: apps/payments/models.py:40 apps/wallets/models.py:22
 #: apps/wallets/models.py:69 apps/wallets/models.py:105 common/models.py:6
 msgid "created at"
@@ -894,63 +895,67 @@ msgstr "terminado em"
 msgid "file purged at"
 msgstr "ficheiro apagado em"
 
-#: apps/jobs/models.py:82
+#: apps/jobs/models.py:81
+msgid "preview purged at"
+msgstr "imagens apagadas em"
+
+#: apps/jobs/models.py:85
 msgid "print job"
 msgstr "trabalho de impressão"
 
-#: apps/jobs/models.py:83
+#: apps/jobs/models.py:86
 msgid "print jobs"
 msgstr "trabalhos de impressão"
 
-#: apps/jobs/models.py:98
+#: apps/jobs/models.py:101
 msgid "from"
 msgstr "de"
 
-#: apps/jobs/models.py:99
+#: apps/jobs/models.py:102
 msgid "to"
 msgstr "para"
 
-#: apps/jobs/models.py:101 apps/wallets/models.py:67
+#: apps/jobs/models.py:104 apps/wallets/models.py:67
 msgid "actor"
 msgstr "autor"
 
-#: apps/jobs/models.py:101
+#: apps/jobs/models.py:104
 msgid "e.g. system, user:<id>, task:print"
 msgstr "ex.: system, user:<id>, task:print"
 
-#: apps/jobs/models.py:103 apps/monitoring/models.py:30
+#: apps/jobs/models.py:106 apps/monitoring/models.py:30
 msgid "data"
 msgstr "dados"
 
-#: apps/jobs/models.py:107
+#: apps/jobs/models.py:110
 msgid "job event"
 msgstr "evento do trabalho"
 
-#: apps/jobs/models.py:108
+#: apps/jobs/models.py:111
 msgid "job events"
 msgstr "eventos do trabalho"
 
-#: apps/jobs/models.py:119
+#: apps/jobs/models.py:122
 msgid "Analysing"
 msgstr "A analisar"
 
-#: apps/jobs/models.py:121
+#: apps/jobs/models.py:124
 msgid "Rejected"
 msgstr "Recusado"
 
-#: apps/jobs/models.py:130
+#: apps/jobs/models.py:133
 msgid "filename"
 msgstr "nome do ficheiro"
 
-#: apps/jobs/models.py:138
+#: apps/jobs/models.py:141
 msgid "colour pages"
 msgstr "páginas a cores"
 
-#: apps/jobs/models.py:145
+#: apps/jobs/models.py:148
 msgid "document"
 msgstr "documento"
 
-#: apps/jobs/models.py:146
+#: apps/jobs/models.py:149
 msgid "documents"
 msgstr "documentos"
 
@@ -1114,6 +1119,7 @@ msgid "Revenue per day"
 msgstr "Receita por dia"
 
 #: apps/partner_portal/templates/partner/_jobs_table.html:5
+#: apps/portal/templates/portal/preview.html:9
 msgid "Date"
 msgstr "Data"
 
@@ -1612,7 +1618,7 @@ msgstr "Código"
 msgid "Full name"
 msgstr "Nome completo"
 
-#: apps/portal/forms.py:47 apps/portal/views.py:120
+#: apps/portal/forms.py:47 apps/portal/views.py:121
 msgid "Please enter your name."
 msgstr "Indique o seu nome."
 
@@ -1686,38 +1692,44 @@ msgstr "Escolher ficheiro"
 msgid "Upload"
 msgstr "Enviar"
 
-#: apps/portal/templates/portal/documents.html:24
+#: apps/portal/templates/portal/documents.html:20
+#: apps/portal/templates/portal/history.html:9
+msgid "See"
+msgstr "Ver"
+
+#: apps/portal/templates/portal/documents.html:25
+#: apps/portal/templates/portal/preview.html:19
 #, python-format
 msgid "%(n)s page"
 msgid_plural "%(n)s pages"
 msgstr[0] "%(n)s página"
 msgstr[1] "%(n)s páginas"
 
-#: apps/portal/templates/portal/documents.html:24
+#: apps/portal/templates/portal/documents.html:25
 #, python-format
 msgid "%(c)s in colour"
 msgid_plural "%(c)s in colour"
 msgstr[0] "%(c)s a cores"
 msgstr[1] "%(c)s a cores"
 
-#: apps/portal/templates/portal/documents.html:24
+#: apps/portal/templates/portal/documents.html:25
 #, python-format
 msgid "B&amp;W from %(price)s"
 msgstr "P&amp;B desde %(price)s"
 
-#: apps/portal/templates/portal/documents.html:25
+#: apps/portal/templates/portal/documents.html:26
 msgid "Checking…"
 msgstr "A verificar…"
 
-#: apps/portal/templates/portal/documents.html:26
+#: apps/portal/templates/portal/documents.html:27
 msgid "Cannot be printed"
 msgstr "Não pode ser impresso"
 
-#: apps/portal/templates/portal/documents.html:29
+#: apps/portal/templates/portal/documents.html:30
 msgid "Delete"
 msgstr "Apagar"
 
-#: apps/portal/templates/portal/documents.html:32
+#: apps/portal/templates/portal/documents.html:33
 msgid "No files yet."
 msgstr "Ainda não tem ficheiros."
 
@@ -1725,14 +1737,14 @@ msgstr "Ainda não tem ficheiros."
 msgid "My prints"
 msgstr "As minhas impressões"
 
-#: apps/portal/templates/portal/history.html:10
+#: apps/portal/templates/portal/history.html:11
 #, python-format
 msgid "%(n)s page printed"
 msgid_plural "%(n)s pages printed"
 msgstr[0] "%(n)s página impressa"
 msgstr[1] "%(n)s páginas impressas"
 
-#: apps/portal/templates/portal/history.html:17
+#: apps/portal/templates/portal/history.html:18
 msgid "You have not printed anything yet."
 msgstr "Ainda não imprimiu nada."
 
@@ -1849,6 +1861,82 @@ msgstr "Enviar novo código"
 msgid "We will send a 6-digit code to your phone."
 msgstr "Vamos enviar um código de 6 algarismos para o seu telefone."
 
+#: apps/portal/templates/portal/preview.html:4
+msgid "Back"
+msgstr "Voltar"
+
+#: apps/portal/templates/portal/preview.html:10
+msgid "Where"
+msgstr "Onde"
+
+#: apps/portal/templates/portal/preview.html:11
+msgid "Type"
+msgstr "Tipo"
+
+#: apps/portal/templates/portal/preview.html:12
+msgid "State"
+msgstr "Estado"
+
+#: apps/portal/templates/portal/preview.html:13
+msgid "Pages in the file"
+msgstr "Páginas do ficheiro"
+
+#: apps/portal/templates/portal/preview.html:14
+msgid "Options"
+msgstr "Opções"
+
+#: apps/portal/templates/portal/preview.html:14
+msgid "Colour"
+msgstr "Cores"
+
+#: apps/portal/templates/portal/preview.html:14
+msgid "Black and white"
+msgstr "Preto e branco"
+
+#: apps/portal/templates/portal/preview.html:14
+msgid "Both sides"
+msgstr "Frente e verso"
+
+#: apps/portal/templates/portal/preview.html:14
+msgid "One side"
+msgstr "Só frente"
+
+#: apps/portal/templates/portal/preview.html:14
+msgid "%(n)s copy"
+msgid_plural "%(n)s copies"
+msgstr[0] "%(n)s cópia"
+msgstr[1] "%(n)s cópias"
+
+#: apps/portal/templates/portal/preview.html:15
+msgid "Faces printed"
+msgstr "Faces impressas"
+
+#: apps/portal/templates/portal/preview.html:16
+msgid "Price"
+msgstr "Preço"
+
+#: apps/portal/templates/portal/preview.html:24
+msgid "Page"
+msgstr "Página"
+
+#: apps/portal/templates/portal/preview.html:26
+#, python-format
+msgid "Showing the first %(n)s page."
+msgid_plural "Showing the first %(n)s pages."
+msgstr[0] "A mostrar a primeira página."
+msgstr[1] "A mostrar as primeiras %(n)s páginas."
+
+#: apps/portal/templates/portal/preview.html:28
+#, python-format
+msgid ""
+"The page images are no longer available. We keep them for %(retention_days)s "
+"days."
+msgstr "As imagens das páginas já não estão disponíveis. Guardamo-las durante %(retention_days)s dias."
+
+#: apps/portal/templates/portal/preview.html:30
+msgid "Preview not available yet."
+msgstr "Pré-visualização ainda não disponível."
+
 #: apps/portal/templates/portal/topup_detail.html:2
 #: apps/portal/templates/portal/topup_detail.html:5
 msgid "Payment reference"
@@ -1929,40 +2017,40 @@ msgstr "Movimentos"
 msgid "No movements yet."
 msgstr "Ainda sem movimentos."
 
-#: apps/portal/views.py:87
+#: apps/portal/views.py:88
 msgid "This account is disabled."
 msgstr "Esta conta está desativada."
 
-#: apps/portal/views.py:106
+#: apps/portal/views.py:107
 msgid "We sent you a new code."
 msgstr "Enviámos-lhe um novo código."
 
-#: apps/portal/views.py:118
+#: apps/portal/views.py:119
 msgid "Welcome to StrongPrint!"
 msgstr "Bem-vindo à StrongPrint!"
 
-#: apps/portal/views.py:159
+#: apps/portal/views.py:160
 msgid "The payment service is unavailable. Try again shortly."
 msgstr "O serviço de pagamentos está indisponível. Tente daqui a pouco."
 
-#: apps/portal/views.py:185
+#: apps/portal/views.py:186
 msgid "Simulation is not available."
 msgstr "A simulação não está disponível."
 
-#: apps/portal/views.py:210
+#: apps/portal/views.py:211
 msgid "This file type is not supported."
 msgstr "Este tipo de ficheiro não é suportado."
 
-#: apps/portal/views.py:211
+#: apps/portal/views.py:212
 #, python-format
 msgid "The file is too large (max %(mb)s MB)."
 msgstr "O ficheiro é demasiado grande (máx. %(mb)s MB)."
 
-#: apps/portal/views.py:216
+#: apps/portal/views.py:217
 msgid "File saved. We are checking it now."
 msgstr "Ficheiro guardado. Estamos a verificá-lo."
 
-#: apps/portal/views.py:239
+#: apps/portal/views.py:241
 msgid "File deleted."
 msgstr "Ficheiro apagado."
 

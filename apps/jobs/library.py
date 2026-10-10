@@ -64,7 +64,10 @@ def save_document(owner, fileobj, filename: str, size: int, *, source=Job.Source
 
 
 def delete_document(doc: Document) -> None:
+    from .previews import delete_previews
+
     storage.delete_prefix(f"documents/{doc.pk}/")
+    delete_previews(doc)
     doc.delete()
 
 

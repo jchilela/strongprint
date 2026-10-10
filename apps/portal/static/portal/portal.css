@@ -209,3 +209,15 @@ dialog.modal h2 { margin-top: 0; font-size: 20px; }
 @media (min-width: 600px) {
   dialog.modal { inset: 50% 0 auto 0; transform: translateY(-50%); border-radius: 18px; }
 }
+
+/* pré-visualização das páginas */
+.list .grow { flex: 1; min-width: 0; }
+.list a.title { color: inherit; text-decoration: none; display: block; }
+.thumb { flex: 0 0 52px; height: 70px; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; overflow-wrap: anywhere; }
+.pages { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin: 16px 0; }
+.pages figure { margin: 0; text-align: center; }
+.pages img { width: 100%; border: 1px solid var(--line); border-radius: 4px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08); }

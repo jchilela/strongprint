@@ -70,6 +70,7 @@
       phoneUpload: "Enviar agora",
       phoneUploadSub: "Do telemóvel, com o QR",
       finish: "Terminar",
+      close: "Fechar",
       noFiles: "Ainda não tem ficheiros. Use «Enviar agora».",
       checking: "A verificar…",
       pages: "{n} pág.",
@@ -185,6 +186,7 @@
       phoneUpload: "Send now",
       phoneUploadSub: "From your phone, with the QR",
       finish: "Finish",
+      close: "Close",
       noFiles: "No files yet. Use “Send now”.",
       checking: "Checking…",
       pages: "{n} p.",
@@ -355,6 +357,10 @@
   }
 
   function render(name, html) {
+    if (name !== "options" && viewer) {
+      viewer = null;
+      paintViewer();
+    }
     S.screen = name;
     $app.innerHTML = html;
   }
@@ -497,6 +503,8 @@
 
   function logout() {
     S.session = null;
+    viewer = null;
+    paintViewer();
     $overlay.hidden = true;
     $overlay.dataset.kind = "";
     showIdle();
@@ -678,10 +686,55 @@
           ? esc(t("pages", { n: d.pages })) + (d.color_pages ? " · " + esc(t("colorPages", { n: d.color_pages })) : "")
           : '<span class="pill warn">' + esc(t("checking")) + "</span>";
       return (
-        '<button class="item" data-doc="' + esc(d.id) + '"' + (d.state === "READY" ? "" : " disabled") + '><div><div class="t">' +
-        esc(d.filename) + '</div><div class="s">' + meta + '</div></div><span class="pill">›</span></button>'
+        '<button class="item" data-doc="' + esc(d.id) + '"' + (d.state === "READY" ? "" : " disabled") + ">" + thumb((d.preview_urls || [])[0]) +
+        '<div style="flex:1;min-width:0"><div class="t">' + esc(d.filename) + '</div><div class="s">' + meta + '</div></div><span class="pill">›</span></button>'
       );
     }).join("");
+  }
+
+  function thumb(url) {
+    return '<span class="thumb">' + (url ? '<img src="' + esc(url) + '" alt="">' : "📄") + "</span>";
+  }
+
+  // Faixa com as páginas do documento; as que ficam fora do intervalo escolhido ficam esbatidas.
+  function previewStrip(job, from, to) {
+    var urls = job.preview_urls || [];
+    if (!urls.length) return "";
+    var more = (job.pages || 0) > urls.length ? '<span class="more muted">+' + (job.pages - urls.length) + "</span>" : "";
+    return (
+      '<div class="strip">' +
+      urls.map(function (u, i) {
+        var n = i + 1;
+        var off = from && to && (n < from || n > to);
+        return '<button class="pg' + (off ? " off" : "") + '" data-view="' + i + '"><img src="' + esc(u) + '" alt=""><span>' + n + "</span></button>";
+      }).join("") + more + "</div>"
+    );
+  }
+
+  // Página em tamanho grande, por cima de tudo, com anterior/seguinte.
+  var viewer = null;
+  function openViewer(urls, i) {
+    viewer = { urls: urls, i: i };
+    paintViewer();
+  }
+  function paintViewer() {
+    var el = document.getElementById("viewer");
+    if (!viewer) {
+      if (el) el.remove();
+      return;
+    }
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "viewer";
+      document.body.appendChild(el);
+    }
+    var n = viewer.urls.length;
+    el.innerHTML =
+      '<img src="' + esc(viewer.urls[viewer.i]) + '" alt="">' +
+      '<div class="bar"><button class="btn ghost" data-vnav="-1"' + (viewer.i === 0 ? " disabled" : "") + ">‹</button>" +
+      '<span class="num">' + (viewer.i + 1) + " / " + n + "</span>" +
+      '<button class="btn ghost" data-vnav="1"' + (viewer.i >= n - 1 ? " disabled" : "") + ">›</button>" +
+      '<button class="btn" data-act="closeViewer">' + esc(t("close")) + "</button></div>";
   }
 
   function paintDocs() {
@@ -939,7 +992,7 @@
       frame(
         (blank ? '<p class="error">' + esc(t("blankWarning")) + "</p>" : "") +
         '<h2 style="overflow-wrap:anywhere">' + esc(job.original_filename) + ' <span class="muted" style="font-size:20px">· ' + esc(t("pages", { n: pages })) + "</span></h2>" +
-          '<div class="opts"><div>' + rows + '</div><div class="summary"><div class="muted">' + esc(t("total")) + '</div><div class="total num">' + kz(job.total_kz) +
+          '<div class="opts"><div style="min-width:0">' + previewStrip(job, opts.from, opts.to) + rows + '</div><div class="summary"><div class="muted">' + esc(t("total")) + '</div><div class="total num">' + kz(job.total_kz) +
           '</div><div class="line"><span>' + esc(t("faces", { n: b.faces || 0 })) + "</span><span>" + esc(t("sheets", { n: b.sheets || 0 })) + "</span></div>" +
           '<div class="line"><span>' + esc(t("available")) + '</span><span class="num">' + kz(available) + '</span></div><div style="margin-top:auto">' + action +
           '</div><button class="btn ghost block" data-act="cancelJob" style="margin-top:10px">' + esc(t("back")) + "</button></div></div>"
@@ -1178,6 +1231,11 @@
       paintName();
       return;
     }
+    if (d.view !== undefined && S.job) return openViewer(S.job.preview_urls || [], Number(d.view));
+    if (d.vnav && viewer) {
+      viewer.i = Math.min(viewer.urls.length - 1, Math.max(0, viewer.i + Number(d.vnav)));
+      return paintViewer();
+    }
     if (d.doc) return pickDoc(d.doc);
     if (d.usb !== undefined) return pickUsb(Number(d.usb));
     if (d.amount) return createTopup(Number(d.amount));
@@ -1222,6 +1280,9 @@
       case "backToOptions": return refreshJob().then(paintOptionsScreen, paintOptionsScreen);
       case "cancelJob": return cancelJob();
       case "stay": return touch();
+      case "closeViewer":
+        viewer = null;
+        return paintViewer();
       case "blockedLogout":
         if (S.job && ["CREATED", "ANALYZED"].indexOf(S.job.state) !== -1) cancelJob();
         return logout();

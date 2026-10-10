@@ -6,7 +6,8 @@
   {% if jobs %}<ul class="list">
     {% for j in jobs %}
     <li>
-      <div><div class="title">{{ j.original_filename|default:"—" }}</div>
+      <a class="thumb" href="{% url 'portal:job' j.pk %}" aria-label="{% translate 'See' %} {{ j.original_filename }}">{% if j.thumb %}<img src="{{ j.thumb }}" alt="" loading="lazy">{% else %}<span>📄</span>{% endif %}</a>
+      <div class="grow"><a class="title" href="{% url 'portal:job' j.pk %}">{{ j.original_filename|default:"—" }}</a>
         <div class="muted small">{{ j.created_at|date:"d/m/Y H:i" }} · {{ j.kiosk.site.partner.name }}{% if j.pages_printed %} · {% blocktranslate count n=j.pages_printed %}{{ n }} page printed{% plural %}{{ n }} pages printed{% endblocktranslate %}{% endif %}</div></div>
       <div style="text-align:right">
         <span class="pill {% if j.state == 'COMPLETED' %}ok{% elif j.state == 'PARTIAL' %}warn{% elif j.state in 'FAILED REJECTED EXPIRED CANCELLED' %}bad{% endif %}">{{ j.get_state_display }}</span>

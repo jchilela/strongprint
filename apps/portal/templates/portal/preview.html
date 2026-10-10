@@ -1,0 +1,32 @@
+{% extends "portal/base.html" %}{% load i18n portal %}
+{% block title %}{% firstof job.original_filename doc.original_filename %} · StrongPrint{% endblock %}
+{% block content %}
+<p><a href="{% url back %}">← {% translate "Back" %}</a></p>
+<h1 style="overflow-wrap:anywhere">{% firstof job.original_filename doc.original_filename "—" %}</h1>
+<div class="card">
+  {% if job %}
+  <dl class="facts">
+    <dt>{% translate "Date" %}</dt><dd>{{ job.created_at|date:"d/m/Y H:i" }}</dd>
+    <dt>{% translate "Where" %}</dt><dd>{{ job.kiosk.site.partner.name }} · {{ job.kiosk.site.name }} · {{ job.kiosk.code }}</dd>
+    <dt>{% translate "Type" %}</dt><dd>{{ job.get_source_display }}</dd>
+    <dt>{% translate "State" %}</dt><dd><span class="pill {% if job.state == 'COMPLETED' %}ok{% elif job.state == 'PARTIAL' %}warn{% elif job.state in 'FAILED REJECTED EXPIRED CANCELLED' %}bad{% endif %}">{{ job.get_state_display }}</span></dd>
+    {% if job.pages %}<dt>{% translate "Pages in the file" %}</dt><dd>{{ job.pages }}</dd>{% endif %}
+    <dt>{% translate "Options" %}</dt><dd>{% if job.options.color %}{% translate "Colour" %}{% else %}{% translate "Black and white" %}{% endif %} · {% if job.options.duplex %}{% translate "Both sides" %}{% else %}{% translate "One side" %}{% endif %} · {% blocktranslate count n=job.options.copies|default:1 %}{{ n }} copy{% plural %}{{ n }} copies{% endblocktranslate %}{% if job.options.page_range %} · {% translate "pages" %} {{ job.options.page_range }}{% endif %}</dd>
+    {% if job.pages_printed %}<dt>{% translate "Faces printed" %}</dt><dd>{{ job.pages_printed }}</dd>{% endif %}
+    {% if job.total_kz %}<dt>{% translate "Price" %}</dt><dd class="num">{{ job.total_kz|kz }}</dd>{% endif %}
+  </dl>
+  {% else %}
+  <p class="muted small">{% blocktranslate count n=doc.pages|default:0 %}{{ n }} page{% plural %}{{ n }} pages{% endblocktranslate %}</p>
+  {% endif %}
+</div>
+{% if pages %}
+<div class="pages">
+  {% for url in pages %}<figure><img src="{{ url }}" alt="{% translate 'Page' %} {{ forloop.counter }}" loading="lazy"><figcaption class="muted small">{{ forloop.counter }}</figcaption></figure>{% endfor %}
+</div>
+{% if job.pages > pages|length or doc.pages > pages|length %}<p class="muted small">{% blocktranslate count n=pages|length %}Showing the first {{ n }} page.{% plural %}Showing the first {{ n }} pages.{% endblocktranslate %}</p>{% endif %}
+{% elif job %}
+<p class="empty">{% blocktranslate %}The page images are no longer available. We keep them for {{ retention_days }} days.{% endblocktranslate %}</p>
+{% else %}
+<p class="empty">{% translate "Preview not available yet." %}</p>
+{% endif %}
+{% endblock %}

@@ -15,7 +15,7 @@ from domain.analysis.types import AnalysisError
 from domain.jobs.state_machine import InvalidTransition, JobState
 from domain.pricing.service import InvalidOptions, PrintOptions
 
-from . import printing, services
+from . import previews, printing, services
 from .models import Document, Job
 
 log = structlog.get_logger(__name__)
@@ -83,8 +83,9 @@ def analyze_job(job_id: str) -> str:
                 pass
             return JobState.REJECTED
         storage.upload_file(pdf, document_key(job), "application/pdf")
+        preview_pages = previews.store_previews(job, pdf, workdir)
 
-    job.analysis = analysis.to_dict()
+    job.analysis = {**analysis.to_dict(), "preview_pages": preview_pages}
     options = PrintOptions.from_dict(job.options)
     try:
         breakdown = services.quote(job, options)
@@ -167,6 +168,23 @@ def purge_job_files() -> int:
     return count
 
 
+@shared_task(
+    queue="default", autoretry_for=(BotoCoreError, ClientError), retry_backoff=True, max_retries=3
+)
+def purge_previews() -> int:
+    """Apaga as imagens das páginas de trabalhos com mais de N dias (o histórico fica, sem imagens)."""
+    limit = timezone.now() - timedelta(days=settings.PREVIEW_RETENTION_DAYS)
+    jobs = Job.objects.filter(created_at__lt=limit, preview_purged_at__isnull=True)
+    count = 0
+    for job in jobs.only("pk")[:500]:
+        previews.delete_previews(job)
+        Job.objects.filter(pk=job.pk).update(preview_purged_at=timezone.now())
+        count += 1
+    if count:
+        log.info("jobs.previews_purged", count=count)
+    return count
+
+
 @shared_task(bind=True, queue="printing", acks_late=True, max_retries=None)
 def print_job(self, job_id: str) -> str:
     """Imprime um trabalho QUEUED (ou retoma um PRINTING). Seguro para repetir."""
@@ -234,11 +252,12 @@ def analyze_document(document_id: str) -> str:
             log.warning("document.rejected", document_id=str(doc.pk), code=exc.code)
             return Document.State.REJECTED
         storage.upload_file(pdf, doc.document_key, "application/pdf")
+        preview_pages = previews.store_previews(doc, pdf, workdir)
     Document.objects.filter(pk=doc.pk).update(
         state=Document.State.READY,
         pages=analysis.page_count,
         color_pages=analysis.color_pages,
-        analysis=analysis.to_dict(),
+        analysis={**analysis.to_dict(), "preview_pages": preview_pages},
     )
     return Document.State.READY
 
@@ -251,6 +270,7 @@ def purge_documents() -> int:
     count = 0
     for doc in Document.objects.filter(expires_at__lt=timezone.now())[:500]:
         storage.delete_prefix(f"documents/{doc.pk}/")
+        previews.delete_previews(doc)
         doc.delete()
         count += 1
     if count:

@@ -11,6 +11,7 @@ from django.views.decorators.http import require_POST
 
 from apps.accounts import otp, web
 from apps.jobs import library
+from apps.jobs.previews import preview_urls
 from apps.jobs.models import Document, Job
 from apps.partners.models import PriceTable
 from apps.payments import services as payments
@@ -218,6 +219,7 @@ def documents(request):
     docs = list(request.user.documents.all())
     for doc in docs:
         doc.estimate_kz = bw_estimate(doc.pages)
+        doc.thumb = (preview_urls(doc) or [None])[0]
     return render(
         request,
         "portal/documents.html",
@@ -244,9 +246,38 @@ def document_delete(request, document_id):
 
 
 @login_required
+def document_view(request, document_id):
+    doc = get_object_or_404(Document, pk=document_id, owner=request.user)
+    return render(
+        request,
+        "portal/preview.html",
+        {"doc": doc, "pages": preview_urls(doc), "back": "portal:documents"},
+    )
+
+
+@login_required
 def history(request):
-    jobs = request.user.print_jobs.select_related("kiosk__site__partner")[:50]
+    jobs = list(request.user.print_jobs.select_related("kiosk__site__partner")[:50])
+    for job in jobs:
+        job.thumb = (preview_urls(job) or [None])[0]
     return render(request, "portal/history.html", {"jobs": jobs, "States": Job.State})
+
+
+@login_required
+def job_view(request, job_id):
+    job = get_object_or_404(
+        Job.objects.select_related("kiosk__site__partner"), pk=job_id, customer=request.user
+    )
+    return render(
+        request,
+        "portal/preview.html",
+        {
+            "job": job,
+            "pages": preview_urls(job),
+            "back": "portal:history",
+            "retention_days": settings.PREVIEW_RETENTION_DAYS,
+        },
+    )
 
 
 # --- ligar ao kiosk (QR do ecrã) ------------------------------------------------

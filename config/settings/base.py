@@ -153,6 +153,9 @@ TONER_LOW_PCT = env.int("TONER_LOW_PCT", default=10)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 
 LIBRARY_RETENTION_DAYS = env.int("LIBRARY_RETENTION_DAYS", default=7)
+# Imagens das páginas para o cliente ver o que imprime/imprimiu (histórico).
+PREVIEW_MAX_PAGES = env.int("PREVIEW_MAX_PAGES", default=30)
+PREVIEW_RETENTION_DAYS = env.int("PREVIEW_RETENTION_DAYS", default=30)
 
 # VPN WireGuard (servidor = hub). Cada kiosk usa 10.77.N.0/24: Pi .1, impressora .2.
 VPN_PREFIX = env("VPN_PREFIX", default="10.77")

@@ -17,8 +17,9 @@
   {% if documents %}<ul class="list">
     {% for d in documents %}
     <li>
-      <div>
-        <div class="title">{{ d.original_filename }}</div>
+      <a class="thumb" href="{% url 'portal:document' d.pk %}" aria-label="{% translate 'See' %} {{ d.original_filename }}">{% if d.thumb %}<img src="{{ d.thumb }}" alt="" loading="lazy">{% else %}<span>📄</span>{% endif %}</a>
+      <div class="grow">
+        <a class="title" href="{% url 'portal:document' d.pk %}">{{ d.original_filename }}</a>
         <div class="muted small">
           {% if d.state == 'READY' %}
             {% blocktranslate count n=d.pages %}{{ n }} page{% plural %}{{ n }} pages{% endblocktranslate %}{% if d.color_pages %} · {% blocktranslate count c=d.color_pages %}{{ c }} in colour{% plural %}{{ c }} in colour{% endblocktranslate %}{% endif %}{% if d.estimate_kz %} · {% blocktranslate with price=d.estimate_kz|kz %}B&amp;W from {{ price }}{% endblocktranslate %}{% endif %}

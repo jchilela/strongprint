@@ -21,6 +21,8 @@ urlpatterns = [
     ),
     path("ficheiros/", views.documents, name="documents"),
     path("ficheiros/<uuid:document_id>/apagar/", views.document_delete, name="document_delete"),
+    path("ficheiros/<uuid:document_id>/", views.document_view, name="document"),
     path("impressoes/", views.history, name="history"),
+    path("impressoes/<uuid:job_id>/", views.job_view, name="job"),
     path("k/<str:code>/", views.kiosk_pair, name="kiosk_pair"),
 ]

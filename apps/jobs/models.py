@@ -77,6 +77,9 @@ class Job(models.Model):
     updated_at = models.DateTimeField(_("updated at"), auto_now=True)
     finished_at = models.DateTimeField(_("finished at"), null=True, blank=True)
     file_purged_at = models.DateTimeField(_("file purged at"), null=True, blank=True)
+    preview_purged_at = models.DateTimeField(
+        _("preview purged at"), null=True, blank=True
+    )
 
     class Meta:
         verbose_name = _("print job")
