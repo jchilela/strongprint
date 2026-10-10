@@ -16,6 +16,12 @@ def error(code: str, detail: str, http_status: int, **extra) -> Response:
 
 
 def exception_handler(exc, context):
+    from apps.jobs.printing import PrinterNotReady
+
+    if isinstance(exc, PrinterNotReady):
+        return error(
+            "printer_not_ready", "The printer cannot print right now", 409, reason=exc.reason
+        )
     if isinstance(exc, InvalidTransition):
         return error(
             "invalid_state",

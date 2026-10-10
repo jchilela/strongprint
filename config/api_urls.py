@@ -1,5 +1,6 @@
 from django.urls import path
 
+from apps.devices import api as devices
 from apps.jobs import api as jobs
 from apps.payments import api as payments
 
@@ -21,4 +22,5 @@ urlpatterns = [
         name="topup-simulate",
     ),
     path("payments/webhook/<str:provider>", payments.payment_webhook, name="payment-webhook"),
+    path("edge/heartbeat", devices.heartbeat, name="edge-heartbeat"),
 ]

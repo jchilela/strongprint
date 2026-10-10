@@ -9,12 +9,13 @@ from django.conf import settings
 from django.utils import timezone
 
 from common import storage
+from common.locks import printer_lock
 from domain.analysis.analyzer import DocumentAnalyzer
 from domain.analysis.types import AnalysisError
 from domain.jobs.state_machine import InvalidTransition, JobState
 from domain.pricing.service import InvalidOptions, PrintOptions
 
-from . import services
+from . import printing, services
 from .models import Job
 
 log = structlog.get_logger(__name__)
@@ -162,3 +163,45 @@ def purge_job_files() -> int:
     if count:
         log.info("jobs.files_purged", count=count)
     return count
+
+
+@shared_task(bind=True, queue="printing", acks_late=True, max_retries=None)
+def print_job(self, job_id: str) -> str:
+    """Imprime um trabalho QUEUED (ou retoma um PRINTING). Seguro para repetir."""
+    structlog.contextvars.bind_contextvars(job_id=str(job_id))
+    job = Job.objects.select_related("kiosk__printer", "printer").get(pk=job_id)
+    if job.state not in (JobState.QUEUED, JobState.PRINTING):
+        return job.state
+    printer = job.printer or getattr(job.kiosk, "printer", None)
+    if printer is None:
+        services.finish(job.pk, JobState.FAILED, actor="task:print", failure_reason="no_printer")
+        return JobState.FAILED
+
+    with printer_lock(printer.pk) as acquired:
+        if not acquired:
+            raise self.retry(countdown=settings.PRINT_RETRY_SECONDS)
+        job.refresh_from_db()
+        try:
+            if job.state == JobState.PRINTING:
+                job = printing.resume(job)
+            elif job.state == JobState.QUEUED:
+                job = printing.start(job)
+        except printing.PrinterNotReady as exc:
+            # Fica na fila; o timeout da fila liberta o valor se a impressora não voltar.
+            log.warning("print.waiting", reason=exc.reason)
+            raise self.retry(countdown=settings.PRINT_RETRY_SECONDS) from exc
+    return job.state
+
+
+@shared_task(queue="default")
+def resume_stuck_printing() -> int:
+    """Trabalhos em PRINTING sem atividade (worker caiu) voltam a ser acompanhados."""
+    limit = timezone.now() - timedelta(seconds=settings.PRINT_JOB_TIMEOUT_SECONDS + 300)
+    ids = list(
+        Job.objects.filter(state=JobState.PRINTING, updated_at__lt=limit).values_list(
+            "pk", flat=True
+        )
+    )
+    for job_id in ids:
+        print_job.delay(str(job_id))
+    return len(ids)

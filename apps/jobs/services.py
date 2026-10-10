@@ -101,18 +101,24 @@ def update_options(job_id, raw_options: dict, *, actor: str) -> Job:
     return job
 
 
-def checkout(job_id, *, actor: str) -> Job:
+def checkout(job_id, *, actor: str, check_printer: bool = True) -> Job:
     """Cativa o valor na carteira e põe o trabalho na fila de impressão.
 
-    Tudo ou nada: se faltar saldo (InsufficientFunds) nada muda.
+    Só avança se a impressora estiver pronta (PrinterNotReady). Tudo ou nada:
+    se faltar saldo (InsufficientFunds) nada muda.
     """
+    from . import printing, tasks
+
+    if check_printer:
+        job = Job.objects.select_related("kiosk__printer").get(pk=job_id)
+        printing.ensure_ready(getattr(job.kiosk, "printer", None))
     with transaction.atomic():
         job = Job.objects.select_for_update().get(pk=job_id)
         validate_transition(job.state, JobState.RESERVED)
         wallet.place_hold(job, actor=actor)
         transition(job.pk, JobState.RESERVED, actor=actor, data={"held_kz": job.total_kz})
         job = transition(job.pk, JobState.QUEUED, actor=actor, expires_at=None)
-    # A tarefa de impressão (Fase D) é despachada aqui após o commit.
+        transaction.on_commit(lambda: tasks.print_job.delay(str(job.pk)))
     return job
 
 

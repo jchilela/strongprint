@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "apps.wallets",
     "apps.jobs",
     "apps.payments",
+    "apps.monitoring",
 ]
 
 MIDDLEWARE = [
@@ -124,6 +125,14 @@ MAX_DOCUMENT_PAGES = env.int("MAX_DOCUMENT_PAGES", default=300)
 # Página é a cores quando pelo menos esta % de píxeis tem cor real.
 ANALYSIS_COLOR_THRESHOLD_PCT = env.float("ANALYSIS_COLOR_THRESHOLD_PCT", default=0.1)
 PRINT_QUEUE_TIMEOUT_MINUTES = env.int("PRINT_QUEUE_TIMEOUT_MINUTES", default=15)
+PRINTER_TIMEOUT_SECONDS = env.int("PRINTER_TIMEOUT_SECONDS", default=10)
+PRINT_POLL_SECONDS = env.float("PRINT_POLL_SECONDS", default=3)
+PRINT_COUNTER_SETTLE_SECONDS = env.float("PRINT_COUNTER_SETTLE_SECONDS", default=8)
+PRINT_JOB_TIMEOUT_SECONDS = env.int("PRINT_JOB_TIMEOUT_SECONDS", default=900)
+PRINT_RETRY_SECONDS = env.int("PRINT_RETRY_SECONDS", default=30)
+# Monitorização
+KIOSK_OFFLINE_AFTER_SECONDS = env.int("KIOSK_OFFLINE_AFTER_SECONDS", default=90)
+TONER_LOW_PCT = env.int("TONER_LOW_PCT", default=10)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 
 # Pagamentos (carregamento da carteira): mock | strongpay

@@ -126,6 +126,7 @@ class KioskAdmin(admin.ModelAdmin):
         "status",
         "printer_status",
         "last_heartbeat",
+        "open_alerts",
         "is_active",
     )
     list_filter = ("status", "is_active", "site__partner", "site")
@@ -137,6 +138,10 @@ class KioskAdmin(admin.ModelAdmin):
     def printer_status(self, obj):
         printer = getattr(obj, "printer", None)
         return printer.get_status_display() if printer else "—"
+
+    @admin.display(description=_("open alerts"))
+    def open_alerts(self, obj):
+        return obj.alerts.filter(resolved_at__isnull=True).count() or "—"
 
     @admin.display(description=_("last heartbeat"))
     def last_heartbeat(self, obj):
