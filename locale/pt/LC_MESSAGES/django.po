@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-10 20:22+0100\n"
+"POT-Creation-Date: 2026-10-10 20:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -128,6 +128,303 @@ msgstr "Modo de desenvolvimento — o seu código é %(code)s"
 #: apps/accounts/web.py:51
 msgid "Wrong code. Try again."
 msgstr "Código errado. Tente de novo."
+
+#: apps/backoffice/apps.py:8 apps/backoffice/views.py:16
+msgid "Owner dashboard"
+msgstr "Painel do dono"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:38
+msgid "Updated"
+msgstr "Atualizado"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:38
+msgid "refreshes every minute"
+msgstr "atualiza a cada minuto"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:38
+msgid "All admin sections"
+msgstr "Todas as secções do admin"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:41
+msgid "Sales (money spent on prints and copies)"
+msgstr "Vendas (dinheiro gasto em impressões e cópias)"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:43
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:59
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:103
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:127
+#: apps/partner_portal/templates/partner/_period.html:4
+msgid "Today"
+msgstr "Hoje"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:43
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:44
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:45
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:46
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:47
+msgid "jobs"
+msgstr "trabalhos"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:43
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:44
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:45
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:47
+#: apps/jobs/models.py:58 apps/jobs/models.py:137
+msgid "pages"
+msgstr "páginas"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:44
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:60
+msgid "This week"
+msgstr "Esta semana"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:45
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:61
+#: apps/partner_portal/templates/partner/_period.html:7
+msgid "This month"
+msgstr "Este mês"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:46
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:62
+msgid "This year"
+msgstr "Este ano"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:46
+msgid "copies"
+msgstr "cópias"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:47
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:63
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:127
+msgid "Since the start"
+msgstr "Desde o início"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:52
+msgid "Sales per day — last 30 days"
+msgstr "Vendas por dia — últimos 30 dias"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:53
+msgid "Sales per day"
+msgstr "Vendas por dia"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:57
+msgid "Money received (wallet top-ups)"
+msgstr "Dinheiro recebido (carregamentos)"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:69
+msgid "Customer wallets"
+msgstr "Carteiras dos clientes"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:71
+msgid "Total in wallets"
+msgstr "Total nas carteiras"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:71
+msgid "paid by customers, not yet spent"
+msgstr "pago pelos clientes, ainda por gastar"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:72
+msgid "Reserved now"
+msgstr "Cativo agora"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:72
+msgid "jobs being printed"
+msgstr "trabalhos a imprimir"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:73
+msgid "Customers"
+msgstr "Clientes"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:73
+msgid "with balance"
+msgstr "com saldo"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:73
+msgid "this month"
+msgstr "este mês"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:74
+msgid "References awaiting payment"
+msgstr "Referências por pagar"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:74
+msgid "see"
+msgstr "ver"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:75
+msgid "Already earned"
+msgstr "Já ganho"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:75
+msgid "spent on prints and copies"
+msgstr "gasto em impressões e cópias"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:75
+msgid "received"
+msgstr "recebido"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:80
+msgid "Find a customer to add credit"
+msgstr "Procurar cliente para adicionar crédito"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:81
+msgid "Phone number or name"
+msgstr "Telefone ou nome"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:81
+msgid "Search"
+msgstr "Procurar"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:84
+#: apps/partner_portal/templates/partner/_jobs_table.html:5
+msgid "Customer"
+msgstr "Cliente"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:84
+#: apps/wallets/templates/admin/wallets/adjust.html:12
+msgid "Balance"
+msgstr "Saldo"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:86
+msgid "Add credit"
+msgstr "Adicionar crédito"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:91
+msgid "Largest wallets"
+msgstr "Maiores carteiras"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:92
+msgid "adjust"
+msgstr "ajustar"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:92
+msgid "No wallets with balance yet."
+msgstr "Ainda não há carteiras com saldo."
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:97
+msgid "Kiosks right now"
+msgstr "Kiosks neste momento"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:101
+#: apps/partner_portal/templates/partner/_jobs_table.html:5
+#: apps/partner_portal/templates/partner/dashboard.html:18
+#: apps/partner_portal/templates/partner/jobs.html:6
+#: apps/portal/templates/portal/kiosk_pair.html:19
+msgid "Kiosk"
+msgstr "Kiosk"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:101
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:127
+#: apps/partner_portal/templates/partner/base.html:31
+msgid "Partner"
+msgstr "Parceiro"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:101
+#: apps/partner_portal/templates/partner/_jobs_table.html:5
+#: apps/partner_portal/templates/partner/dashboard.html:18
+#: apps/partner_portal/templates/partner/jobs.html:8
+#: apps/partner_portal/templates/partner/kiosk.html:13
+msgid "Status"
+msgstr "Estado"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:101
+msgid "In use"
+msgstr "Em uso"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:102
+#: apps/partner_portal/templates/partner/dashboard.html:18
+#: apps/partner_portal/templates/partner/kiosk.html:19
+msgid "Printer"
+msgstr "Impressora"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:102
+msgid "Toner"
+msgstr "Toner"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:102
+#: apps/partner_portal/templates/partner/alerts.html:2
+#: apps/partner_portal/templates/partner/alerts.html:4
+#: apps/partner_portal/templates/partner/base.html:27
+msgid "Alerts"
+msgstr "Alertas"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:102
+#: apps/partner_portal/templates/partner/kiosk.html:14
+msgid "Last signal"
+msgstr "Último sinal"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:103
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:127
+msgid "Month"
+msgstr "Mês"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:108
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:129
+msgid "inactive"
+msgstr "inativo"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:111
+msgid "printing"
+msgstr "a imprimir"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:111
+msgid "customer"
+msgstr "cliente"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:112
+msgid "counter"
+msgstr "contador"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:118
+msgid "No kiosks yet."
+msgstr "Ainda não há kiosks."
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:124
+#: apps/partner_portal/templates/partner/base.html:8
+#: apps/partner_portal/templates/partner/base.html:14
+msgid "Partners"
+msgstr "Parceiros"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:127
+#: apps/partner_portal/templates/partner/dashboard.html:13
+msgid "Kiosks"
+msgstr "Kiosks"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:127
+#: apps/partners/models.py:130
+msgid "Online"
+msgstr "Online"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:127
+msgid "Year"
+msgstr "Ano"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:131
+msgid "No partners yet."
+msgstr "Ainda não há parceiros."
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:138
+#: apps/partner_portal/templates/partner/kiosk.html:30
+msgid "Open alerts"
+msgstr "Alertas abertos"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:141
+#: apps/partner_portal/templates/partner/alerts.html:8
+msgid "Everything is working. No open alerts."
+msgstr "Está tudo a funcionar. Não há alertas abertos."
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:143
+msgid "Latest top-ups"
+msgstr "Últimos carregamentos"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:147
+msgid "Latest print and copy jobs"
+msgstr "Últimos trabalhos de impressão e cópia"
+
+#: apps/backoffice/views.py:31
+#, python-format
+msgid "No customer found for “%(q)s”."
+msgstr "Nenhum cliente encontrado para «%(q)s»."
 
 #: apps/devices/admin.py:10
 #, python-format
@@ -487,10 +784,6 @@ msgstr "tamanho do ficheiro"
 msgid "MIME type"
 msgstr "tipo MIME"
 
-#: apps/jobs/models.py:58 apps/jobs/models.py:137
-msgid "pages"
-msgstr "páginas"
-
 #: apps/jobs/models.py:59 apps/jobs/models.py:139
 msgid "analysis"
 msgstr "análise"
@@ -710,24 +1003,6 @@ msgid "Date"
 msgstr "Data"
 
 #: apps/partner_portal/templates/partner/_jobs_table.html:5
-#: apps/partner_portal/templates/partner/dashboard.html:18
-#: apps/partner_portal/templates/partner/jobs.html:6
-#: apps/portal/templates/portal/kiosk_pair.html:19
-msgid "Kiosk"
-msgstr "Kiosk"
-
-#: apps/partner_portal/templates/partner/_jobs_table.html:5
-msgid "Customer"
-msgstr "Cliente"
-
-#: apps/partner_portal/templates/partner/_jobs_table.html:5
-#: apps/partner_portal/templates/partner/dashboard.html:18
-#: apps/partner_portal/templates/partner/jobs.html:8
-#: apps/partner_portal/templates/partner/kiosk.html:13
-msgid "Status"
-msgstr "Estado"
-
-#: apps/partner_portal/templates/partner/_jobs_table.html:5
 #: apps/partner_portal/templates/partner/dashboard.html:19
 msgid "Pages"
 msgstr "Páginas"
@@ -745,10 +1020,6 @@ msgstr "Ainda não há trabalhos de impressão."
 msgid "Period"
 msgstr "Período"
 
-#: apps/partner_portal/templates/partner/_period.html:4
-msgid "Today"
-msgstr "Hoje"
-
 #: apps/partner_portal/templates/partner/_period.html:5
 msgid "7 days"
 msgstr "7 dias"
@@ -757,23 +1028,9 @@ msgstr "7 dias"
 msgid "30 days"
 msgstr "30 dias"
 
-#: apps/partner_portal/templates/partner/_period.html:7
-msgid "This month"
-msgstr "Este mês"
-
-#: apps/partner_portal/templates/partner/alerts.html:2
-#: apps/partner_portal/templates/partner/alerts.html:4
-#: apps/partner_portal/templates/partner/base.html:27
-msgid "Alerts"
-msgstr "Alertas"
-
 #: apps/partner_portal/templates/partner/alerts.html:7
 msgid "since"
 msgstr "desde"
-
-#: apps/partner_portal/templates/partner/alerts.html:8
-msgid "Everything is working. No open alerts."
-msgstr "Está tudo a funcionar. Não há alertas abertos."
 
 #: apps/partner_portal/templates/partner/alerts.html:10
 msgid "Recently resolved"
@@ -782,11 +1039,6 @@ msgstr "Resolvidos recentemente"
 #: apps/partner_portal/templates/partner/alerts.html:13
 msgid "Nothing yet."
 msgstr "Ainda nada."
-
-#: apps/partner_portal/templates/partner/base.html:8
-#: apps/partner_portal/templates/partner/base.html:14
-msgid "Partners"
-msgstr "Parceiros"
 
 #: apps/partner_portal/templates/partner/base.html:23
 #: apps/portal/templates/portal/base.html:27
@@ -798,10 +1050,6 @@ msgstr "Principal"
 #: apps/partner_portal/templates/partner/kiosk.html:4
 msgid "Overview"
 msgstr "Visão geral"
-
-#: apps/partner_portal/templates/partner/base.html:31
-msgid "Partner"
-msgstr "Parceiro"
 
 #: apps/partner_portal/templates/partner/base.html:37
 #: apps/portal/templates/portal/home.html:30
@@ -830,18 +1078,9 @@ msgid_plural "%(n)s open alerts"
 msgstr[0] "%(n)s alerta aberto"
 msgstr[1] "%(n)s alertas abertos"
 
-#: apps/partner_portal/templates/partner/dashboard.html:13
-msgid "Kiosks"
-msgstr "Kiosks"
-
 #: apps/partner_portal/templates/partner/dashboard.html:18
 msgid "Site"
 msgstr "Local"
-
-#: apps/partner_portal/templates/partner/dashboard.html:18
-#: apps/partner_portal/templates/partner/kiosk.html:19
-msgid "Printer"
-msgstr "Impressora"
 
 #: apps/partner_portal/templates/partner/dashboard.html:19
 msgid "Jobs"
@@ -863,17 +1102,9 @@ msgstr "Todos os estados"
 msgid "Showing the latest 100. Customers are shown partially for privacy."
 msgstr "Mostram-se os últimos 100. Os clientes aparecem só em parte, por privacidade."
 
-#: apps/partner_portal/templates/partner/kiosk.html:14
-msgid "Last signal"
-msgstr "Último sinal"
-
 #: apps/partner_portal/templates/partner/kiosk.html:29
 msgid "No printer assigned."
 msgstr "Sem impressora associada."
-
-#: apps/partner_portal/templates/partner/kiosk.html:30
-msgid "Open alerts"
-msgstr "Alertas abertos"
 
 #: apps/partner_portal/templates/partner/kiosk.html:32
 msgid "No open alerts."
@@ -1093,10 +1324,6 @@ msgstr "longitude"
 #: apps/partners/models.py:104
 msgid "site"
 msgstr "local"
-
-#: apps/partners/models.py:130
-msgid "Online"
-msgstr "Online"
 
 #: apps/partners/models.py:133
 msgid "Maintenance"
@@ -1737,10 +1964,6 @@ msgstr "valor cativo"
 msgid "wallet holds"
 msgstr "valores cativos"
 
-#: apps/wallets/templates/admin/wallets/adjust.html:12
-msgid "Balance"
-msgstr "Saldo"
-
 #: apps/wallets/templates/admin/wallets/adjust.html:13
 msgid "Held"
 msgstr "Cativo"
@@ -1753,11 +1976,11 @@ msgstr "Disponível"
 msgid "Apply adjustment"
 msgstr "Aplicar ajuste"
 
-#: config/settings/base.py:94
+#: config/settings/base.py:95
 msgid "Portuguese"
 msgstr "Português"
 
-#: config/settings/base.py:94
+#: config/settings/base.py:95
 msgid "English"
 msgstr "Inglês"
 

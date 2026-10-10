@@ -11,6 +11,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import signing
+from django.core.cache import cache
 from django.utils import timezone
 from rest_framework import authentication, exceptions
 
@@ -24,7 +25,26 @@ class KioskSession:
     user_id: int
 
 
+ACTIVE_SECONDS = 120
+
+
+def mark_kiosk_active(kiosk_id: int, user_id: int) -> None:
+    """Regista que o kiosk está a ser usado agora (para o painel do dono)."""
+    cache.set(
+        f"kiosk_active:{kiosk_id}",
+        {"user_id": user_id, "at": timezone.now().isoformat()},
+        ACTIVE_SECONDS,
+    )
+
+
+def kiosk_activity(kiosk_ids) -> dict[int, dict]:
+    keys = {f"kiosk_active:{k}": k for k in kiosk_ids}
+    found = cache.get_many(list(keys))
+    return {keys[key]: value for key, value in found.items()}
+
+
 def issue_kiosk_session(user, kiosk) -> dict:
+    mark_kiosk_active(kiosk.pk, user.pk)
     token = signing.dumps({"k": kiosk.pk, "u": user.pk}, salt=SALT, compress=True)
     expires = timezone.now() + timedelta(minutes=settings.KIOSK_SESSION_MINUTES)
     return {"token": token, "token_type": KEYWORD, "expires_at": expires.isoformat()}
@@ -51,6 +71,7 @@ class KioskSessionAuthentication(authentication.BaseAuthentication):
         user = get_user_model().objects.filter(pk=session.user_id, is_active=True).first()
         if user is None:
             raise exceptions.AuthenticationFailed("Unknown user")
+        mark_kiosk_active(session.kiosk_id, user.pk)
         return user, session
 
     def authenticate_header(self, request):

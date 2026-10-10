@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "apps.portal",
     "apps.partner_portal",
     "apps.screen",
+    "apps.backoffice",
 ]
 
 MIDDLEWARE = [

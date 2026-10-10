@@ -12,7 +12,12 @@ def healthz(_request):
     return JsonResponse({"status": "ok"})
 
 
+from apps.backoffice import views as backoffice  # noqa: E402
+
 urlpatterns = [
+    # Painel do dono como página inicial do superadmin; a lista de modelos fica em /admin/modelos/.
+    path("admin/", admin.site.admin_view(backoffice.dashboard), name="strongprint-dashboard"),
+    path("admin/modelos/", admin.site.admin_view(backoffice.models_index), name="admin-models"),
     path("admin/", admin.site.urls),
     path("healthz", healthz),
     path("api/v1/", include("config.api_urls")),

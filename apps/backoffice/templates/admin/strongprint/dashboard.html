@@ -1,0 +1,152 @@
+{% extends "admin/base_site.html" %}
+{% load i18n portal %}
+{% block extrahead %}{{ block.super }}
+<meta http-equiv="refresh" content="60">
+<style>
+  .sp { --gap: 14px; }
+  .sp h2 { margin: 26px 0 10px; font-size: 17px; }
+  .sp-grid { display: grid; gap: var(--gap); }
+  .sp-kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .sp-2 { grid-template-columns: 1.4fr 1fr; }
+  @media (max-width: 1100px) { .sp-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sp-2 { grid-template-columns: 1fr; } }
+  .sp-card { background: var(--body-bg); border: 1px solid var(--hairline-color); border-radius: 10px; padding: 14px 16px; }
+  .sp-card.dark { background: var(--darkened-bg); }
+  .sp-label { color: var(--body-quiet-color); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  .sp-value { font-size: 26px; font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .sp-sub { color: var(--body-quiet-color); font-size: 12px; margin-top: 4px; }
+  .sp-hero { background: var(--primary); color: var(--header-link-color, #fff); border: 0; }
+  .sp-hero .sp-label, .sp-hero .sp-sub { color: inherit; opacity: .85; }
+  .sp table { width: 100%; }
+  .sp td, .sp th { vertical-align: middle; padding: 7px 8px; }
+  .sp .r { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .sp-pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; background: var(--darkened-bg); }
+  .sp-ok { color: #1e7d3d; } .sp-warn { color: #a3640b; } .sp-bad { color: #b42318; } .sp-muted { color: var(--body-quiet-color); }
+  @media (prefers-color-scheme: dark) { .sp-ok { color: #5ad08a; } .sp-warn { color: #f0b24a; } .sp-bad { color: #ff8a7a; } }
+  .sp-toner { display: flex; gap: 3px; align-items: flex-end; height: 22px; }
+  .sp-toner span { width: 7px; border-radius: 2px; background: var(--hairline-color); position: relative; height: 100%; overflow: hidden; display: inline-block; }
+  .sp-toner span i { position: absolute; bottom: 0; left: 0; right: 0; }
+  .sp-bars { display: flex; align-items: flex-end; gap: 3px; height: 120px; margin-top: 10px; }
+  .sp-bars div { flex: 1; background: var(--primary); border-radius: 3px 3px 0 0; min-height: 2px; opacity: .85; }
+  .sp-search { display: flex; gap: 8px; margin: 8px 0 10px; }
+  .sp-search input[type=text] { flex: 1; padding: 8px; font-size: 14px; }
+  .sp-live { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background: #22a55a; box-shadow: 0 0 0 3px rgba(34,165,90,.25); margin-right: 4px; }
+</style>
+{% endblock %}
+{% block breadcrumbs %}{% endblock %}
+{% block content %}
+<div class="sp">
+  <p class="sp-muted" style="margin-top:0">{% translate "Updated" %} {% now "d/m/Y H:i" %} · {% translate "refreshes every minute" %} · <a href="{% url 'admin-models' %}">{% translate "All admin sections" %} →</a></p>
+
+  {# ------------------------------------------------ vendas #}
+  <h2>{% translate "Sales (money spent on prints and copies)" %}</h2>
+  <div class="sp-grid sp-kpis">
+    <div class="sp-card sp-hero"><div class="sp-label">{% translate "Today" %}</div><div class="sp-value">{{ sales.today.revenue_kz|kz }}</div><div class="sp-sub">{{ sales.today.jobs }} {% translate "jobs" %} · {{ sales.today.faces }} {% translate "pages" %}</div></div>
+    <div class="sp-card"><div class="sp-label">{% translate "This week" %}</div><div class="sp-value">{{ sales.week.revenue_kz|kz }}</div><div class="sp-sub">{{ sales.week.jobs }} {% translate "jobs" %} · {{ sales.week.faces }} {% translate "pages" %}</div></div>
+    <div class="sp-card"><div class="sp-label">{% translate "This month" %}</div><div class="sp-value">{{ sales.month.revenue_kz|kz }}</div><div class="sp-sub">{{ sales.month.jobs }} {% translate "jobs" %} · {{ sales.month.faces }} {% translate "pages" %}</div></div>
+    <div class="sp-card"><div class="sp-label">{% translate "This year" %}</div><div class="sp-value">{{ sales.year.revenue_kz|kz }}</div><div class="sp-sub">{{ sales.year.jobs }} {% translate "jobs" %} · {{ sales.year.copies }} {% translate "copies" %}</div></div>
+    <div class="sp-card dark"><div class="sp-label">{% translate "Since the start" %}</div><div class="sp-value">{{ sales.all.revenue_kz|kz }}</div><div class="sp-sub">{{ sales.all.jobs }} {% translate "jobs" %} · {{ sales.all.faces }} {% translate "pages" %}</div></div>
+  </div>
+
+  <div class="sp-grid sp-2" style="margin-top:var(--gap)">
+    <div class="sp-card">
+      <div class="sp-label">{% translate "Sales per day — last 30 days" %}</div>
+      <div class="sp-bars" role="img" aria-label="{% translate 'Sales per day' %}">{% for d in daily %}<div style="height:{{ d.pct }}%" title="{{ d.day|date:'d/m' }}: {{ d.kz|kz }}"></div>{% endfor %}</div>
+      <div class="sp-sub" style="display:flex;justify-content:space-between"><span>{{ daily.0.day|date:"d/m" }}</span><span>{% with daily|last as l %}{{ l.day|date:"d/m" }}{% endwith %}</span></div>
+    </div>
+    <div class="sp-card">
+      <div class="sp-label">{% translate "Money received (wallet top-ups)" %}</div>
+      <table>
+        <tr><td>{% translate "Today" %}</td><td class="r">{{ sales.today.topups_kz|kz }}</td><td class="r sp-muted">{{ sales.today.topups }}</td></tr>
+        <tr><td>{% translate "This week" %}</td><td class="r">{{ sales.week.topups_kz|kz }}</td><td class="r sp-muted">{{ sales.week.topups }}</td></tr>
+        <tr><td>{% translate "This month" %}</td><td class="r">{{ sales.month.topups_kz|kz }}</td><td class="r sp-muted">{{ sales.month.topups }}</td></tr>
+        <tr><td>{% translate "This year" %}</td><td class="r">{{ sales.year.topups_kz|kz }}</td><td class="r sp-muted">{{ sales.year.topups }}</td></tr>
+        <tr><td><strong>{% translate "Since the start" %}</strong></td><td class="r"><strong>{{ sales.all.topups_kz|kz }}</strong></td><td class="r sp-muted">{{ sales.all.topups }}</td></tr>
+      </table>
+    </div>
+  </div>
+
+  {# ------------------------------------------------ carteiras #}
+  <h2>{% translate "Customer wallets" %}</h2>
+  <div class="sp-grid sp-kpis">
+    <div class="sp-card"><div class="sp-label">{% translate "Total in wallets" %}</div><div class="sp-value">{{ wallets.balance_kz|kz }}</div><div class="sp-sub">{% translate "paid by customers, not yet spent" %}</div></div>
+    <div class="sp-card"><div class="sp-label">{% translate "Reserved now" %}</div><div class="sp-value">{{ wallets.held_kz|kz }}</div><div class="sp-sub">{% translate "jobs being printed" %}</div></div>
+    <div class="sp-card"><div class="sp-label">{% translate "Customers" %}</div><div class="sp-value">{{ wallets.customers }}</div><div class="sp-sub">{{ wallets.with_balance }} {% translate "with balance" %} · +{{ wallets.new_customers_month }} {% translate "this month" %}</div></div>
+    <div class="sp-card"><div class="sp-label">{% translate "References awaiting payment" %}</div><div class="sp-value">{{ wallets.pending_topups }}</div><div class="sp-sub"><a href="{% url 'admin:payments_topup_changelist' %}?status__exact=pending">{% translate "see" %} →</a></div></div>
+    <div class="sp-card sp-hero"><div class="sp-label">{% translate "Already earned" %}</div><div class="sp-value">{{ sales.all.revenue_kz|kz }}</div><div class="sp-sub">{% translate "spent on prints and copies" %} · {% translate "received" %} {{ sales.all.topups_kz|kz }}</div></div>
+  </div>
+
+  <div class="sp-grid sp-2" style="margin-top:var(--gap)">
+    <div class="sp-card">
+      <div class="sp-label">{% translate "Find a customer to add credit" %}</div>
+      <form class="sp-search" method="get"><input type="text" name="q" value="{{ query }}" placeholder="{% translate 'Phone number or name' %}" autocomplete="off"><input type="submit" value="{% translate 'Search' %}"></form>
+      {% if customers %}
+      <table>
+        <thead><tr><th>{% translate "Customer" %}</th><th class="r">{% translate "Balance" %}</th><th></th></tr></thead>
+        {% for u in customers %}<tr><td>{{ u.full_name|default:"—" }}<div class="sp-sub">{{ u.phone }}</div></td><td class="r">{% if u.wallet %}{{ u.wallet.balance_kz|kz }}{% else %}—{% endif %}</td>
+          <td class="r">{% if u.wallet %}<a class="button" href="{% url 'admin:wallets_wallet_adjust' u.wallet.pk %}">{% translate "Add credit" %}</a>{% endif %}</td></tr>{% endfor %}
+      </table>
+      {% endif %}
+    </div>
+    <div class="sp-card">
+      <div class="sp-label">{% translate "Largest wallets" %}</div>
+      <table>{% for w in top_wallets %}<tr><td>{{ w.user.full_name|default:w.user.phone }}</td><td class="r">{{ w.balance_kz|kz }}</td><td class="r"><a href="{% url 'admin:wallets_wallet_adjust' w.pk %}">{% translate "adjust" %}</a></td></tr>{% empty %}<tr><td class="sp-muted">{% translate "No wallets with balance yet." %}</td></tr>{% endfor %}</table>
+    </div>
+  </div>
+
+  {# ------------------------------------------------ kiosks #}
+  <h2>{% translate "Kiosks right now" %}</h2>
+  <div class="sp-card" style="padding:0;overflow-x:auto">
+    <table>
+      <thead><tr>
+        <th>{% translate "Kiosk" %}</th><th>{% translate "Partner" %}</th><th>{% translate "Status" %}</th><th>{% translate "In use" %}</th>
+        <th>{% translate "Printer" %}</th><th>{% translate "Toner" %}</th><th>{% translate "Alerts" %}</th><th>{% translate "Last signal" %}</th>
+        <th class="r">{% translate "Today" %}</th><th class="r">{% translate "Month" %}</th>
+      </tr></thead>
+      <tbody>
+      {% for r in kiosks %}
+        <tr>
+          <td><a href="{% url 'admin:partners_kiosk_change' r.kiosk.pk %}"><strong>{{ r.kiosk.code }}</strong></a>{% if not r.kiosk.is_active %} <span class="sp-pill sp-muted">{% translate "inactive" %}</span>{% endif %}<div class="sp-sub">{{ r.kiosk.name }}</div></td>
+          <td>{{ r.partner.name }}</td>
+          <td><span class="sp-pill {% if r.kiosk.status == 'ONLINE' %}sp-ok{% elif r.kiosk.status == 'MAINTENANCE' %}sp-warn{% else %}sp-bad{% endif %}">{{ r.kiosk.get_status_display }}</span></td>
+          <td>{% if r.printing %}<span class="sp-live"></span>{% translate "printing" %}{% elif r.in_use %}<span class="sp-live"></span>{% translate "customer" %}{% else %}<span class="sp-muted">—</span>{% endif %}</td>
+          <td>{% if r.printer %}<span class="{% if r.printer.status == 'READY' or r.printer.status == 'BUSY' %}sp-ok{% elif r.printer.status == 'WARNING' %}sp-warn{% else %}sp-bad{% endif %}">{{ r.printer.get_status_display }}</span>{% if r.reasons %}<div class="sp-sub">{{ r.reasons|join:", " }}</div>{% endif %}{% if r.printer.last_page_counter is not None %}<div class="sp-sub">{% translate "counter" %} {{ r.printer.last_page_counter }}</div>{% endif %}{% else %}—{% endif %}</td>
+          <td>{% if r.toner %}<div class="sp-toner" title="{% for c, v in r.toner %}{{ c }}: {{ v }}% {% endfor %}">{% for c, v in r.toner %}<span><i style="height:{% if v >= 0 %}{{ v }}{% else %}0{% endif %}%;background:{% if 'cyan' in c %}#00a3e0{% elif 'magenta' in c %}#d6007e{% elif 'yellow' in c %}#f5c400{% else %}#333{% endif %}"></i></span>{% endfor %}</div>{% if r.toner_min is not None and r.toner_min < 15 %}<div class="sp-sub sp-bad">{{ r.toner_min }}%</div>{% endif %}{% else %}<span class="sp-muted">—</span>{% endif %}</td>
+          <td>{% if r.open_alerts %}<a class="sp-bad" href="{% url 'admin:monitoring_alert_changelist' %}?open=1&kiosk__id__exact={{ r.kiosk.pk }}">{{ r.open_alerts }} ⚠</a>{% else %}<span class="sp-muted">—</span>{% endif %}</td>
+          <td class="sp-sub">{% if r.device.last_heartbeat %}{{ r.device.last_heartbeat|timesince }}{% else %}—{% endif %}</td>
+          <td class="r">{{ r.today|kz }}</td><td class="r">{{ r.month|kz }}</td>
+        </tr>
+      {% empty %}<tr><td colspan="10" class="sp-muted">{% translate "No kiosks yet." %}</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {# ------------------------------------------------ parceiros #}
+  <h2>{% translate "Partners" %}</h2>
+  <div class="sp-card" style="padding:0;overflow-x:auto">
+    <table>
+      <thead><tr><th>{% translate "Partner" %}</th><th class="r">{% translate "Kiosks" %}</th><th class="r">{% translate "Online" %}</th><th class="r">{% translate "Today" %}</th><th class="r">{% translate "Month" %}</th><th class="r">{% translate "Year" %}</th><th class="r">{% translate "Since the start" %}</th></tr></thead>
+      <tbody>{% for p in partners %}<tr>
+        <td><a href="{% url 'admin:partners_partner_change' p.partner.pk %}">{{ p.partner.name }}</a>{% if not p.partner.is_active %} <span class="sp-pill sp-muted">{% translate "inactive" %}</span>{% endif %}</td>
+        <td class="r">{{ p.kiosks }}</td><td class="r">{{ p.online }}</td><td class="r">{{ p.today|kz }}</td><td class="r">{{ p.month|kz }}</td><td class="r">{{ p.year|kz }}</td><td class="r"><strong>{{ p.all|kz }}</strong></td>
+      </tr>{% empty %}<tr><td class="sp-muted">{% translate "No partners yet." %}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+
+  {# ------------------------------------------------ alertas e atividade #}
+  <div class="sp-grid sp-2">
+    <div>
+      <h2>{% translate "Open alerts" %}</h2>
+      <div class="sp-card">
+        {% if alerts %}<table>{% for a in alerts %}<tr><td><span class="sp-pill {% if a.severity == 'critical' %}sp-bad{% else %}sp-warn{% endif %}">{{ a.get_severity_display }}</span></td><td><strong>{{ a.kiosk.code }}</strong> · {{ a.get_kind_display }}<div class="sp-sub">{{ a.message }} · {{ a.opened_at|timesince }}</div></td></tr>{% endfor %}</table>
+        {% else %}<p class="sp-ok" style="margin:0">✓ {% translate "Everything is working. No open alerts." %}</p>{% endif %}
+      </div>
+      <h2>{% translate "Latest top-ups" %}</h2>
+      <div class="sp-card"><table>{% for t in recent_topups %}<tr><td>{{ t.created_at|date:"d/m H:i" }}</td><td>{{ t.wallet.user.full_name|default:t.wallet.user.phone }}</td><td class="r">{{ t.amount_kz|kz }}</td><td><span class="sp-pill {% if t.status == 'paid' %}sp-ok{% elif t.status == 'pending' %}sp-warn{% else %}sp-bad{% endif %}">{{ t.get_status_display }}</span></td></tr>{% empty %}<tr><td class="sp-muted">—</td></tr>{% endfor %}</table></div>
+    </div>
+    <div>
+      <h2>{% translate "Latest print and copy jobs" %}</h2>
+      <div class="sp-card"><table>{% for j in recent_jobs %}<tr><td>{{ j.created_at|date:"d/m H:i" }}</td><td><a href="{% url 'admin:jobs_job_change' j.pk %}">{{ j.kiosk.code }}</a><div class="sp-sub">{{ j.customer.full_name|default:j.customer.phone }} · {{ j.get_source_display }}</div></td><td><span class="sp-pill {% if j.state == 'COMPLETED' %}sp-ok{% elif j.state == 'PARTIAL' or j.state == 'PRINTING' or j.state == 'QUEUED' %}sp-warn{% elif j.state in 'FAILED REJECTED EXPIRED CANCELLED' %}sp-bad{% endif %}">{{ j.get_state_display }}</span></td><td class="r">{% if j.total_kz %}{{ j.total_kz|kz }}{% endif %}</td></tr>{% empty %}<tr><td class="sp-muted">—</td></tr>{% endfor %}</table></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
