@@ -12,3 +12,4 @@ media/
 .dev-credentials
 celerybeat-schedule*
 .claude/settings.local.json
+local-data.json
