@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=StrongPrint Kiosk
+Exec=/usr/local/bin/strongprint-kiosk
+X-GNOME-Autostart-enabled=true

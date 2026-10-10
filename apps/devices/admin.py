@@ -30,6 +30,9 @@ class EdgeDeviceAdmin(admin.ModelAdmin):
     readonly_fields = (
         "name",
         "kiosk",
+        "vpn_slot",
+        "wg_public_key",
+        "provisioned_at",
         "token_prefix",
         "last_heartbeat",
         "version",
@@ -40,7 +43,12 @@ class EdgeDeviceAdmin(admin.ModelAdmin):
         "printer",
         "name",
         "kiosk",
+        "lan_ip",
+        "ssh_user",
         "vpn_ip",
+        "vpn_slot",
+        "wg_public_key",
+        "provisioned_at",
         "pending_command",
         "is_active",
         "token_prefix",
@@ -113,7 +121,10 @@ class PrinterAdmin(admin.ModelAdmin):
     inlines = [EdgeDeviceOfPrinterInline]
     fieldsets = (
         (None, {"fields": ("kiosk", "name", "model", "serial_number")}),
-        (_("Network"), {"fields": ("vpn_ip", "ipp_uri", "snmp_community", "gateway")}),
+        (
+            _("Network"),
+            {"fields": ("vpn_ip", "lan_ip", "ipp_uri", "snmp_community", "gateway")},
+        ),
         (
             _("Capabilities"),
             {

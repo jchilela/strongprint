@@ -1,0 +1,13 @@
+[Unit]
+Description=StrongPrint: agente do kiosk (heartbeat e pen USB)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/strongprint-agent/agent.py
+Restart=always
+RestartSec=5
+NoNewPrivileges=no
+
+[Install]
+WantedBy=multi-user.target

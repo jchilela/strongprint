@@ -153,6 +153,12 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 
 LIBRARY_RETENTION_DAYS = env.int("LIBRARY_RETENTION_DAYS", default=7)
 
+# VPN WireGuard (servidor = hub). Cada kiosk usa 10.77.N.0/24: Pi .1, impressora .2.
+VPN_PREFIX = env("VPN_PREFIX", default="10.77")
+VPN_SERVER_IP = env("VPN_SERVER_IP", default="10.77.0.1")
+VPN_ENDPOINT = env("VPN_ENDPOINT", default="strongprint.it.ao:51820")
+VPN_SERVER_PUBLIC_KEY = env("VPN_SERVER_PUBLIC_KEY", default="")
+
 # Ecrã do kiosk: agente local do Pi (pens USB) e tempo de inatividade da sessão.
 KIOSK_AGENT_URL = env("KIOSK_AGENT_URL", default="http://127.0.0.1:8800")
 KIOSK_IDLE_SECONDS = env.int("KIOSK_IDLE_SECONDS", default=90)

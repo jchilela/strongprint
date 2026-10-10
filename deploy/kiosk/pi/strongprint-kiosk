@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Abre o ecrã StrongPrint em ecrã inteiro e volta a abri-lo se fechar.
+source /etc/strongprint/screen.env
+BROWSER=$(command -v chromium || command -v chromium-browser)
+PROFILE="$HOME/.config/strongprint-kiosk"
+# Limpa o aviso "o Chromium não fechou corretamente" depois de um corte de energia.
+sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"Crashed"/"exit_type":"Normal"/' \
+    "$PROFILE/Default/Preferences" 2>/dev/null || true
+while true; do
+    "$BROWSER" --kiosk --noerrdialogs --disable-infobars --no-first-run \
+        --disable-session-crashed-bubble --disable-features=Translate,TranslateUI \
+        --overscroll-history-navigation=0 --disable-pinch --check-for-update-interval=31536000 \
+        --user-data-dir="$PROFILE" --password-store=basic \
+        "${SCREEN_URL}#token=${DEVICE_TOKEN}"
+    sleep 3
+done

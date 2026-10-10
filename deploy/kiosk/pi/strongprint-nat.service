@@ -1,0 +1,12 @@
+[Unit]
+Description=StrongPrint: encaminhamento VPN para a impressora
+After=wg-quick@wgsp.service network-online.target
+Wants=wg-quick@wgsp.service network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/strongprint-nat
+
+[Install]
+WantedBy=multi-user.target

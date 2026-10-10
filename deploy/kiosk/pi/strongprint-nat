@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Encaminha o IP da impressora na VPN (10.77.N.2) para o IP dela na rede local.
+set -euo pipefail
+source /etc/strongprint/agent.env
+CHAIN=STRONGPRINT
+sysctl -q -w net.ipv4.ip_forward=1
+for table in nat filter; do
+    iptables -t $table -N $CHAIN 2>/dev/null || iptables -t $table -F $CHAIN
+done
+iptables -t nat -C PREROUTING -j $CHAIN 2>/dev/null || iptables -t nat -I PREROUTING -j $CHAIN
+iptables -t nat -C POSTROUTING -j $CHAIN 2>/dev/null || iptables -t nat -I POSTROUTING -j $CHAIN
+iptables -C FORWARD -j $CHAIN 2>/dev/null || iptables -I FORWARD -j $CHAIN
+if [[ -n ${PRINTER_LAN_IP:-} && -n ${PRINTER_VPN_IP:-} ]]; then
+    # Só o servidor (pela VPN) chega à impressora, e só aos serviços necessários.
+    iptables -t nat -A $CHAIN -i wgsp -d "$PRINTER_VPN_IP" -j DNAT --to-destination "$PRINTER_LAN_IP"
+    iptables -t nat -A $CHAIN -o "$(ip route get "$PRINTER_LAN_IP" | grep -oP 'dev \K\S+')" -d "$PRINTER_LAN_IP" -j MASQUERADE
+    for rule in "-p tcp --dport 631" "-p tcp --dport 443" "-p tcp --dport 80" "-p udp --dport 161" "-p tcp --dport 8080"; do
+        iptables -A $CHAIN -i wgsp -d "$PRINTER_LAN_IP" $rule -j ACCEPT
+    done
+    iptables -A $CHAIN -i wgsp -d "$PRINTER_LAN_IP" -j DROP
+    iptables -A $CHAIN -o wgsp -s "$PRINTER_LAN_IP" -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+fi
+echo "strongprint-nat: ${PRINTER_VPN_IP:-?} -> ${PRINTER_LAN_IP:-(sem impressora)}"

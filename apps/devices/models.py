@@ -41,6 +41,18 @@ class EdgeDevice(TimeStampedModel):
     device_token_hash = models.CharField(max_length=64, unique=True, editable=False)
     token_prefix = models.CharField(_("token prefix"), max_length=8, editable=False)
     vpn_ip = models.GenericIPAddressField(_("VPN IP"), null=True, blank=True)
+    # Instalação (deploy/kiosk/provision.sh). Sem passwords: o acesso é por chave SSH.
+    lan_ip = models.GenericIPAddressField(_("local network IP"), null=True, blank=True)
+    ssh_user = models.CharField(_("SSH user"), max_length=40, blank=True)
+    vpn_slot = models.PositiveSmallIntegerField(
+        _("VPN slot"),
+        null=True,
+        blank=True,
+        unique=True,
+        help_text=_("N in 10.77.N.0/24: the Pi is 10.77.N.1 and its printer 10.77.N.2."),
+    )
+    wg_public_key = models.CharField(_("WireGuard public key"), max_length=60, blank=True)
+    provisioned_at = models.DateTimeField(_("installed at"), null=True, blank=True)
     last_heartbeat = models.DateTimeField(_("last heartbeat"), null=True, blank=True)
     version = models.CharField(_("software version"), max_length=40, blank=True)
     pending_command = models.CharField(
@@ -110,6 +122,12 @@ class Printer(TimeStampedModel):
     )
     serial_number = models.CharField(_("serial number"), max_length=60, blank=True)
     vpn_ip = models.GenericIPAddressField(_("VPN IP"))
+    lan_ip = models.GenericIPAddressField(
+        _("local network IP"),
+        null=True,
+        blank=True,
+        help_text=_("Address in the kiosk network; the Pi forwards the VPN IP to it."),
+    )
     ipp_uri = models.CharField(
         _("IPP URI"), max_length=255, blank=True, help_text=_("Empty = ipp://<VPN IP>/ipp/print")
     )
