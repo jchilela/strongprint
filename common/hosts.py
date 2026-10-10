@@ -4,6 +4,7 @@
 - HOST_ADMIN    → superadmin (/admin é exclusivo deste subdomínio)
 - HOST_API      → só /api/ (webhooks de pagamento, Pi, apps)
 - HOST_APP      → ecrã do kiosk (Fase G); até lá reencaminha para o portal
+- HOST_PARTNER  → portal do parceiro (/parceiro/ é exclusivo deste subdomínio)
 - HOST_ROOTS    → domínio principal: reencaminha para o portal (/api/ continua a funcionar)
 
 Sem HOST_CLIENT configurado (desenvolvimento) não há qualquer restrição.
@@ -34,6 +35,14 @@ class HostRoutingMiddleware:
 
         is_admin_path = path.startswith("/admin/") or path == "/admin"
         is_api_path = path.startswith("/api/")
+        is_partner_path = path.startswith("/parceiro/") or path == "/parceiro"
+
+        if host == settings.HOST_PARTNER:
+            if path == "/":
+                return HttpResponsePermanentRedirect("/parceiro/")
+            if is_partner_path or path.startswith("/i18n/"):
+                return self.get_response(request)
+            return HttpResponseNotFound()
 
         if host == settings.HOST_ADMIN:
             if path == "/":
@@ -50,7 +59,9 @@ class HostRoutingMiddleware:
             return JsonResponse({"error": "not_found"}, status=404)
 
         if host == settings.HOST_CLIENT:
-            if is_admin_path and settings.HOST_ADMIN:
+            if (is_admin_path and settings.HOST_ADMIN) or (
+                is_partner_path and settings.HOST_PARTNER
+            ):
                 return HttpResponseNotFound()
             return self.get_response(request)
 
@@ -65,6 +76,8 @@ class HostRoutingMiddleware:
             if is_admin_path:
                 target = settings.HOST_ADMIN or settings.HOST_CLIENT
                 return HttpResponsePermanentRedirect(_url(target, path, query))
+            if is_partner_path and settings.HOST_PARTNER:
+                return HttpResponsePermanentRedirect(_url(settings.HOST_PARTNER, path, query))
             return HttpResponsePermanentRedirect(_url(settings.HOST_CLIENT, path, query))
 
         return self.get_response(request)

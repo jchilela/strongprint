@@ -1,0 +1,12 @@
+{% extends "partner/base.html" %}{% load i18n %}
+{% block title %}{% translate "Sign in" %}{% endblock %}
+{% block content %}
+<div class="narrow">
+  <h1>{% translate "Partner area" %}</h1>
+  <p class="muted">{% translate "Follow your kiosks and earnings. Access is created by StrongPrint." %}</p>
+  <form method="post" class="card" novalidate>{% csrf_token %}
+    <div class="field">{{ form.phone.label_tag }}{{ form.phone }}{{ form.phone.errors }}</div>
+    <button class="btn block">{% translate "Send code" %}</button>
+  </form>
+</div>
+{% endblock %}

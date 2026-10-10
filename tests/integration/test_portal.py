@@ -50,17 +50,41 @@ def sign_in(client, phone="923456789"):
 # --- entrada / registo ------------------------------------------------------------
 
 
-def test_new_customer_registers_with_phone_code(client):
+def test_new_number_creates_account_then_asks_name(client):
     response = sign_in(client)
-    assert response.url == reverse("portal:register")
-    response = client.post(reverse("portal:register"), {"full_name": "Ana Silva", "language": "en"})
-    assert response.status_code == 302
+    assert response.url == reverse("portal:home")
     user = User.objects.get(phone="+244923456789")
-    assert (user.full_name, user.language) == ("Ana Silva", "en")
-    assert user.phone_verified_at is not None and not user.has_usable_password()
-    assert response.cookies["django_language"].value == "en"
-    home = client.get(reverse("portal:home"))
-    assert "Ana Silva" in home.content.decode()
+    assert user.full_name == "" and user.phone_verified_at is not None
+    assert not user.has_usable_password()
+    assert wallet.wallet_for(user).balance_kz == 0
+
+    home = client.get(reverse("portal:home")).content.decode()
+    assert 'dialog class="modal" open' in home and "<main inert" in home
+
+    # nada se pode fazer sem nome
+    blocked = client.post(reverse("portal:topup_new"), {"amount_kz": 1000})
+    assert blocked.url == reverse("portal:home")
+    assert not TopUp.objects.exists()
+
+    assert client.post(reverse("portal:profile_name"), {"full_name": " "}).status_code == 302
+    user.refresh_from_db()
+    assert user.full_name == ""
+    client.post(
+        reverse("portal:profile_name"), {"full_name": "  Ana   Silva ", "next": "/carteira/"}
+    )
+    user.refresh_from_db()
+    assert user.full_name == "Ana Silva"
+    page_ = client.get(reverse("portal:home")).content.decode()
+    assert 'dialog class="modal"' not in page_ and "Ana Silva" in page_
+    assert client.post(reverse("portal:topup_new"), {"amount_kz": 1000}).status_code == 302
+    assert TopUp.objects.count() == 1
+
+
+def test_disabled_account_cannot_sign_in(client):
+    UserFactory(phone="+244923456789", is_active=False)
+    response = sign_in(client)
+    assert response.status_code == 200
+    assert "_auth_user_id" not in client.session
 
 
 def test_existing_customer_signs_in(client):
@@ -180,10 +204,9 @@ def test_strongx_sender(settings):
         otp.request_code("923456782")
 
 
-def test_resend_and_register_guards(client):
+def test_resend_guards(client):
     assert client.post(reverse("portal:resend_code")).url == reverse("portal:login")
     assert client.get(reverse("portal:login_code")).url == reverse("portal:login")
-    assert client.get(reverse("portal:register")).url == reverse("portal:login")
     client.post(reverse("portal:login"), {"phone": "923456789"})
     response = client.post(reverse("portal:resend_code"))
     assert response.url == reverse("portal:login_code")  # 1/min: mostra erro e volta

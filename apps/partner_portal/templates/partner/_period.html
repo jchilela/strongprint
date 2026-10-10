@@ -1,0 +1,10 @@
+{% load i18n %}
+<form class="period" method="get" aria-label="{% translate 'Period' %}">
+  <div class="segmented" role="group">
+    <button name="periodo" value="today" aria-pressed="{% if period.key == 'today' %}true{% else %}false{% endif %}">{% translate "Today" %}</button>
+    <button name="periodo" value="7d" aria-pressed="{% if period.key == '7d' %}true{% else %}false{% endif %}">{% translate "7 days" %}</button>
+    <button name="periodo" value="30d" aria-pressed="{% if period.key == '30d' %}true{% else %}false{% endif %}">{% translate "30 days" %}</button>
+    <button name="periodo" value="month" aria-pressed="{% if period.key == 'month' %}true{% else %}false{% endif %}">{% translate "This month" %}</button>
+  </div>
+  <span class="muted small">{{ period.start|date:"d/m/Y" }} – {{ period.end|date:"d/m/Y" }}</span>
+</form>

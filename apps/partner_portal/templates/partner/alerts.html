@@ -1,0 +1,15 @@
+{% extends "partner/base.html" %}{% load i18n %}
+{% block title %}{% translate "Alerts" %}{% endblock %}
+{% block content %}
+<h1>{% translate "Alerts" %}</h1>
+<h2>{% translate "Open" %}</h2>
+<div class="card">
+  {% if open_alerts %}<ul class="list">{% for a in open_alerts %}<li><div><div class="title">{{ a.kiosk.code }} · {{ a.get_kind_display }}</div><div class="muted small">{{ a.message }} · {% translate "since" %} {{ a.opened_at|date:"d/m H:i" }}</div></div><span class="pill {% if a.severity == 'critical' %}bad{% else %}warn{% endif %}">{{ a.get_severity_display }}</span></li>{% endfor %}</ul>
+  {% else %}<p class="empty">{% translate "Everything is working. No open alerts." %}</p>{% endif %}
+</div>
+<h2>{% translate "Recently resolved" %}</h2>
+<div class="card">
+  {% if recent %}<ul class="list">{% for a in recent %}<li><div><div class="title">{{ a.kiosk.code }} · {{ a.get_kind_display }}</div><div class="muted small">{{ a.opened_at|date:"d/m H:i" }} → {{ a.resolved_at|date:"d/m H:i" }}</div></div></li>{% endfor %}</ul>
+  {% else %}<p class="empty">{% translate "Nothing yet." %}</p>{% endif %}
+</div>
+{% endblock %}

@@ -17,5 +17,6 @@ urlpatterns = [
     path("healthz", healthz),
     path("api/v1/", include("config.api_urls")),
     path("i18n/", include("django.conf.urls.i18n")),
+    path("parceiro/", include("apps.partner_portal.urls")),
     path("", include("apps.portal.urls")),
 ]

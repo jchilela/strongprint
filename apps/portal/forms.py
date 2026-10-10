@@ -38,9 +38,14 @@ class CodeForm(forms.Form):
     )
 
 
-class RegisterForm(forms.Form):
-    full_name = forms.CharField(label=_("Full name"), max_length=150)
-    language = forms.ChoiceField(label=_("Language"), choices=settings.LANGUAGES, initial="pt")
+class NameForm(forms.Form):
+    full_name = forms.CharField(label=_("Full name"), min_length=2, max_length=150)
+
+    def clean_full_name(self):
+        name = " ".join(self.cleaned_data["full_name"].split())
+        if len(name) < 2:
+            raise forms.ValidationError(_("Please enter your name."))
+        return name
 
 
 class TopUpForm(forms.Form):

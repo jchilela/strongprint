@@ -1,0 +1,20 @@
+{% load i18n portal %}
+<div class="card table-wrap">
+  {% if jobs %}
+  <table>
+    <thead><tr><th>{% translate "Date" %}</th><th>{% translate "Kiosk" %}</th><th>{% translate "Customer" %}</th><th>{% translate "Status" %}</th><th class="r">{% translate "Pages" %}</th><th class="r">{% translate "Amount" %}</th></tr></thead>
+    <tbody>
+    {% for j in jobs %}
+      <tr>
+        <td class="num">{{ j.created_at|date:"d/m/Y H:i" }}</td>
+        <td>{{ j.kiosk.code }}</td>
+        <td class="num">{{ j.masked_customer }}</td>
+        <td><span class="pill {% if j.state == 'COMPLETED' %}ok{% elif j.state == 'PARTIAL' %}warn{% elif j.state in 'FAILED REJECTED EXPIRED CANCELLED' %}bad{% endif %}">{{ j.get_state_display }}</span></td>
+        <td class="r num">{{ j.pages_printed|default_if_none:"—" }}</td>
+        <td class="r num">{% if j.state == 'COMPLETED' or j.state == 'PARTIAL' %}{{ j.total_kz|kz }}{% else %}—{% endif %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="empty">{% translate "No print jobs yet." %}</p>{% endif %}
+</div>

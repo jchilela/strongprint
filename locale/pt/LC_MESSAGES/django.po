@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-10 14:52+0100\n"
+"POT-Creation-Date: 2026-10-10 15:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,15 +18,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: apps/accounts/admin.py:32
+#: apps/accounts/admin.py:23
+msgid "Leave empty for customers and partners (they sign in with an SMS code)."
+msgstr "Deixe vazio para clientes e parceiros (entram com um código por SMS)."
+
+#: apps/accounts/admin.py:31
+msgid "The two passwords do not match."
+msgstr "As duas passwords não coincidem."
+
+#: apps/accounts/admin.py:69
 msgid "Profile"
 msgstr "Perfil"
 
-#: apps/accounts/admin.py:34
+#: apps/accounts/admin.py:71
 msgid "Permissions"
 msgstr "Permissões"
 
-#: apps/accounts/admin.py:37
+#: apps/accounts/admin.py:74
 msgid "Dates"
 msgstr "Datas"
 
@@ -91,6 +99,35 @@ msgstr "códigos de acesso"
 #: apps/accounts/phone.py:13 apps/accounts/phone.py:15
 msgid "Invalid phone number."
 msgstr "Número de telefone inválido."
+
+#: apps/accounts/web.py:27
+msgid "Please wait a minute before asking for a new code."
+msgstr "Aguarde um minuto antes de pedir um novo código."
+
+#: apps/accounts/web.py:28
+msgid "Too many codes requested. Try again later."
+msgstr "Pediu demasiados códigos. Tente mais tarde."
+
+#: apps/accounts/web.py:29
+msgid "The code expired. Ask for a new one."
+msgstr "O código expirou. Peça um novo."
+
+#: apps/accounts/web.py:30
+msgid "Too many attempts. Ask for a new code."
+msgstr "Demasiadas tentativas. Peça um novo código."
+
+#: apps/accounts/web.py:31
+msgid "We could not send the code. Try again."
+msgstr "Não foi possível enviar o código. Tente de novo."
+
+#: apps/accounts/web.py:41
+#, python-format
+msgid "Development mode — your code is %(code)s"
+msgstr "Modo de desenvolvimento — o seu código é %(code)s"
+
+#: apps/accounts/web.py:51
+msgid "Wrong code. Try again."
+msgstr "Código errado. Tente de novo."
 
 #: apps/devices/admin.py:10
 #, python-format
@@ -306,7 +343,11 @@ msgstr "Uma impressora fora de um kiosk precisa de nome."
 msgid "ID"
 msgstr "ID"
 
-#: apps/jobs/apps.py:8
+#: apps/jobs/apps.py:8 apps/partner_portal/templates/partner/base.html:26
+#: apps/partner_portal/templates/partner/dashboard.html:7
+#: apps/partner_portal/templates/partner/jobs.html:2
+#: apps/partner_portal/templates/partner/jobs.html:4
+#: apps/partner_portal/templates/partner/kiosk.html:11
 msgid "Print jobs"
 msgstr "Trabalhos de impressão"
 
@@ -517,7 +558,9 @@ msgstr "documento"
 msgid "documents"
 msgstr "documentos"
 
-#: apps/monitoring/admin.py:13 apps/partners/admin.py:117
+#: apps/monitoring/admin.py:13
+#: apps/partner_portal/templates/partner/alerts.html:5
+#: apps/partners/admin.py:117
 msgid "Open"
 msgstr "Abrir"
 
@@ -596,6 +639,289 @@ msgstr "alerta"
 #: apps/monitoring/models.py:37
 msgid "alerts"
 msgstr "alertas"
+
+#: apps/partner_portal/apps.py:8
+msgid "Partner portal"
+msgstr "Portal do parceiro"
+
+#: apps/partner_portal/templates/partner/_chart.html:3
+#: apps/partner_portal/templates/partner/_chart.html:4
+msgid "Revenue per day"
+msgstr "Receita por dia"
+
+#: apps/partner_portal/templates/partner/_jobs_table.html:5
+msgid "Date"
+msgstr "Data"
+
+#: apps/partner_portal/templates/partner/_jobs_table.html:5
+#: apps/partner_portal/templates/partner/dashboard.html:18
+#: apps/partner_portal/templates/partner/jobs.html:6
+msgid "Kiosk"
+msgstr "Kiosk"
+
+#: apps/partner_portal/templates/partner/_jobs_table.html:5
+msgid "Customer"
+msgstr "Cliente"
+
+#: apps/partner_portal/templates/partner/_jobs_table.html:5
+#: apps/partner_portal/templates/partner/dashboard.html:18
+#: apps/partner_portal/templates/partner/jobs.html:8
+#: apps/partner_portal/templates/partner/kiosk.html:13
+msgid "Status"
+msgstr "Estado"
+
+#: apps/partner_portal/templates/partner/_jobs_table.html:5
+#: apps/partner_portal/templates/partner/dashboard.html:19
+msgid "Pages"
+msgstr "Páginas"
+
+#: apps/partner_portal/templates/partner/_jobs_table.html:5
+#: apps/portal/templates/portal/topup_detail.html:15
+msgid "Amount"
+msgstr "Valor"
+
+#: apps/partner_portal/templates/partner/_jobs_table.html:19
+msgid "No print jobs yet."
+msgstr "Ainda não há trabalhos de impressão."
+
+#: apps/partner_portal/templates/partner/_period.html:2
+msgid "Period"
+msgstr "Período"
+
+#: apps/partner_portal/templates/partner/_period.html:4
+msgid "Today"
+msgstr "Hoje"
+
+#: apps/partner_portal/templates/partner/_period.html:5
+msgid "7 days"
+msgstr "7 dias"
+
+#: apps/partner_portal/templates/partner/_period.html:6
+msgid "30 days"
+msgstr "30 dias"
+
+#: apps/partner_portal/templates/partner/_period.html:7
+msgid "This month"
+msgstr "Este mês"
+
+#: apps/partner_portal/templates/partner/alerts.html:2
+#: apps/partner_portal/templates/partner/alerts.html:4
+#: apps/partner_portal/templates/partner/base.html:27
+msgid "Alerts"
+msgstr "Alertas"
+
+#: apps/partner_portal/templates/partner/alerts.html:7
+msgid "since"
+msgstr "desde"
+
+#: apps/partner_portal/templates/partner/alerts.html:8
+msgid "Everything is working. No open alerts."
+msgstr "Está tudo a funcionar. Não há alertas abertos."
+
+#: apps/partner_portal/templates/partner/alerts.html:10
+msgid "Recently resolved"
+msgstr "Resolvidos recentemente"
+
+#: apps/partner_portal/templates/partner/alerts.html:13
+msgid "Nothing yet."
+msgstr "Ainda nada."
+
+#: apps/partner_portal/templates/partner/base.html:8
+#: apps/partner_portal/templates/partner/base.html:14
+msgid "Partners"
+msgstr "Parceiros"
+
+#: apps/partner_portal/templates/partner/base.html:23
+#: apps/portal/templates/portal/base.html:27
+msgid "Main"
+msgstr "Principal"
+
+#: apps/partner_portal/templates/partner/base.html:25
+#: apps/partner_portal/templates/partner/dashboard.html:2
+#: apps/partner_portal/templates/partner/kiosk.html:4
+msgid "Overview"
+msgstr "Visão geral"
+
+#: apps/partner_portal/templates/partner/base.html:31
+msgid "Partner"
+msgstr "Parceiro"
+
+#: apps/partner_portal/templates/partner/base.html:37
+#: apps/portal/templates/portal/home.html:30
+msgid "Sign out"
+msgstr "Sair"
+
+#: apps/partner_portal/templates/partner/dashboard.html:6
+#: apps/partner_portal/templates/partner/dashboard.html:19
+#: apps/partner_portal/templates/partner/kiosk.html:10
+msgid "Revenue"
+msgstr "Receita"
+
+#: apps/partner_portal/templates/partner/dashboard.html:8
+#: apps/partner_portal/templates/partner/kiosk.html:12
+msgid "Pages printed"
+msgstr "Páginas impressas"
+
+#: apps/partner_portal/templates/partner/dashboard.html:9
+msgid "Kiosks online"
+msgstr "Kiosks online"
+
+#: apps/partner_portal/templates/partner/dashboard.html:10
+msgid "%(n)s open alert"
+msgid_plural "%(n)s open alerts"
+msgstr[0] "%(n)s alerta aberto"
+msgstr[1] "%(n)s alertas abertos"
+
+#: apps/partner_portal/templates/partner/dashboard.html:13
+msgid "Kiosks"
+msgstr "Kiosks"
+
+#: apps/partner_portal/templates/partner/dashboard.html:18
+msgid "Site"
+msgstr "Local"
+
+#: apps/partner_portal/templates/partner/dashboard.html:18
+#: apps/partner_portal/templates/partner/kiosk.html:19
+msgid "Printer"
+msgstr "Impressora"
+
+#: apps/partner_portal/templates/partner/dashboard.html:19
+msgid "Jobs"
+msgstr "Trabalhos"
+
+#: apps/partner_portal/templates/partner/dashboard.html:33
+msgid "No kiosks yet. StrongPrint will add your kiosks."
+msgstr "Ainda não há kiosks. A StrongPrint vai adicionar os seus kiosks."
+
+#: apps/partner_portal/templates/partner/jobs.html:7
+msgid "All kiosks"
+msgstr "Todos os kiosks"
+
+#: apps/partner_portal/templates/partner/jobs.html:9
+msgid "All states"
+msgstr "Todos os estados"
+
+#: apps/partner_portal/templates/partner/jobs.html:12
+msgid "Showing the latest 100. Customers are shown partially for privacy."
+msgstr "Mostram-se os últimos 100. Os clientes aparecem só em parte, por privacidade."
+
+#: apps/partner_portal/templates/partner/kiosk.html:14
+msgid "Last signal"
+msgstr "Último sinal"
+
+#: apps/partner_portal/templates/partner/kiosk.html:29
+msgid "No printer assigned."
+msgstr "Sem impressora associada."
+
+#: apps/partner_portal/templates/partner/kiosk.html:30
+msgid "Open alerts"
+msgstr "Alertas abertos"
+
+#: apps/partner_portal/templates/partner/kiosk.html:32
+msgid "No open alerts."
+msgstr "Não há alertas abertos."
+
+#: apps/partner_portal/templates/partner/kiosk.html:35
+msgid "Kiosk details"
+msgstr "Dados do kiosk"
+
+#: apps/partner_portal/templates/partner/kiosk.html:40
+msgid "Save"
+msgstr "Guardar"
+
+#: apps/partner_portal/templates/partner/kiosk.html:44
+msgid "Back in service"
+msgstr "Voltar ao serviço"
+
+#: apps/partner_portal/templates/partner/kiosk.html:46
+msgid "Put in maintenance"
+msgstr "Pôr em manutenção"
+
+#: apps/partner_portal/templates/partner/kiosk.html:47
+msgid ""
+"In maintenance the kiosk screen shows that it is temporarily unavailable."
+msgstr "Em manutenção, o ecrã do kiosk indica que está temporariamente indisponível."
+
+#: apps/partner_portal/templates/partner/kiosk.html:51
+#: apps/partner_portal/views.py:181 apps/partner_portal/views.py:219
+msgid "Only the partner owner can change kiosks."
+msgstr "Só o responsável do parceiro pode alterar os kiosks."
+
+#: apps/partner_portal/templates/partner/kiosk.html:55
+msgid "Recent print jobs"
+msgstr "Trabalhos recentes"
+
+#: apps/partner_portal/templates/partner/login_code.html:2
+#: apps/portal/templates/portal/login_code.html:2
+msgid "Enter code"
+msgstr "Introduzir código"
+
+#: apps/partner_portal/templates/partner/login_code.html:5
+#: apps/portal/templates/portal/login_code.html:4
+msgid "Enter the code"
+msgstr "Introduza o código"
+
+#: apps/partner_portal/templates/partner/login_code.html:6
+#: apps/portal/templates/portal/login_code.html:5
+#, python-format
+msgid "Sent to %(phone)s."
+msgstr "Enviado para %(phone)s."
+
+#: apps/partner_portal/templates/partner/login_code.html:6
+#: apps/portal/templates/portal/login_code.html:5
+msgid "Change number"
+msgstr "Mudar número"
+
+#: apps/partner_portal/templates/partner/login_code.html:9
+#: apps/portal/templates/portal/login_code.html:8
+msgid "Continue"
+msgstr "Continuar"
+
+#: apps/partner_portal/templates/partner/login_phone.html:2
+#: apps/portal/templates/portal/login_phone.html:2
+msgid "Sign in"
+msgstr "Entrar"
+
+#: apps/partner_portal/templates/partner/login_phone.html:5
+msgid "Partner area"
+msgstr "Área do parceiro"
+
+#: apps/partner_portal/templates/partner/login_phone.html:6
+msgid "Follow your kiosks and earnings. Access is created by StrongPrint."
+msgstr "Acompanhe os seus kiosks e ganhos. O acesso é criado pela StrongPrint."
+
+#: apps/partner_portal/templates/partner/login_phone.html:9
+#: apps/portal/templates/portal/login_phone.html:8
+msgid "Send code"
+msgstr "Enviar código"
+
+#: apps/partner_portal/views.py:61
+msgid "This account has no partner access."
+msgstr "Esta conta não tem acesso de parceiro."
+
+#: apps/partner_portal/views.py:92
+msgid "This number has no partner access. Contact StrongPrint."
+msgstr "Este número não tem acesso de parceiro. Contacte a StrongPrint."
+
+#: apps/partner_portal/views.py:170
+msgid "Display name"
+msgstr "Nome a mostrar"
+
+#: apps/partner_portal/views.py:171
+msgid "Where is it?"
+msgstr "Onde fica?"
+
+#: apps/partner_portal/views.py:186
+msgid "Kiosk updated."
+msgstr "Kiosk atualizado."
+
+#: apps/partner_portal/views.py:227
+msgid "This change is not possible now."
+msgstr "Esta alteração não é possível agora."
+
+#: apps/partner_portal/views.py:231
+msgid "Kiosk status updated."
+msgstr "Estado do kiosk atualizado."
 
 #: apps/partners/admin.py:40
 msgid "Price overrides (empty fields inherit)"
@@ -882,25 +1208,25 @@ msgstr "Introduza um número de telefone válido."
 msgid "Code"
 msgstr "Código"
 
-#: apps/portal/forms.py:42
+#: apps/portal/forms.py:42 apps/portal/templates/portal/base.html:46
 msgid "Full name"
 msgstr "Nome completo"
 
-#: apps/portal/forms.py:43
-msgid "Language"
-msgstr "Idioma"
+#: apps/portal/forms.py:47 apps/portal/views.py:120
+msgid "Please enter your name."
+msgstr "Indique o seu nome."
 
-#: apps/portal/forms.py:50 apps/wallets/admin.py:14
+#: apps/portal/forms.py:55 apps/wallets/admin.py:14
 msgid "Amount (Kz)"
 msgstr "Valor (Kz)"
 
-#: apps/portal/forms.py:58
+#: apps/portal/forms.py:63
 msgid "Document"
 msgstr "Documento"
 
-#: apps/portal/templates/portal/base.html:27
-msgid "Main"
-msgstr "Principal"
+#: apps/portal/middleware.py:30
+msgid "Please enter your name to continue."
+msgstr "Indique o seu nome para continuar."
 
 #: apps/portal/templates/portal/base.html:29
 #: apps/wallets/templates/admin/wallets/adjust.html:5
@@ -921,6 +1247,18 @@ msgstr "Ficheiros"
 #: apps/portal/templates/portal/history.html:2
 msgid "Prints"
 msgstr "Impressões"
+
+#: apps/portal/templates/portal/base.html:42
+msgid "What is your name?"
+msgstr "Como se chama?"
+
+#: apps/portal/templates/portal/base.html:43
+msgid "We use it on your receipts and to help you at the kiosk."
+msgstr "Usamo-lo nos seus recibos e para o ajudar no kiosk."
+
+#: apps/portal/templates/portal/base.html:48
+msgid "Save and continue"
+msgstr "Guardar e continuar"
 
 #: apps/portal/templates/portal/documents.html:2
 #: apps/portal/templates/portal/documents.html:5
@@ -1035,10 +1373,6 @@ msgstr "Atividade recente"
 msgid "No activity yet. Top up your wallet to start printing."
 msgstr "Ainda sem movimentos. Carregue a carteira para começar a imprimir."
 
-#: apps/portal/templates/portal/home.html:30
-msgid "Sign out"
-msgstr "Sair"
-
 #: apps/portal/templates/portal/landing.html:4
 msgid "Print at any StrongPrint kiosk"
 msgstr "Imprima em qualquer kiosk StrongPrint"
@@ -1068,56 +1402,13 @@ msgstr "Escolha o ficheiro no kiosk e imprima. Só paga as páginas que saírem.
 msgid "Sign in or create account"
 msgstr "Entrar ou criar conta"
 
-#: apps/portal/templates/portal/login_code.html:2
-msgid "Enter code"
-msgstr "Introduzir código"
-
-#: apps/portal/templates/portal/login_code.html:4
-msgid "Enter the code"
-msgstr "Introduza o código"
-
-#: apps/portal/templates/portal/login_code.html:5
-#, python-format
-msgid "Sent to %(phone)s."
-msgstr "Enviado para %(phone)s."
-
-#: apps/portal/templates/portal/login_code.html:5
-msgid "Change number"
-msgstr "Mudar número"
-
-#: apps/portal/templates/portal/login_code.html:8
-msgid "Continue"
-msgstr "Continuar"
-
 #: apps/portal/templates/portal/login_code.html:11
 msgid "Send a new code"
 msgstr "Enviar novo código"
 
-#: apps/portal/templates/portal/login_phone.html:2
-msgid "Sign in"
-msgstr "Entrar"
-
 #: apps/portal/templates/portal/login_phone.html:5
 msgid "We will send a 6-digit code to your phone."
 msgstr "Vamos enviar um código de 6 algarismos para o seu telefone."
-
-#: apps/portal/templates/portal/login_phone.html:8
-msgid "Send code"
-msgstr "Enviar código"
-
-#: apps/portal/templates/portal/register.html:2
-#: apps/portal/templates/portal/register.html:9
-msgid "Create account"
-msgstr "Criar conta"
-
-#: apps/portal/templates/portal/register.html:4
-msgid "Create your account"
-msgstr "Crie a sua conta"
-
-#: apps/portal/templates/portal/register.html:5
-#, python-format
-msgid "Number %(phone)s confirmed."
-msgstr "Número %(phone)s confirmado."
 
 #: apps/portal/templates/portal/topup_detail.html:2
 #: apps/portal/templates/portal/topup_detail.html:5
@@ -1140,10 +1431,6 @@ msgstr "Entidade"
 #: apps/portal/templates/portal/topup_detail.html:14
 msgid "Reference"
 msgstr "Referência"
-
-#: apps/portal/templates/portal/topup_detail.html:15
-msgid "Amount"
-msgstr "Valor"
 
 #: apps/portal/templates/portal/topup_detail.html:17
 #, python-format
@@ -1203,65 +1490,40 @@ msgstr "Movimentos"
 msgid "No movements yet."
 msgstr "Ainda sem movimentos."
 
-#: apps/portal/views.py:91 apps/portal/views.py:145
-#, python-format
-msgid "Development mode — your code is %(code)s"
-msgstr "Modo de desenvolvimento — o seu código é %(code)s"
-
-#: apps/portal/views.py:109
-msgid "Wrong code. Try again."
-msgstr "Código errado. Tente de novo."
-
-#: apps/portal/views.py:115
+#: apps/portal/views.py:87
 msgid "This account is disabled."
 msgstr "Esta conta está desativada."
 
-#: apps/portal/views.py:143
+#: apps/portal/views.py:106
 msgid "We sent you a new code."
 msgstr "Enviámos-lhe um novo código."
 
-#: apps/portal/views.py:178
-msgid "Please wait a minute before asking for a new code."
-msgstr "Aguarde um minuto antes de pedir um novo código."
+#: apps/portal/views.py:118
+msgid "Welcome to StrongPrint!"
+msgstr "Bem-vindo à StrongPrint!"
 
-#: apps/portal/views.py:179
-msgid "Too many codes requested. Try again later."
-msgstr "Pediu demasiados códigos. Tente mais tarde."
-
-#: apps/portal/views.py:180
-msgid "The code expired. Ask for a new one."
-msgstr "O código expirou. Peça um novo."
-
-#: apps/portal/views.py:181
-msgid "Too many attempts. Ask for a new code."
-msgstr "Demasiadas tentativas. Peça um novo código."
-
-#: apps/portal/views.py:182
-msgid "We could not send the code. Try again."
-msgstr "Não foi possível enviar o código. Tente de novo."
-
-#: apps/portal/views.py:215
+#: apps/portal/views.py:159
 msgid "The payment service is unavailable. Try again shortly."
 msgstr "O serviço de pagamentos está indisponível. Tente daqui a pouco."
 
-#: apps/portal/views.py:241
+#: apps/portal/views.py:185
 msgid "Simulation is not available."
 msgstr "A simulação não está disponível."
 
-#: apps/portal/views.py:266
+#: apps/portal/views.py:210
 msgid "This file type is not supported."
 msgstr "Este tipo de ficheiro não é suportado."
 
-#: apps/portal/views.py:267
+#: apps/portal/views.py:211
 #, python-format
 msgid "The file is too large (max %(mb)s MB)."
 msgstr "O ficheiro é demasiado grande (máx. %(mb)s MB)."
 
-#: apps/portal/views.py:272
+#: apps/portal/views.py:216
 msgid "File saved. We are checking it now."
 msgstr "Ficheiro guardado. Estamos a verificá-lo."
 
-#: apps/portal/views.py:295
+#: apps/portal/views.py:239
 msgid "File deleted."
 msgstr "Ficheiro apagado."
 
@@ -1390,11 +1652,11 @@ msgstr "Disponível"
 msgid "Apply adjustment"
 msgstr "Aplicar ajuste"
 
-#: config/settings/base.py:80
+#: config/settings/base.py:92
 msgid "Portuguese"
 msgstr "Português"
 
-#: config/settings/base.py:80
+#: config/settings/base.py:92
 msgid "English"
 msgstr "Inglês"
 

@@ -1,0 +1,35 @@
+{% extends "partner/base.html" %}{% load i18n portal %}
+{% block title %}{% translate "Overview" %}{% endblock %}
+{% block content %}
+<div class="page-head"><h1>{{ partner.name }}</h1>{% include "partner/_period.html" %}</div>
+<section class="kpis">
+  <div class="card kpi"><div class="label">{% translate "Revenue" %}</div><div class="value num">{{ totals.revenue_kz|kz }}</div></div>
+  <div class="card kpi"><div class="label">{% translate "Print jobs" %}</div><div class="value num">{{ totals.jobs }}</div></div>
+  <div class="card kpi"><div class="label">{% translate "Pages printed" %}</div><div class="value num">{{ totals.faces }}</div></div>
+  <div class="card kpi"><div class="label">{% translate "Kiosks online" %}</div><div class="value num">{{ online }} / {{ rows|length }}</div>
+    {% if open_alerts %}<a class="small" href="{% url 'partner:alerts' %}">{% blocktranslate count n=open_alerts %}{{ n }} open alert{% plural %}{{ n }} open alerts{% endblocktranslate %}</a>{% endif %}</div>
+</section>
+{% include "partner/_chart.html" %}
+<h2>{% translate "Kiosks" %}</h2>
+<div class="card table-wrap">
+  {% if rows %}
+  <table>
+    <thead><tr>
+      <th>{% translate "Kiosk" %}</th><th>{% translate "Site" %}</th><th>{% translate "Status" %}</th><th>{% translate "Printer" %}</th>
+      <th class="r">{% translate "Jobs" %}</th><th class="r">{% translate "Pages" %}</th><th class="r">{% translate "Revenue" %}</th>
+    </tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr>
+        <td><a href="{% url 'partner:kiosk' r.kiosk.code %}?periodo={{ period.key }}"><strong>{{ r.kiosk.code }}</strong></a><div class="muted small">{{ r.kiosk.name }}</div></td>
+        <td>{{ r.kiosk.site.name }}</td>
+        <td><span class="pill {% if r.kiosk.status == 'ONLINE' %}ok{% elif r.kiosk.status == 'MAINTENANCE' %}warn{% else %}bad{% endif %}">{{ r.kiosk.get_status_display }}</span>{% if r.open_alerts %} <span class="pill bad">{{ r.open_alerts }} ⚠</span>{% endif %}</td>
+        <td>{% if r.printer %}{{ r.printer.get_status_display }}{% else %}—{% endif %}</td>
+        <td class="r num">{{ r.jobs }}</td><td class="r num">{{ r.faces }}</td><td class="r num"><strong>{{ r.revenue_kz|kz }}</strong></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="empty">{% translate "No kiosks yet. StrongPrint will add your kiosks." %}</p>{% endif %}
+</div>
+{% endblock %}

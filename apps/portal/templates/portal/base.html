@@ -18,13 +18,13 @@
       <button name="language" value="en" aria-pressed="{% if LANG == 'en' %}true{% else %}false{% endif %}">EN</button>
     </form>
   </header>
-  <main>
+  <main{% if needs_name %} inert aria-hidden="true"{% endif %}>
     {% if messages %}<ul class="messages">{% for m in messages %}<li class="{{ m.tags }}">{{ m }}</li>{% endfor %}</ul>{% endif %}
     {% block content %}{% endblock %}
   </main>
   {% if user.is_authenticated %}
   {% with page=request.resolver_match.url_name %}
-  <nav class="tabbar" aria-label="{% translate 'Main' %}">
+  <nav class="tabbar" aria-label="{% translate 'Main' %}"{% if needs_name %} inert aria-hidden="true"{% endif %}>
     <a href="{% url 'portal:home' %}" {% if page == 'home' %}aria-current="page"{% endif %}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>{% translate "Home" %}</a>
     <a href="{% url 'portal:wallet' %}" {% if page == 'wallet' or page == 'topup_new' or page == 'topup' %}aria-current="page"{% endif %}>
@@ -35,6 +35,20 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7"/></svg>{% translate "Prints" %}</a>
   </nav>
   {% endwith %}
+  {% endif %}
+  {% if needs_name %}
+  <div class="modal-backdrop"></div>
+  <dialog class="modal" open aria-modal="true" aria-labelledby="name-title">
+    <h2 id="name-title">{% translate "What is your name?" %}</h2>
+    <p class="muted small">{% translate "We use it on your receipts and to help you at the kiosk." %}</p>
+    <form method="post" action="{% url 'portal:profile_name' %}">{% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <div class="field"><label for="id_full_name">{% translate "Full name" %}</label>
+        <input type="text" name="full_name" id="id_full_name" autocomplete="name" minlength="2" maxlength="150" required autofocus></div>
+      <button class="btn block">{% translate "Save and continue" %}</button>
+    </form>
+    <script>document.querySelector("dialog.modal").addEventListener("cancel", function (e) { e.preventDefault(); });</script>
+  </dialog>
   {% endif %}
 </body>
 </html>

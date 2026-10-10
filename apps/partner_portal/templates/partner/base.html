@@ -1,0 +1,47 @@
+{% load i18n static %}<!doctype html>
+{% get_current_language as LANG %}
+<html lang="{{ LANG }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b5cad">
+  <title>{% block title %}{% translate "Partners" %}{% endblock %} · StrongPrint</title>
+  <link rel="stylesheet" href="{% static 'portal/portal.css' %}">
+  <link rel="stylesheet" href="{% static 'partner/partner.css' %}">
+</head>
+<body class="partner">
+  <header class="topbar">
+    <a class="brand" href="{% url 'partner:dashboard' %}">Strong<span>Print</span> <small class="muted">{% translate "Partners" %}</small></a>
+    <form class="lang" action="{% url 'set_language' %}" method="post">{% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <button name="language" value="pt" aria-pressed="{% if LANG == 'pt' %}true{% else %}false{% endif %}">PT</button>
+      <button name="language" value="en" aria-pressed="{% if LANG == 'en' %}true{% else %}false{% endif %}">EN</button>
+    </form>
+  </header>
+  {% if partner %}
+  {% with page=request.resolver_match.url_name %}
+  <nav class="subnav" aria-label="{% translate 'Main' %}">
+    <div class="subnav-inner">
+      <a href="{% url 'partner:dashboard' %}" {% if page == 'dashboard' or page == 'kiosk' %}aria-current="page"{% endif %}>{% translate "Overview" %}</a>
+      <a href="{% url 'partner:jobs' %}" {% if page == 'jobs' %}aria-current="page"{% endif %}>{% translate "Print jobs" %}</a>
+      <a href="{% url 'partner:alerts' %}" {% if page == 'alerts' %}aria-current="page"{% endif %}>{% translate "Alerts" %}</a>
+      <span class="spacer"></span>
+      {% if partners %}
+      <form method="post" action="{% url 'partner:switch' %}" class="switch">{% csrf_token %}
+        <label class="visually-hidden" for="partner-switch">{% translate "Partner" %}</label>
+        <select id="partner-switch" name="partner" onchange="this.form.submit()">
+          {% for p in partners %}<option value="{{ p.pk }}" {% if p.pk == partner.pk %}selected{% endif %}>{{ p.name }}</option>{% endfor %}
+        </select>
+      </form>
+      {% else %}<span class="muted small">{{ partner.name }}</span>{% endif %}
+      <form method="post" action="{% url 'partner:logout' %}">{% csrf_token %}<button class="btn link small">{% translate "Sign out" %}</button></form>
+    </div>
+  </nav>
+  {% endwith %}
+  {% endif %}
+  <main class="wide">
+    {% if messages %}<ul class="messages">{% for m in messages %}<li class="{{ m.tags }}">{{ m }}</li>{% endfor %}</ul>{% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,57 @@
+{% extends "partner/base.html" %}{% load i18n portal %}
+{% block title %}{{ kiosk.code }}{% endblock %}
+{% block content %}
+<p class="small"><a href="{% url 'partner:dashboard' %}?periodo={{ period.key }}">← {% translate "Overview" %}</a></p>
+<div class="page-head">
+  <div><h1>{{ kiosk.code }}</h1><p class="muted">{{ kiosk.name }} · {{ kiosk.site.name }}{% if kiosk.location_hint %} · {{ kiosk.location_hint }}{% endif %}</p></div>
+  {% include "partner/_period.html" %}
+</div>
+<section class="kpis">
+  <div class="card kpi"><div class="label">{% translate "Revenue" %}</div><div class="value num">{{ totals.revenue_kz|kz }}</div></div>
+  <div class="card kpi"><div class="label">{% translate "Print jobs" %}</div><div class="value num">{{ totals.jobs }}</div></div>
+  <div class="card kpi"><div class="label">{% translate "Pages printed" %}</div><div class="value num">{{ totals.faces }}</div></div>
+  <div class="card kpi"><div class="label">{% translate "Status" %}</div><div class="value"><span class="pill {% if kiosk.status == 'ONLINE' %}ok{% elif kiosk.status == 'MAINTENANCE' %}warn{% else %}bad{% endif %}">{{ kiosk.get_status_display }}</span></div>
+    <div class="small muted">{% translate "Last signal" %}: {% if device.last_heartbeat %}{{ device.last_heartbeat|date:"d/m H:i" }}{% else %}—{% endif %}</div></div>
+</section>
+{% include "partner/_chart.html" %}
+<div class="grid2">
+  <section class="card">
+    <h2>{% translate "Printer" %}</h2>
+    {% if printer %}
+      <p><strong>{{ printer.name }}</strong> · {{ printer.get_status_display }}{% if printer.last_polled_at %} <span class="muted small">({{ printer.last_polled_at|date:"H:i" }})</span>{% endif %}</p>
+      {% if printer.status_detail.toner %}
+      <ul class="toner">
+        {% for color, level in printer.status_detail.toner.items %}
+        <li><span>{{ color }}</span><meter min="0" max="100" low="10" high="30" optimum="100" value="{% if level >= 0 %}{{ level }}{% else %}0{% endif %}"></meter><span class="num small">{% if level >= 0 %}{{ level }}%{% else %}—{% endif %}</span></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    {% else %}<p class="muted">{% translate "No printer assigned." %}</p>{% endif %}
+    <h2>{% translate "Open alerts" %}</h2>
+    {% if alerts %}<ul class="list">{% for a in alerts %}<li><div><div class="title">{{ a.get_kind_display }}</div><div class="muted small">{{ a.message }} · {{ a.opened_at|date:"d/m H:i" }}</div></div><span class="pill {% if a.severity == 'critical' %}bad{% else %}warn{% endif %}">{{ a.get_severity_display }}</span></li>{% endfor %}</ul>
+    {% else %}<p class="muted">{% translate "No open alerts." %}</p>{% endif %}
+  </section>
+  <section class="card">
+    <h2>{% translate "Kiosk details" %}</h2>
+    {% if is_owner %}
+    <form method="post" novalidate>{% csrf_token %}
+      <div class="field">{{ form.name.label_tag }}{{ form.name }}{{ form.name.errors }}</div>
+      <div class="field">{{ form.location_hint.label_tag }}{{ form.location_hint }}{{ form.location_hint.errors }}</div>
+      <button class="btn">{% translate "Save" %}</button>
+    </form>
+    <form method="post" action="{% url 'partner:kiosk_status' kiosk.code %}" style="margin-top:16px">{% csrf_token %}
+      {% if kiosk.status == 'MAINTENANCE' %}
+        <button class="btn secondary" name="action" value="resume">{% translate "Back in service" %}</button>
+      {% elif kiosk.status == 'ONLINE' or kiosk.status == 'OFFLINE' %}
+        <button class="btn secondary" name="action" value="maintenance">{% translate "Put in maintenance" %}</button>
+        <p class="muted small">{% translate "In maintenance the kiosk screen shows that it is temporarily unavailable." %}</p>
+      {% endif %}
+    </form>
+    {% else %}
+      <p class="muted">{% translate "Only the partner owner can change kiosks." %}</p>
+    {% endif %}
+  </section>
+</div>
+<h2>{% translate "Recent print jobs" %}</h2>
+{% include "partner/_jobs_table.html" %}
+{% endblock %}

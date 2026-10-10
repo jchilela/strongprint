@@ -11,6 +11,7 @@ HOSTS = {
     "HOST_ADMIN": "administ.sp.test",
     "HOST_API": "api.sp.test",
     "HOST_APP": "app.sp.test",
+    "HOST_PARTNER": "partner.sp.test",
     "HOST_ROOTS": ["sp.test", "www.sp.test"],
 }
 
@@ -46,6 +47,11 @@ def route(settings):
         ("sp.test", "/api/v1/edge/heartbeat", 200, None),
         ("sp.test", "/static/portal/portal.css", 200, None),
         ("127.0.0.1", "/healthz", 200, None),
+        ("partner.sp.test", "/", 301, "/parceiro/"),
+        ("partner.sp.test", "/parceiro/kiosks/", 200, None),
+        ("partner.sp.test", "/carteira/", 404, None),
+        ("client.sp.test", "/parceiro/", 404, None),
+        ("sp.test", "/parceiro/", 301, "https://partner.sp.test/parceiro/"),
         ("other.test", "/", 200, None),
     ],
 )

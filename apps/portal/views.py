@@ -1,18 +1,15 @@
 """Portal do cliente (web, mobile-first, PT/EN)."""
 
-from datetime import datetime, timedelta
-
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import get_user_model, login, logout
+from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone, translation
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from apps.accounts import otp
+from apps.accounts import otp, web
 from apps.jobs import library
 from apps.jobs.models import Document, Job
 from apps.partners.models import PriceTable
@@ -22,32 +19,15 @@ from apps.wallets.services import wallet_for
 from domain.analysis.types import AnalysisError
 from domain.payments.provider import PaymentProviderError
 
-from .forms import CodeForm, PhoneForm, RegisterForm, TopUpForm, UploadForm
+from .forms import CodeForm, NameForm, PhoneForm, TopUpForm, UploadForm
 
 User = get_user_model()
 SESSION_PHONE = "portal_otp_phone"
-SESSION_VERIFIED = "portal_verified_phone"
 SESSION_NEXT = "portal_next"
-VERIFIED_TTL = timedelta(minutes=15)
 
 
-def client_ip(request) -> str:
-    forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
-    return forwarded.split(",")[0].strip() or request.META.get("REMOTE_ADDR", "")
-
-
-def safe_next(request, url: str | None) -> str | None:
-    if url and url_has_allowed_host_and_scheme(url, {request.get_host()}):
-        return url
-    return None
-
-
-def finish_login(request, user):
-    login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-    translation.activate(user.language)
-    response = redirect(request.session.pop(SESSION_NEXT, None) or "portal:home")
-    response.set_cookie(settings.LANGUAGE_COOKIE_NAME, user.language, max_age=365 * 86400)
-    return response
+def needs_name(user) -> bool:
+    return user.is_authenticated and not (user.full_name or "").strip()
 
 
 # --- autenticação -------------------------------------------------------------
@@ -72,59 +52,44 @@ def home(request):
 def login_phone(request):
     if request.user.is_authenticated:
         return redirect("portal:home")
-    if nxt := safe_next(request, request.GET.get("next")):
+    if nxt := web.safe_next(request, request.GET.get("next")):
         request.session[SESSION_NEXT] = nxt
     form = PhoneForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         try:
-            phone, code = otp.request_code(
-                form.cleaned_data["phone"],
-                ip=client_ip(request),
-                language=translation.get_language() or "pt",
-            )
+            request.session[SESSION_PHONE] = web.send_code(request, form.cleaned_data["phone"])
         except otp.OtpError as exc:
-            form.add_error("phone", _otp_message(exc))
+            form.add_error("phone", web.otp_message(exc))
         else:
-            request.session[SESSION_PHONE] = phone
-            if code:
-                messages.info(
-                    request, _("Development mode — your code is %(code)s") % {"code": code}
-                )
             return redirect("portal:login_code")
     return render(request, "portal/login_phone.html", {"form": form})
 
 
 def login_code(request):
+    """Código certo → entra. Número novo → a conta é criada aqui; o nome é pedido depois."""
     phone = request.session.get(SESSION_PHONE)
     if not phone:
         return redirect("portal:login")
     form = CodeForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
-        try:
-            ok = otp.verify_code(phone, form.cleaned_data["code"])
-        except otp.OtpError as exc:
-            form.add_error("code", _otp_message(exc))
+        if error := web.check_code(phone, form.cleaned_data["code"]):
+            form.add_error("code", error)
         else:
-            if not ok:
-                form.add_error("code", _("Wrong code. Try again."))
-            else:
-                request.session.pop(SESSION_PHONE, None)
-                user = User.objects.filter(phone=phone).first()
-                if user is not None:
-                    if not user.is_active:
-                        form.add_error("code", _("This account is disabled."))
-                        return render(
-                            request, "portal/login_code.html", {"form": form, "phone": phone}
-                        )
-                    if user.phone_verified_at is None:
-                        user.phone_verified_at = timezone.now()
-                        user.save(update_fields=["phone_verified_at"])
-                    return finish_login(request, user)
-                request.session[SESSION_VERIFIED] = {
-                    "phone": phone,
-                    "at": timezone.now().isoformat(),
-                }
-                return redirect("portal:register")
+            request.session.pop(SESSION_PHONE, None)
+            user = User.objects.filter(phone=phone).first()
+            if user is None:
+                user = User.objects.create_user(
+                    phone,
+                    language=translation.get_language() or "pt",
+                    phone_verified_at=timezone.now(),
+                )
+            elif not user.is_active:
+                form.add_error("code", _("This account is disabled."))
+                return render(request, "portal/login_code.html", {"form": form, "phone": phone})
+            wallet_for(user)
+            return web.sign_in(
+                request, user, request.session.pop(SESSION_NEXT, None) or "portal:home"
+            )
     return render(request, "portal/login_code.html", {"form": form, "phone": phone})
 
 
@@ -134,53 +99,32 @@ def resend_code(request):
     if not phone:
         return redirect("portal:login")
     try:
-        _phone, code = otp.request_code(
-            phone, ip=client_ip(request), language=translation.get_language() or "pt"
-        )
+        web.send_code(request, phone)
     except otp.OtpError as exc:
-        messages.error(request, _otp_message(exc))
+        messages.error(request, web.otp_message(exc))
     else:
         messages.success(request, _("We sent you a new code."))
-        if code:
-            messages.info(request, _("Development mode — your code is %(code)s") % {"code": code})
     return redirect("portal:login_code")
 
 
-def register(request):
-    verified = request.session.get(SESSION_VERIFIED)
-    if not verified or timezone.now() - datetime.fromisoformat(verified["at"]) > VERIFIED_TTL:
-        request.session.pop(SESSION_VERIFIED, None)
-        return redirect("portal:login")
-    form = RegisterForm(
-        request.POST or None, initial={"language": translation.get_language() or "pt"}
-    )
-    if request.method == "POST" and form.is_valid():
-        user = User.objects.filter(phone=verified["phone"]).first() or User.objects.create_user(
-            verified["phone"],
-            full_name=form.cleaned_data["full_name"],
-            language=form.cleaned_data["language"],
-            phone_verified_at=timezone.now(),
-        )
-        request.session.pop(SESSION_VERIFIED, None)
-        wallet_for(user)
-        return finish_login(request, user)
-    return render(request, "portal/register.html", {"form": form, "phone": verified["phone"]})
+@login_required
+@require_POST
+def profile_name(request):
+    """Guarda o nome pedido na janela obrigatória."""
+    form = NameForm(request.POST)
+    if form.is_valid():
+        request.user.full_name = form.cleaned_data["full_name"]
+        request.user.save(update_fields=["full_name"])
+        messages.success(request, _("Welcome to StrongPrint!"))
+    else:
+        messages.error(request, _("Please enter your name."))
+    return redirect(web.safe_next(request, request.POST.get("next")) or "portal:home")
 
 
 @require_POST
 def logout_view(request):
     logout(request)
     return redirect("portal:home")
-
-
-def _otp_message(exc: otp.OtpError) -> str:
-    return {
-        "too_soon": _("Please wait a minute before asking for a new code."),
-        "too_many": _("Too many codes requested. Try again later."),
-        "expired": _("The code expired. Ask for a new one."),
-        "too_many_attempts": _("Too many attempts. Ask for a new code."),
-        "send_failed": _("We could not send the code. Try again."),
-    }.get(exc.code, str(exc))
 
 
 # --- carteira ------------------------------------------------------------------

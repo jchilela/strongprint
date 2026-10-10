@@ -1,0 +1,14 @@
+{% extends "partner/base.html" %}{% load i18n %}
+{% block title %}{% translate "Print jobs" %}{% endblock %}
+{% block content %}
+<div class="page-head"><h1>{% translate "Print jobs" %}</h1>
+  <form method="get" class="filters">
+    <label class="visually-hidden" for="f-kiosk">{% translate "Kiosk" %}</label>
+    <select id="f-kiosk" name="kiosk" onchange="this.form.submit()"><option value="">{% translate "All kiosks" %}</option>{% for k in kiosks %}<option value="{{ k.code }}" {% if request.GET.kiosk == k.code %}selected{% endif %}>{{ k.code }}</option>{% endfor %}</select>
+    <label class="visually-hidden" for="f-state">{% translate "Status" %}</label>
+    <select id="f-state" name="estado" onchange="this.form.submit()"><option value="">{% translate "All states" %}</option>{% for value, label in states %}<option value="{{ value }}" {% if request.GET.estado == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  </form>
+</div>
+<p class="muted small">{% translate "Showing the latest 100. Customers are shown partially for privacy." %}</p>
+{% include "partner/_jobs_table.html" %}
+{% endblock %}

@@ -18,6 +18,7 @@ HOST_CLIENT = env("HOST_CLIENT", default="")
 HOST_ADMIN = env("HOST_ADMIN", default="")
 HOST_API = env("HOST_API", default="")
 HOST_APP = env("HOST_APP", default="")
+HOST_PARTNER = env("HOST_PARTNER", default="")
 HOST_ROOTS = env.list("HOST_ROOTS", default=[])
 
 INSTALLED_APPS = [
@@ -36,6 +37,7 @@ INSTALLED_APPS = [
     "apps.payments",
     "apps.monitoring",
     "apps.portal",
+    "apps.partner_portal",
 ]
 
 MIDDLEWARE = [
@@ -49,6 +51,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "apps.portal.middleware.NameRequiredMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
@@ -66,6 +69,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.i18n",
+                "apps.portal.context.portal",
             ],
         },
     },
