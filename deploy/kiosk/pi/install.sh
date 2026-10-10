@@ -53,6 +53,8 @@ cat > /etc/wireguard/wgsp.conf <<WG
 [Interface]
 Address = $PI_VPN_IP/32
 PostUp = wg set %i private-key /etc/wireguard/wgsp.key
+# Reaplicar o keepalive depois da chave faz o túnel ligar-se logo, sem esperar por tráfego.
+PostUp = wg set %i peer $SERVER_PUB persistent-keepalive 25
 
 [Peer]
 PublicKey = $SERVER_PUB

@@ -10,6 +10,8 @@
 Configuração: /etc/strongprint/agent.env (API_URL, DEVICE_TOKEN, SCREEN_URL, VPN_IP).
 """
 
+from __future__ import annotations  # Python 3.7 (Raspbian Buster)
+
 import json
 import mimetypes
 import os
