@@ -11,6 +11,9 @@ set -euo pipefail
 SERVER="${SERVER:-root@173.212.219.248}"
 APP_DIR="/opt/strongprint"
 DOMAIN="strongprint.it.ao"
+# Todos os nomes servidos (certificado único). O nginx do servidor só é tocado no
+# site "$DOMAIN" — os outros sites (OpenClaw, etc.) nunca são alterados.
+DOMAINS="${DOMAINS:-$DOMAIN www.$DOMAIN client.$DOMAIN administ.$DOMAIN api.$DOMAIN app.$DOMAIN}"
 CERT_EMAIL="${CERT_EMAIL:-juliochilela@hotmail.com}"
 
 cd "$(git rev-parse --show-toplevel)"
@@ -90,15 +93,24 @@ if [[ $BOOTSTRAP == 1 ]] && ! dig +short "$DOMAIN" A | grep -qx "$SERVER_IP"; th
     echo "==> DNS de $DOMAIN ainda não aponta para $SERVER_IP: nginx/HTTPS adiados."
     echo "    Volte a correr 'deploy/deploy.sh --bootstrap' quando o DNS estiver ativo."
 elif [[ $BOOTSTRAP == 1 ]]; then
-    echo "==> Bootstrap: nginx e HTTPS"
-    ssh "$SERVER" DOMAIN="$DOMAIN" CERT_EMAIL="$CERT_EMAIL" APP_DIR="$APP_DIR" bash -s <<'REMOTE'
+    # Só nomes que apontam para este servidor: um nome errado faria falhar o certificado todo.
+    READY=""
+    for d in $DOMAINS; do
+        if dig +short "$d" A | grep -qx "$SERVER_IP"; then READY="$READY $d"; else
+            echo "    (ignorado: $d não aponta para $SERVER_IP — ex.: proxy Cloudflare ligado)"; fi
+    done
+    DOMAINS="${READY# }"
+    echo "==> Bootstrap: nginx e HTTPS para: $DOMAINS"
+    ssh "$SERVER" DOMAIN="$DOMAIN" DOMAINS="$DOMAINS" CERT_EMAIL="$CERT_EMAIL" APP_DIR="$APP_DIR" bash -s <<'REMOTE'
 set -euo pipefail
 cp "$APP_DIR/deploy/nginx-strongprint.it.ao.conf" "/etc/nginx/sites-available/$DOMAIN"
 ln -sf "/etc/nginx/sites-available/$DOMAIN" "/etc/nginx/sites-enabled/$DOMAIN"
 nginx -t
 systemctl reload nginx
-certbot --nginx --non-interactive --agree-tos --redirect -m "$CERT_EMAIL" \
-    -d "$DOMAIN" -d "www.$DOMAIN"
+args=()
+for d in $DOMAINS; do args+=(-d "$d"); done
+certbot --nginx --non-interactive --agree-tos --redirect --expand --cert-name "$DOMAIN" \
+    -m "$CERT_EMAIL" "${args[@]}"
 REMOTE
 fi
 

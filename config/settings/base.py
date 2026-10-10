@@ -13,6 +13,13 @@ DEBUG = env.bool("DJANGO_DEBUG", default=False)
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 CSRF_TRUSTED_ORIGINS = env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=[])
 
+# Subdomínios (vazios em desenvolvimento = sem restrições). Ver common/hosts.py.
+HOST_CLIENT = env("HOST_CLIENT", default="")
+HOST_ADMIN = env("HOST_ADMIN", default="")
+HOST_API = env("HOST_API", default="")
+HOST_APP = env("HOST_APP", default="")
+HOST_ROOTS = env.list("HOST_ROOTS", default=[])
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -34,6 +41,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "common.middleware.LogContextMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "common.hosts.HostRoutingMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
