@@ -120,7 +120,13 @@ def request_code(raw_phone: str, *, ip: str = "", language: str = "pt") -> tuple
         channel=settings.OTP_SENDER,
         expires_at=timezone.now() + timedelta(minutes=settings.OTP_TTL_MINUTES),
     )
-    send(phone, message_for(code, language))
+    try:
+        send(phone, message_for(code, language))
+    except OtpError:
+        if not settings.OTP_SHOW_CODE:
+            raise
+        # Modo de desenvolvimento: o código aparece no ecrã, a entrada não pára.
+        log.warning("otp.send_failed_dev_fallback", phone=phone)
     return phone, (code if settings.OTP_SHOW_CODE else None)
 
 

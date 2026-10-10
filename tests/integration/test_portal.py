@@ -204,6 +204,19 @@ def test_strongx_sender(settings):
         otp.request_code("923456782")
 
 
+def test_send_failure_falls_back_in_dev_mode(settings):
+    settings.OTP_SENDER = "strongx"
+    settings.STRONGX_BASE_URL = "https://api.strongx.test/v1"
+    settings.STRONGX_API_KEY = "strx_test_abc"
+    settings.OTP_SHOW_CODE = True
+    with respx.mock:
+        respx.post("https://api.strongx.test/v1/sms/send").mock(
+            return_value=httpx.Response(422, json={"error": "sandbox_recipient_not_allowed"})
+        )
+        phone, code = otp.request_code("923456789")
+    assert code and len(code) == 6
+
+
 def test_resend_guards(client):
     assert client.post(reverse("portal:resend_code")).url == reverse("portal:login")
     assert client.get(reverse("portal:login_code")).url == reverse("portal:login")
