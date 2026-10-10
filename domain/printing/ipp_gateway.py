@@ -70,7 +70,8 @@ def map_status(attrs: dict[str, list]) -> PrinterStatus:
     formats = attrs.get("document-format-supported", [])
     return PrinterStatus(
         state=state,
-        can_print=state in (PrinterState.READY, PrinterState.BUSY, PrinterState.WARNING),
+        can_print=not paper_out
+        and state in (PrinterState.READY, PrinterState.BUSY, PrinterState.WARNING),
         paper_out=paper_out,
         reasons=reasons,
         toner=toner,

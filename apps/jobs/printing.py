@@ -15,6 +15,7 @@ from pypdf import PdfReader, PdfWriter
 from apps.devices.models import Printer
 from common import storage
 from domain.jobs.state_machine import JobState
+from domain.printing.blocking import block_reason
 from domain.printing.fake import FakePrinterGateway
 from domain.printing.gateway import (
     JobOutcome,
@@ -58,10 +59,9 @@ def ensure_ready(printer: Printer | None, gateway: PrinterGateway | None = None)
         status = gateway.get_status()
     except PrinterUnavailable as exc:
         raise PrinterNotReady("printer_offline") from exc
-    if status.paper_out:
-        raise PrinterNotReady("paper_out")
-    if not status.can_print:
-        raise PrinterNotReady("printer_error")
+    reason = block_reason(status.state.value, status.to_dict())
+    if reason or not status.can_print:
+        raise PrinterNotReady(reason or "error")
     return status
 
 

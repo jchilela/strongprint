@@ -117,8 +117,14 @@
       stay: "Continuar",
       unavailable: "Kiosk temporariamente indisponível",
       unMaintenance: "Em manutenção. Volte daqui a pouco.",
-      unPaper: "Sem papel. A equipa já foi avisada.",
-      unPrinter: "A impressora não está pronta.",
+      unPaper: "A impressora está sem papel. A equipa já foi avisada.",
+      unJam: "Há papel encravado na impressora. A equipa já foi avisada.",
+      unDoor: "Uma porta da impressora está aberta.",
+      unToner: "O toner acabou. A equipa já foi avisada.",
+      unOffline: "A impressora está desligada ou sem ligação.",
+      unPrinter: "A impressora tem um problema. A equipa já foi avisada.",
+      unSession: "A sua carteira não foi cobrada. Pode voltar quando o kiosk estiver disponível.",
+      printPaused: "Impressão parada: {msg} Continua sozinha quando for resolvido.",
       noToken: "Este ecrã ainda não está configurado.",
       noTokenHint: "Abra-o com o endereço que contém o token do dispositivo.",
       error: "Ocorreu um erro. Tente de novo.",
@@ -226,8 +232,14 @@
       stay: "Continue",
       unavailable: "Kiosk temporarily unavailable",
       unMaintenance: "Under maintenance. Please come back soon.",
-      unPaper: "Out of paper. The team has been notified.",
-      unPrinter: "The printer is not ready.",
+      unPaper: "The printer is out of paper. The team has been notified.",
+      unJam: "There is a paper jam. The team has been notified.",
+      unDoor: "A printer door is open.",
+      unToner: "The toner is empty. The team has been notified.",
+      unOffline: "The printer is off or not connected.",
+      unPrinter: "The printer has a problem. The team has been notified.",
+      unSession: "Your wallet was not charged. Come back when the kiosk is available.",
+      printPaused: "Printing paused: {msg} It resumes by itself once fixed.",
       noToken: "This screen is not configured yet.",
       noTokenHint: "Open it with the address that contains the device token.",
       error: "Something went wrong. Please try again.",
@@ -359,7 +371,7 @@
       render("noToken", frame("<h1>" + esc(t("noToken")) + '</h1><p class="muted">' + esc(t("noTokenHint")) + "</p>", { center: true }));
       return;
     }
-    every("state", 30000, refreshState);
+    every("state", 10000, refreshState);
     every("agent", 10000, detectAgent);
     showIdle();
   }
@@ -378,15 +390,38 @@
       .catch(function () {});
   }
 
+  var REASON_TEXT = {
+    maintenance: "unMaintenance", paper_out: "unPaper", paper_jam: "unJam", door_open: "unDoor",
+    toner_empty: "unToner", offline: "unOffline",
+  };
+  var REASON_ICON = { maintenance: "🛠️", paper_out: "📄", paper_jam: "📄", door_open: "🚪", toner_empty: "🖨️", offline: "🔌" };
+
+  function reasonText() {
+    return t(REASON_TEXT[S.reason] || "unPrinter");
+  }
+
   function updateUnavailable() {
-    var busyScreens = ["printing"];
-    if (!S.available && busyScreens.indexOf(S.screen) === -1) {
-      var msg = S.reason === "maintenance" ? t("unMaintenance") : S.reason === "paper_out" ? t("unPaper") : t("unPrinter");
-      $overlay.innerHTML = '<div class="box"><div class="big-icon">⏸</div><h1>' + esc(t("unavailable")) + '</h1><p class="big muted">' + esc(msg) + "</p></div>";
-      $overlay.hidden = false;
-    } else if ($overlay.dataset.kind !== "idle") {
-      $overlay.hidden = true;
+    if (S.available) {
+      if ($overlay.dataset.kind === "blocked") {
+        $overlay.hidden = true;
+        $overlay.dataset.kind = "";
+      }
+      if (S.screen === "printing") paintPrinting();
+      return;
     }
+    // A meio de uma impressão não bloqueamos: o trabalho continua quando o problema se resolver.
+    if (S.screen === "printing") {
+      paintPrinting();
+      return;
+    }
+    if ($overlay.dataset.kind === "idle") return;
+    $overlay.dataset.kind = "blocked";
+    $overlay.innerHTML =
+      '<div class="box"><div class="big-icon">' + (REASON_ICON[S.reason] || "⏸") + "</div><h1>" + esc(t("unavailable")) +
+      '</h1><p class="big muted">' + esc(reasonText()) + "</p>" +
+      (S.session ? '<p class="muted">' + esc(t("unSession")) + '</p><button class="btn" data-act="blockedLogout">' + esc(t("finish")) + "</button>" : "") +
+      "</div>";
+    $overlay.hidden = false;
   }
 
   function detectAgent() {
@@ -465,6 +500,7 @@
     $overlay.hidden = true;
     $overlay.dataset.kind = "";
     showIdle();
+    updateUnavailable();
   }
 
   // ---------------------------------------------------------------- número + SMS
@@ -988,7 +1024,11 @@
         every("job", 2000, pollPrint);
       })
       .catch(function (e) {
-        if (e.status === 409 && e.data && e.data.error === "printer_not_ready") showMessage("⏸", t("printerBusy"), false, true);
+        if (e.status === 409 && e.data && e.data.error === "printer_not_ready") {
+          S.available = false;
+          S.reason = e.data.reason || "";
+          showMessage(REASON_ICON[S.reason] || "⏸", reasonText(), false, true);
+        }
         else if (e.status === 402) { refreshJob().then(showTopup); }
         else showMessage("❗", t("error"), false, true);
       });
@@ -1000,11 +1040,13 @@
 
   function paintPrinting() {
     var job = S.job;
+    if (!job) return;
     var label = job.state === "PRINTING" ? t("printing") : t("queued");
+    var paused = S.available ? "" : '<p class="error big">' + esc(t("printPaused", { msg: reasonText() })) + "</p>";
     render(
       "printing",
       frame(
-        '<div class="big-icon">🖨️</div><h1>' + esc(label) + '</h1><div class="progress"><span style="width:' + (PROGRESS[job.state] || 40) +
+        '<div class="big-icon">🖨️</div><h1>' + esc(label) + "</h1>" + paused + '<div class="progress"><span style="width:' + (PROGRESS[job.state] || 40) +
           '%"></span></div><p class="muted big">' + esc(job.original_filename) + "</p>",
         { center: true }
       )
@@ -1180,6 +1222,9 @@
       case "backToOptions": return refreshJob().then(paintOptionsScreen, paintOptionsScreen);
       case "cancelJob": return cancelJob();
       case "stay": return touch();
+      case "blockedLogout":
+        if (S.job && ["CREATED", "ANALYZED"].indexOf(S.job.state) !== -1) cancelJob();
+        return logout();
     }
   });
 

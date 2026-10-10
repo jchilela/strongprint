@@ -11,6 +11,7 @@ import segno
 import structlog
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.db import transaction
 from django.utils import timezone, translation
 from rest_framework import serializers, status
@@ -24,6 +25,7 @@ from apps.partners.services import effective_price_rules
 from apps.wallets.services import wallet_for
 from common.api import error
 from common.auth import issue_kiosk_session
+from domain.printing.blocking import block_reason
 
 from .api import DeviceTokenAuthentication, IsDevice
 from .models import KioskPairing, Printer
@@ -73,27 +75,39 @@ def client_url(request, path: str) -> str:
 # --- estado do kiosk ----------------------------------------------------------
 
 
+FRESH_SECONDS = 15
+
+
+def fresh_printer(printer: Printer) -> Printer:
+    """Lê a impressora na hora se a última leitura tiver mais de 15 s (um pedido de cada vez)."""
+    from apps.monitoring.services import poll_printer
+
+    stale = printer.last_polled_at is None or (
+        timezone.now() - printer.last_polled_at
+    ).total_seconds() > FRESH_SECONDS
+    if stale and cache.add(f"printer_poll:{printer.pk}", 1, FRESH_SECONDS):
+        try:
+            return poll_printer(printer)
+        except Exception:  # a monitorização regular volta a tentar
+            log.exception("kiosk.printer_poll_failed", printer=printer.name)
+    return printer
+
+
 @device_view(["GET"])
 def kiosk_state(request):
-    """O ecrã consulta a cada ~30 s: pode atender clientes? A impressora está pronta?"""
+    """O ecrã consulta a cada ~10 s: pode atender clientes? Se não, porquê?"""
     kiosk = _kiosk(request)
-    printer: Printer = request.auth.printer
-    printer_ready = printer.status in (
-        Printer.Status.READY,
-        Printer.Status.BUSY,
-        Printer.Status.WARNING,
-    )
-    available = kiosk.is_active and kiosk.status not in ("MAINTENANCE", "OUT_OF_SERVICE")
-    reason = ""
-    if not available:
+    printer: Printer = fresh_printer(request.auth.printer)
+    if not kiosk.is_active or kiosk.status in ("MAINTENANCE", "OUT_OF_SERVICE"):
         reason = "maintenance"
-    elif not printer_ready:
-        reason = "paper_out" if (printer.status_detail or {}).get("paper_out") else "printer"
+    else:
+        reason = block_reason(printer.status, printer.status_detail) or ""
+    available = not reason
     rules = effective_price_rules(kiosk)
     return Response(
         {
             "kiosk": {"code": kiosk.code, "name": kiosk.name, "site": kiosk.site.name},
-            "available": available and printer_ready,
+            "available": available,
             "reason": reason,
             "printer": {
                 "status": printer.status,

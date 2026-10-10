@@ -70,6 +70,18 @@ def test_kiosk_state(screen, kiosk):
     data = screen.get("/api/v1/kiosk/state").json()
     assert (data["available"], data["reason"]) == (False, "paper_out")
 
+    Printer.objects.filter(pk=kiosk.printer.pk).update(
+        status=Printer.Status.ERROR, status_detail={"reasons": ["media-jam-error"]}
+    )
+    data = screen.get("/api/v1/kiosk/state").json()
+    assert (data["available"], data["reason"]) == (False, "paper_jam")
+
+    Printer.objects.filter(pk=kiosk.printer.pk).update(
+        status=Printer.Status.READY, status_detail={"reasons": ["toner-low-warning"]}
+    )
+    data = screen.get("/api/v1/kiosk/state").json()
+    assert (data["available"], data["reason"]) == (True, "")
+
 
 def test_kiosk_api_requires_device_token():
     assert APIClient().get("/api/v1/kiosk/state").status_code in (401, 403)
