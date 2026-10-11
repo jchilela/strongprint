@@ -2,9 +2,10 @@
 
 Regras (Kz inteiros):
 - cobra-se por face impressa (frente e verso = 2 faces);
-- página sem cor, ou trabalho em P&B, custa ``bw_page_kz``;
-- página a cores custa o escalão da sua cobertura:
-  < low_max% → color_low; ≤ mid_max% → color_mid; acima → color_high;
+- trabalho em P&B: cada face custa ``bw_page_kz``;
+- trabalho a cores (escolha do cliente): cada face custa o escalão da sua cobertura,
+  mesmo que a página só tenha preto: < low_max% → color_low; ≤ mid_max% → color_mid;
+  acima → color_high;
 - total = max(soma × cópias, mínimo por transação).
 """
 
@@ -68,7 +69,7 @@ class PrintOptions:
 
 
 def classify_page(page: PageAnalysis, options: PrintOptions, rules: PriceRules) -> tuple[str, int]:
-    if not options.color or not page.is_color:
+    if not options.color:
         return "bw", rules.bw_page_kz
     if page.coverage_pct < rules.color_low_max_pct:
         return "color_low", rules.color_low_kz

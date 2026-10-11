@@ -29,7 +29,10 @@ def fake_printers():
 
 @pytest.fixture
 def ready_job(api, kiosk, customer, s3, tmp_path, django_capture_on_commit_callbacks):
-    """Trabalho ANALYZED: 3 páginas (P&B, cor pouca, cor total), 2 cópias, a cores."""
+    """Trabalho ANALYZED: 3 páginas (preto 15%, cor pouca, cor total), 2 cópias, a cores.
+
+    A cores, todas as páginas pagam o escalão de cor da cobertura: 350 + 200 + 500.
+    """
     created = api.post(f"/api/v1/kiosks/{kiosk.code}/jobs", {"filename": "a.pdf"}, format="json")
     path = make_pdf(
         tmp_path / "a.pdf",
@@ -44,7 +47,7 @@ def ready_job(api, kiosk, customer, s3, tmp_path, django_capture_on_commit_callb
     )
     wallet.credit(wallet.wallet_for(customer), 5000, idempotency_key="seed", actor="test")
     job = Job.objects.get(pk=created.data["id"])
-    assert job.state == JobState.ANALYZED and job.total_kz == (100 + 200 + 500) * 2
+    assert job.state == JobState.ANALYZED and job.total_kz == (350 + 200 + 500) * 2
     return job
 
 
@@ -65,9 +68,9 @@ def test_completed_print_captures_everything(
     assert job.printer == kiosk.printer and job.printer_job_id
 
     w = wallet.wallet_for(customer)
-    assert (w.balance_kz, w.held_kz) == (5000 - 1600, 0)
+    assert (w.balance_kz, w.held_kz) == (5000 - 2100, 0)
     capture = LedgerEntry.objects.get(kind=LedgerEntry.Kind.CAPTURE)
-    assert (capture.amount_kz, capture.kiosk) == (-1600, kiosk)
+    assert (capture.amount_kz, capture.kiosk) == (-2100, kiosk)
 
     sent = FakePrinterGateway(str(kiosk.printer.pk)).state["submitted"][0]
     assert (sent["pages"], sent["copies"], sent["color"]) == (3, 2, True)
@@ -82,9 +85,9 @@ def test_partial_print_charges_printed_faces(
     _, job = checkout(api, ready_job, django_capture_on_commit_callbacks)
     assert (job.state, job.pages_printed) == (JobState.PARTIAL, 4)
     hold = WalletHold.objects.get(job=job)
-    assert hold.captured_kz == 100 + 200 + 500 + 100  # 1.ª cópia + 1.ª página da 2.ª
+    assert hold.captured_kz == 350 + 200 + 500 + 350  # 1.ª cópia + 1.ª página da 2.ª
     w = wallet.wallet_for(customer)
-    assert (w.balance_kz, w.held_kz) == (5000 - 900, 0)
+    assert (w.balance_kz, w.held_kz) == (5000 - 1400, 0)
 
 
 def test_failed_print_releases_everything(

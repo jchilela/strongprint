@@ -57,11 +57,13 @@ def test_bw_job_charges_everything_as_bw():
     assert result["total_kz"] == 400
 
 
-def test_color_job_uses_tiers_and_bw_pages_stay_bw():
+def test_color_job_charges_every_page_as_color():
+    """Escolher cores cobra cores, mesmo nas páginas que só têm preto."""
     result = price_job(DOC, PrintOptions(color=True), RULES)
-    assert [line["unit_kz"] for line in result["pages"]] == [100, 200, 350, 500]
-    assert result["per_copy_kz"] == 1150
-    assert result["total_kz"] == 1150
+    assert [line["unit_kz"] for line in result["pages"]] == [200, 200, 350, 500]
+    assert result["summary"] == {"bw": 0, "color_low": 2, "color_mid": 1, "color_high": 1}
+    assert result["per_copy_kz"] == 1250
+    assert result["total_kz"] == 1250
 
 
 def test_copies_duplex_and_range():
@@ -110,8 +112,8 @@ def test_options_from_dict_defaults():
 def test_faces_value_for_partial_prints():
     breakdown = price_job(DOC, PrintOptions(color=True, copies=2), RULES)
     assert faces_value(breakdown, 0) == 0
-    assert faces_value(breakdown, 2) == 300  # páginas 1 e 2 da 1.ª cópia
-    assert faces_value(breakdown, 5) == 1150 + 100
+    assert faces_value(breakdown, 2) == 400  # páginas 1 e 2 da 1.ª cópia
+    assert faces_value(breakdown, 5) == 1250 + 200
     assert faces_value(breakdown, 8) == breakdown["total_kz"]
     assert faces_value(breakdown, 99) == breakdown["total_kz"]
     assert faces_value({}, 3) == 0

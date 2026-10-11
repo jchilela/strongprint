@@ -76,12 +76,12 @@ def test_options_reprice(analyzed_job, api):
     )
     assert response.status_code == 200, response.data
     assert response.data["price_breakdown"]["summary"] == {
-        "bw": 1,
+        "bw": 0,
         "color_low": 1,
-        "color_mid": 0,
+        "color_mid": 1,
         "color_high": 0,
     }
-    assert response.data["total_kz"] == (100 + 200) * 2
+    assert response.data["total_kz"] == (350 + 200) * 2
 
     bad = api.patch(f"/api/v1/jobs/{analyzed_job.id}/options", {"page_range": "7"}, format="json")
     assert (bad.status_code, bad.data["error"]) == (400, "invalid_page_range")
