@@ -105,7 +105,7 @@ def test_map_status_variants():
     busy = map_status({"printer-state": [4], "printer-is-accepting-jobs": [True]})
     assert busy.state == PrinterState.BUSY
     refusing = map_status({"printer-state": [3], "printer-is-accepting-jobs": [False]})
-    assert refusing.state == PrinterState.ERROR
+    assert (refusing.state, refusing.can_print) == (PrinterState.BUSY, False)
     no_pdf = map_status({"printer-state": [3], "document-format-supported": ["image/urf"]})
     assert not no_pdf.accepts_pdf
 

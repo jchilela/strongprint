@@ -108,6 +108,27 @@ def test_checkout_refused_when_printer_not_ready(api, ready_job, customer, kiosk
     assert wallet.wallet_for(customer).held_kz == 0
 
 
+def test_busy_printer_queues_and_prints_when_free(
+    api, ready_job, customer, kiosk, django_capture_on_commit_callbacks
+):
+    """Impressora a imprimir outro trabalho (não aceita mais por agora): não é erro."""
+    key = str(kiosk.printer.pk)
+    FakePrinterGateway.configure(
+        key, state=PrinterState.BUSY, accepting=False, reasons=["spool-area-full-report"]
+    )
+    with django_capture_on_commit_callbacks(execute=False):
+        response = api.post(f"/api/v1/jobs/{ready_job.id}/checkout")
+    assert response.status_code == 200, response.data
+    ready_job.refresh_from_db()
+    assert ready_job.state == JobState.QUEUED
+    with pytest.raises(printing.PrinterNotReady) as exc:
+        printing.start(ready_job)
+    assert exc.value.reason == "busy"
+
+    FakePrinterGateway.configure(key, state=PrinterState.READY, accepting=True, reasons=[])
+    assert tasks.print_job(str(ready_job.pk)) == JobState.COMPLETED
+
+
 def test_no_printer_in_kiosk(ready_job, kiosk):
     from apps.partners.models import Kiosk
 

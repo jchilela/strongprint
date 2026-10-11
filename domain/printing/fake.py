@@ -67,7 +67,8 @@ class FakePrinterGateway(PrinterGateway):
         state = self.state["state"]
         return PrinterStatus(
             state=state,
-            can_print=state in (PrinterState.READY, PrinterState.BUSY, PrinterState.WARNING),
+            can_print=self.state.get("accepting", True)
+            and state in (PrinterState.READY, PrinterState.BUSY, PrinterState.WARNING),
             paper_out=self.state["paper_out"],
             reasons=list(self.state["reasons"]),
             toner=dict(self.state["toner"]),

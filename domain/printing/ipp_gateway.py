@@ -55,8 +55,12 @@ def map_status(attrs: dict[str, list]) -> PrinterStatus:
     accepting = bool((attrs.get("printer-is-accepting-jobs") or [True])[0])
     errors = [r for r in reasons if r.endswith("-error")]
     paper_out = any(r.startswith(PAPER_REASONS) for r in reasons)
-    if errors or not accepting:
+    if errors:
         state = PrinterState.ERROR
+    elif not accepting:
+        # Sem erros, "não aceita trabalhos" quer dizer ocupada (ex.: a HP envia
+        # spool-area-full-report enquanto imprime): esperar, não bloquear o kiosk.
+        state = PrinterState.BUSY
     elif state == PrinterState.READY and any(r.endswith("-warning") for r in reasons):
         state = PrinterState.WARNING
 
@@ -70,7 +74,8 @@ def map_status(attrs: dict[str, list]) -> PrinterStatus:
     formats = attrs.get("document-format-supported", [])
     return PrinterStatus(
         state=state,
-        can_print=not paper_out
+        can_print=accepting
+        and not paper_out
         and state in (PrinterState.READY, PrinterState.BUSY, PrinterState.WARNING),
         paper_out=paper_out,
         reasons=reasons,

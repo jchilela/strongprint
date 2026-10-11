@@ -111,7 +111,7 @@ def checkout(job_id, *, actor: str, check_printer: bool = True) -> Job:
 
     if check_printer:
         job = Job.objects.select_related("kiosk__printer").get(pk=job_id)
-        printing.ensure_ready(getattr(job.kiosk, "printer", None))
+        printing.ensure_ready(getattr(job.kiosk, "printer", None), allow_busy=True)
     with transaction.atomic():
         job = Job.objects.select_for_update().get(pk=job_id)
         validate_transition(job.state, JobState.RESERVED)

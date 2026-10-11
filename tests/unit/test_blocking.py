@@ -37,3 +37,27 @@ def test_map_status_paper_out_cannot_print():
 def test_map_status_ready():
     status = map_status({"printer-state": [3], "printer-state-reasons": ["none"]})
     assert status.can_print and block_reason(status.state.value, status.to_dict()) is None
+
+
+def test_busy_spool_full_is_not_an_error():
+    """A HP, enquanto imprime: spool-area-full-report e não aceita trabalhos."""
+    status = map_status(
+        {
+            "printer-state": [4],
+            "printer-state-reasons": ["spool-area-full-report"],
+            "printer-is-accepting-jobs": [False],
+        }
+    )
+    assert status.state.value == "BUSY" and not status.can_print
+    assert block_reason(status.state.value, status.to_dict()) is None
+
+
+def test_not_accepting_with_error_is_error():
+    status = map_status(
+        {
+            "printer-state": [5],
+            "printer-state-reasons": ["other-error"],
+            "printer-is-accepting-jobs": [False],
+        }
+    )
+    assert block_reason(status.state.value, status.to_dict()) == "error"

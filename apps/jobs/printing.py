@@ -51,7 +51,14 @@ def gateway_for(printer: Printer) -> PrinterGateway:
     return FakePrinterGateway(key=str(printer.pk))
 
 
-def ensure_ready(printer: Printer | None, gateway: PrinterGateway | None = None):
+def ensure_ready(
+    printer: Printer | None, gateway: PrinterGateway | None = None, *, allow_busy: bool = False
+):
+    """Lança PrinterNotReady se a impressora não pode imprimir agora.
+
+    ``allow_busy``: no pagamento, uma impressora só ocupada (sem erro) aceita o
+    trabalho na fila; a tarefa de impressão espera que fique livre.
+    """
     if printer is None:
         raise PrinterNotReady("no_printer")
     gateway = gateway or gateway_for(printer)
@@ -60,8 +67,10 @@ def ensure_ready(printer: Printer | None, gateway: PrinterGateway | None = None)
     except PrinterUnavailable as exc:
         raise PrinterNotReady("printer_offline") from exc
     reason = block_reason(status.state.value, status.to_dict())
-    if reason or not status.can_print:
-        raise PrinterNotReady(reason or "error")
+    if reason:
+        raise PrinterNotReady(reason)
+    if not status.can_print and not allow_busy:
+        raise PrinterNotReady("busy")
     return status
 
 
