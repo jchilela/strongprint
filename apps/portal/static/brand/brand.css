@@ -1,5 +1,6 @@
 /* Identidade StrongPrint: logotipo "Fita S" + letra Archivo Black (família StrongBox). */
 .sp-logo { display: inline-flex; align-items: center; gap: 0.5em; text-decoration: none; color: inherit; }
+.sp-logo picture { display: contents; }
 .sp-logo img { height: 2.1em; width: auto; display: block; }
 .sp-word {
   font-family: "Archivo", "Arial Black", "Helvetica Neue", sans-serif;
