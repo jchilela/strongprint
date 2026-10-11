@@ -1,0 +1,580 @@
+<title>Móvel do Kiosk StrongPrint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Bancada de oficina: modelo 3D grande à esquerda, comandos e legenda à direita, plano de corte em baixo. */
+  :root {
+    --bg: #eef0f2; --surface: #ffffff; --stage: #e2e6ea; --ink: #1b2430; --muted: #5b6672;
+    --line: #d3d9df; --accent: #c4621b; --accent-soft: #f6e3d3;
+    --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --body: "IBM Plex Sans", "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #12171d; --surface: #1a2129; --stage: #0e1318; --ink: #e7ecf1; --muted: #9aa6b2;
+      --line: #2b3540; --accent: #f08a3c; --accent-soft: #3a2616; color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --bg: #12171d; --surface: #1a2129; --stage: #0e1318; --ink: #e7ecf1; --muted: #9aa6b2;
+    --line: #2b3540; --accent: #f08a3c; --accent-soft: #3a2616; color-scheme: dark; }
+  [hidden] { display: none !important; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.55; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 20px; padding-block: 24px 48px; display: grid; gap: 22px; }
+  header h1 { font-family: var(--display); font-weight: 700; font-size: clamp(24px, 3.4vw, 34px); letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+  header p { margin: 6px 0 0; color: var(--muted); max-width: 72ch; }
+  .dims { font-family: var(--mono); font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; }
+  .dims b { color: var(--ink); font-weight: 500; }
+  .bench { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 18px; align-items: start; }
+  .stage { position: relative; background: var(--stage); border: 1px solid var(--line); border-radius: 14px; height: clamp(460px, 76vh, 820px); overflow: hidden; touch-action: none; }
+  .stage canvas { display: block; width: 100%; height: 100%; }
+  .views { position: absolute; left: 12px; top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .tip { position: absolute; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--line);
+    font-size: 13px; padding: 4px 8px; border-radius: 6px; white-space: nowrap; transform: translate(12px, 12px); }
+  .hint { position: absolute; right: 12px; bottom: 10px; font-size: 12px; color: var(--muted); }
+  .fallback { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--muted); }
+  aside { display: grid; gap: 16px; min-width: 0; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; gap: 10px; }
+  .panel h2 { font-family: var(--display); font-weight: 500; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  button { font: inherit; font-size: 13px; color: var(--ink); background: var(--surface); border: 1px solid var(--line);
+    border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--ink); }
+  .legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .legend button { width: 100%; text-align: left; border: 0; background: transparent; padding: 6px 8px; display: grid; grid-template-columns: 24px 1fr; gap: 8px; border-radius: 6px; }
+  .legend button:hover, .legend button[aria-pressed="true"] { background: var(--accent-soft); }
+  .legend .n { font-family: var(--mono); color: var(--accent); }
+  .legend .d { display: block; color: var(--muted); font-size: 12px; }
+  .legend li.sep { border-top: 1px solid var(--line); margin: 6px 0 4px; }
+  .sheet { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  .sheet section { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; min-width: 0; }
+  .sheet h2 { font-family: var(--display); font-weight: 700; font-size: 18px; margin: 0 0 10px; }
+  .tablebox { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; padding: 6px 8px 6px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+  td.m { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  ul.notes { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+  .small { font-size: 12.5px; color: var(--muted); margin: 10px 0 0; }
+  a { color: var(--accent); }
+  @media (max-width: 900px) { .bench { grid-template-columns: 1fr; } .stage { height: clamp(400px, 66vh, 600px); } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Móvel do Kiosk StrongPrint</h1>
+    <p>Kiosk numa só coluna: armário em baixo, a HP Color LaserJet Pro MFP 3303sdw fechada a meio e o ecrã tátil por cima. O cliente nunca vê a impressora: usa o ecrã, duas ranhuras no lado direito (originais) e uma à frente (impressões). A equipa abre a porta da impressora com chave e puxa-a toda para fora.</p>
+    <div class="dims"><span>Largura <b>62 cm</b> (72 com o apoio da ranhura 2)</span><span>Profundidade <b>62 cm</b></span><span>Altura <b>174 cm</b></span><span>Centro do ecrã a <b>≈ 140 cm</b></span><span>Madeira <b>18 mm</b></span></div>
+  </header>
+
+  <div class="bench">
+    <div class="stage" id="stage">
+      <div class="views" role="group" aria-label="Vistas">
+        <button data-view="iso">3/4</button><button data-view="front">Frente</button><button data-view="right">Lado direito</button><button data-view="back">Trás</button>
+      </div>
+      <div class="tip" id="tip" hidden></div>
+      <div class="hint">Arraste para rodar · roda/pinça para aproximar</div>
+      <div class="fallback" id="fallback" hidden>Este navegador não consegue mostrar o modelo 3D. A lista de peças e as notas abaixo continuam válidas.</div>
+    </div>
+
+    <aside>
+      <div class="panel">
+        <h2>Manutenção (equipa)</h2>
+        <div class="chips" role="group" aria-label="Partes móveis">
+          <button id="t-pdoor" data-toggle="pdoor" aria-pressed="false">Porta da impressora</button>
+          <button id="t-slide" data-toggle="slide" aria-pressed="false">Puxar impressora</button>
+          <button id="t-paper" data-toggle="paper" aria-pressed="false">Ranhura 4: gaveta</button>
+          <button id="t-hatch" data-toggle="hatch" aria-pressed="false">Abrir ecrã</button>
+          <button id="t-cdoor" data-toggle="cdoor" aria-pressed="false">Porta do armário</button>
+          <button id="t-tray" data-toggle="tray" aria-pressed="false">Bandeja eletrónica</button>
+          <button id="t-xray" data-toggle="xray" aria-pressed="false">Ver por dentro</button>
+          <button data-close>Fechar tudo</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Peças</h2>
+        <ul class="legend" id="legend"></ul>
+      </div>
+    </aside>
+  </div>
+
+  <div class="sheet">
+    <section>
+      <h2>Ranhuras e alturas</h2>
+      <div class="tablebox"><table>
+        <thead><tr><th>Ranhura</th><th>Onde</th><th>Do chão</th><th>Abertura</th></tr></thead>
+        <tbody>
+          <tr><td>1 · Inserir originais</td><td>Lado direito, em cima</td><td class="m">102,5–106</td><td class="m">24 × 3,5</td></tr>
+          <tr><td>2 · Retirar originais</td><td>Lado direito, por baixo da 1, com apoio</td><td class="m">98–101,5</td><td class="m">24 × 3,5</td></tr>
+          <tr><td>3 · Retirar impressões</td><td>Frente</td><td class="m">86–94</td><td class="m">30 × 8</td></tr>
+          <tr><td>4 · Gaveta de papel (equipa)</td><td>Frente, em baixo, tampa com chave</td><td class="m">71,5–83,5</td><td class="m">42 × 12</td></tr>
+          <tr><td>Ecrã 21,5" inclinado 20°</td><td>Por cima da impressora</td><td class="m">122–158</td><td class="m">≈ 48 × 27,5</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small">A HP fica encostada à parede direita (1,5 cm de folga) para os originais passarem da ranhura 1 para o alimentador e saírem pela ranhura 2. Antes de cortar, ponha a impressora na plataforma e marque as ranhuras a partir dela.</p>
+    </section>
+
+    <section>
+      <h2>Impressora validada</h2>
+      <div class="tablebox"><table>
+        <tbody>
+          <tr><td>Modelo</td><td>HP Color LaserJet Pro MFP 3303sdw (499M6A)</td></tr>
+          <tr><td>Fechada (L × P × A)</td><td class="m">41,8 × 41,9 × 34,1 cm</td></tr>
+          <tr><td>Aberta, com tabuleiros</td><td class="m">42,8 × 47,2 × 45,5 cm</td></tr>
+          <tr><td>Peso</td><td class="m">17,1 kg</td></tr>
+          <tr><td>Alimentador (ADF)</td><td>50 folhas, A5 a Legal, só uma face de cada vez</td></tr>
+          <tr><td>Gaveta / saída</td><td>250 folhas / 100 folhas</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small">Fonte: <a href="https://www.hp.com/bd-en/products/printers/product-details/product-specifications/2101440520">especificações HP 499M6A</a>. Interior da caixa: 58,4 × 58,4 × 46 cm, cabe a impressora aberta (45,5 cm).</p>
+    </section>
+
+    <section>
+      <h2>Lista de corte</h2>
+      <div class="tablebox"><table>
+        <thead><tr><th>Peça</th><th>Qtd</th><th>Medida (cm)</th></tr></thead>
+        <tbody>
+          <tr><td>Armário: tampo</td><td class="m">1</td><td class="m">62 × 62</td></tr>
+          <tr><td>Armário: laterais</td><td class="m">2</td><td class="m">63,2 × 60</td></tr>
+          <tr><td>Armário: fundo · costas</td><td class="m">1 + 1</td><td class="m">58,4 × 58,2 · 58,4 × 61,4</td></tr>
+          <tr><td>Armário: prateleira · porta</td><td class="m">1 + 1</td><td class="m">58,4 × 50 · 61 × 61</td></tr>
+          <tr><td>Bandeja eletrónica</td><td class="m">1</td><td class="m">50 × 45</td></tr>
+          <tr><td>Caixa: lateral esquerda</td><td class="m">1</td><td class="m">58,4 × 48</td></tr>
+          <tr><td>Caixa: lateral direita, com ranhuras 1 e 2</td><td class="m">1</td><td class="m">58,4 × 48</td></tr>
+          <tr><td>Caixa: costas (furo 12 cm + grelha de entrada)</td><td class="m">1</td><td class="m">58,4 × 48</td></tr>
+          <tr><td>Porta da impressora, com aberturas 3 e 4</td><td class="m">1</td><td class="m">62 × 48</td></tr>
+          <tr><td>Tampa da ranhura 4</td><td class="m">1</td><td class="m">44 × 13</td></tr>
+          <tr><td>Apoio da ranhura 2 + rebordo</td><td class="m">1 + 1</td><td class="m">24 × 10 · 24 × 2,5</td></tr>
+          <tr><td>Plataforma + 2 calhas</td><td class="m">1 + 2</td><td class="m">50 × 54 · 54 × 3</td></tr>
+          <tr><td>Teto da caixa / chão da consola</td><td class="m">1</td><td class="m">62 × 62</td></tr>
+          <tr><td>Consola: laterais (fundo 60, cima 46, frente inclinada)</td><td class="m">2</td><td class="m">60 × 40,2</td></tr>
+          <tr><td>Consola: tampo · costas</td><td class="m">1 + 1</td><td class="m">62 × 46 · 58,4 × 40,2</td></tr>
+          <tr><td>Painel do ecrã (recorte ≈ 48 × 27,5) · rebordo</td><td class="m">1 + 1</td><td class="m">62 × 40,5 · 58,4 × 2,2</td></tr>
+          <tr><td>Cabeçalho</td><td class="m">1</td><td class="m">62 × 14</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small">Contraplacado ou MDF hidrófugo de 18 mm, orlas coladas e verniz.</p>
+    </section>
+
+    <section>
+      <h2>Ferragens</h2>
+      <div class="tablebox"><table>
+        <thead><tr><th>Item</th><th>Qtd</th><th>Para quê</th></tr></thead>
+        <tbody>
+          <tr><td>Corrediças de extração total 55 cm, ≥ 45 kg</td><td class="m">1 par</td><td>A HP sai 46 cm para a frente: tampa do scanner, toner, encravamentos</td></tr>
+          <tr><td>Dobradiça de piano 48 cm + fechadura</td><td class="m">1 + 1</td><td>Porta da impressora</td></tr>
+          <tr><td>Dobradiças + amortecedor a gás</td><td class="m">2 + 1</td><td>Painel do ecrã levanta e fica aberto</td></tr>
+          <tr><td>Escova de vedação (tira de 1 m)</td><td class="m">2</td><td>Ranhuras 2 e 3: o papel passa, a impressora não se vê</td></tr>
+          <tr><td>Ventoinha 12 cm com termóstato + grelha</td><td class="m">1</td><td>Extração do calor da caixa da impressora</td></tr>
+          <tr><td>Fechaduras de móvel, mesma chave</td><td class="m">4</td><td>Porta da impressora, ranhura 4, armário, ecrã</td></tr>
+          <tr><td>Dobradiças de copo 35 mm · corrediças 45 cm</td><td class="m">2 · 1 par</td><td>Porta do armário · bandeja eletrónica</td></tr>
+          <tr><td>Pés niveladores M8 · passa-cabos 60 mm</td><td class="m">4 · 3</td><td>Nivelar · cabos entre os três andares</td></tr>
+          <tr><td>Extensão USB de painel · régua de tomadas com proteção</td><td class="m">1 · 1</td><td>Pen drive · energia</td></tr>
+          <tr><td>Kit de fixação à parede</td><td class="m">1</td><td>Kiosk alto e estreito: não pode tombar</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section>
+      <h2>Notas</h2>
+      <ul class="notes">
+        <li><b>Estabilidade:</b> 174 cm de altura em 62 × 62 cm e a impressora puxada para a frente: fixe sempre à parede.</li>
+        <li><b>Manutenção:</b> abrir a porta da impressora e puxar a plataforma. A HP fica toda fora da caixa, à frente do ecrã, e a tampa do scanner abre livremente.</li>
+        <li><b>Calor:</b> 15 cm livres do lado esquerdo da HP, entrada de ar em baixo atrás e ventoinha em cima atrás.</li>
+        <li><b>Cópias só pelo alimentador:</b> o vidro não está ao alcance do cliente. Folhas soltas de A5 a Legal; livros e cartões não.</li>
+        <li><b>Originais com duas faces:</b> o alimentador da 3303sdw só lê uma face. O cliente vira as folhas e volta a pô-las na ranhura 1.</li>
+        <li><b>Cabos:</b> 60 cm de folga nos cabos da impressora para a plataforma sair toda; HDMI e USB do ecrã sobem pelo passa-cabos de trás.</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function () {
+  var stage = document.getElementById("stage");
+  var tip = document.getElementById("tip");
+  if (!window.THREE || !THREE.OrbitControls) { document.getElementById("fallback").hidden = false; return; }
+  var renderer;
+  try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
+  catch (e) { document.getElementById("fallback").hidden = false; return; }
+
+  var PARTS = [
+    ["slot1", "Ranhura 1 · Inserir originais", "Lado direito, em cima: alimentador"],
+    ["slot2", "Ranhura 2 · Retirar originais", "Lado direito, com apoio"],
+    ["slot3", "Ranhura 3 · Retirar impressões", "Frente: saída da HP"],
+    ["slot4", "Ranhura 4 · Gaveta de papel", "Frente, em baixo: chave da equipa"],
+    ["screen", "Ecrã tátil 21,5\"", "Por cima da impressora, 20°"],
+    ["usb", "Porta USB", "Lado direito do ecrã"],
+    "sep",
+    ["pdoor", "Porta da impressora", "Abre toda a frente da caixa"],
+    ["printer", "HP 3303sdw", "Plataforma sai 46 cm"],
+    ["fan", "Ventilação", "Ventoinha 12 cm atrás"],
+    ["cdoor", "Porta do armário", "Instruções impressas na frente"],
+    ["tray", "Bandeja eletrónica", "Pi, router, tomadas"],
+    ["header", "Cabeçalho", "Marca StrongPrint"]
+  ];
+  var LABEL = {};
+  PARTS.forEach(function (p) { if (p !== "sep") LABEL[p[0]] = p[1]; });
+  LABEL.cabinet = "Armário"; LABEL.box = "Caixa da impressora (fechada)"; LABEL.console = "Consola do ecrã";
+
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  stage.insertBefore(renderer.domElement, stage.firstChild);
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(35, 1, 1, 3000);
+  var controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true; controls.minDistance = 80; controls.maxDistance = 700; controls.maxPolarAngle = Math.PI * 0.53;
+  camera.position.set(190, 190, 260); controls.target.set(0, 95, 0);
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x847a6c, 0.75));
+  var sun = new THREE.DirectionalLight(0xffffff, 0.85);
+  sun.position.set(170, 330, 230); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+  var sc = sun.shadow.camera; sc.left = -150; sc.right = 150; sc.top = 260; sc.bottom = -60; sc.near = 50; sc.far = 850;
+  scene.add(sun);
+  var fill = new THREE.DirectionalLight(0xffffff, 0.3); fill.position.set(-200, 140, -150); scene.add(fill);
+  var ground = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), new THREE.ShadowMaterial({ opacity: 0.18 }));
+  ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+  var grid = new THREE.GridHelper(400, 40, 0x8893a0, 0x8893a0); grid.material.transparent = true; grid.material.opacity = 0.22; scene.add(grid);
+
+  function grain(base, dark) {
+    var c = document.createElement("canvas"); c.width = 512; c.height = 512;
+    var g = c.getContext("2d"); g.fillStyle = base; g.fillRect(0, 0, 512, 512);
+    for (var i = 0; i < 140; i++) {
+      g.strokeStyle = dark; g.globalAlpha = 0.05 + Math.random() * 0.12; g.lineWidth = 1 + Math.random() * 2.5;
+      var y = Math.random() * 512; g.beginPath(); g.moveTo(0, y);
+      for (var x = 0; x <= 512; x += 32) g.lineTo(x, y + Math.sin(x / 70 + i) * 4 + (Math.random() - 0.5) * 2);
+      g.stroke();
+    }
+    var t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.encoding = THREE.sRGBEncoding; return t;
+  }
+  var woodMap = grain("#cfa97f", "#7a5432"), doorMap = grain("#c39a6d", "#6e4a2b");
+  var M = {
+    wood: new THREE.MeshStandardMaterial({ map: woodMap, roughness: 0.78 }),
+    woodDoor: new THREE.MeshStandardMaterial({ map: doorMap, roughness: 0.72 }),
+    box: new THREE.MeshStandardMaterial({ map: woodMap, roughness: 0.78, transparent: true, opacity: 1, side: THREE.DoubleSide }),
+    boxDoor: new THREE.MeshStandardMaterial({ map: doorMap, roughness: 0.72, transparent: true, opacity: 1, side: THREE.DoubleSide }),
+    hp: new THREE.MeshStandardMaterial({ color: 0xeceae6, roughness: 0.45 }),
+    hpDark: new THREE.MeshStandardMaterial({ color: 0x2f3337, roughness: 0.55 }),
+    hpGrey: new THREE.MeshStandardMaterial({ color: 0xc4c7ca, roughness: 0.5 }),
+    metal: new THREE.MeshStandardMaterial({ color: 0x9aa3ab, metalness: 0.65, roughness: 0.35 }),
+    black: new THREE.MeshStandardMaterial({ color: 0x15181b, roughness: 0.7 }),
+    trim: new THREE.MeshStandardMaterial({ color: 0x23272b, roughness: 0.85 }),
+    paper: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 }),
+    ream: new THREE.MeshStandardMaterial({ color: 0xe9eef3, roughness: 0.85 }),
+    pcb: new THREE.MeshStandardMaterial({ color: 0x2f7d4a, roughness: 0.6 }),
+    vent: new THREE.MeshStandardMaterial({ color: 0x3b2c1e, roughness: 0.9 })
+  };
+
+  var root = new THREE.Group(); scene.add(root);
+  var G = {};
+  function group(name, parent) { var g = new THREE.Group(); g.userData.part = name; (parent || root).add(g); G[name] = g; return g; }
+  function box(w, h, d, mat, parent, x, y, z) {
+    var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+    m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; parent.add(m); return m;
+  }
+  function textCanvas(w, h, draw) {
+    var c = document.createElement("canvas"); c.width = w; c.height = h; draw(c.getContext("2d"), w, h);
+    var t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t;
+  }
+  var redraws = [];
+  function label(text, w, h, parent, x, y, z, rotY) {
+    function make() {
+      return textCanvas(w * 20, h * 20, function (g, cw, ch) {
+        g.fillStyle = "#1b2430"; g.fillRect(0, 0, cw, ch);
+        g.fillStyle = "#ffffff"; g.font = "500 " + Math.round(ch * 0.58) + "px 'IBM Plex Sans', Arial, sans-serif";
+        g.textBaseline = "middle"; g.fillText(text, ch * 0.35, ch * 0.54);
+      });
+    }
+    var mat = new THREE.MeshBasicMaterial({ map: make(), toneMapped: false });
+    var m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
+    m.position.set(x, y, z); if (rotY) m.rotation.y = rotY; parent.add(m);
+    redraws.push(function () { mat.map = make(); mat.needsUpdate = true; });
+    return m;
+  }
+  function sideShape(points, holes) {
+    var s = new THREE.Shape(); s.moveTo(points[0][0], points[0][1]);
+    for (var i = 1; i < points.length; i++) s.lineTo(points[i][0], points[i][1]);
+    (holes || []).forEach(function (h) {
+      var p = new THREE.Path(); p.moveTo(h[0], h[1]); p.lineTo(h[0], h[3]); p.lineTo(h[2], h[3]); p.lineTo(h[2], h[1]); p.lineTo(h[0], h[1]); s.holes.push(p);
+    });
+    return s;
+  }
+  // Painel lateral a partir de um perfil (x da forma = -z do mundo, y = altura), espessura 1,8 em x.
+  function sidePanel(shape, mat, parent, x) {
+    var m = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: 1.8, bevelEnabled: false }), mat);
+    m.rotation.y = Math.PI / 2; m.position.x = x; m.castShadow = true; m.receiveShadow = true; parent.add(m); return m;
+  }
+
+  // ---------- Armário: x -31..31, y 5..70
+  var cab = group("cabinet");
+  box(1.8, 63.2, 60, M.wood, cab, -30.1, 36.6, 0);
+  box(1.8, 63.2, 60, M.wood, cab, 30.1, 36.6, 0);
+  box(58.4, 1.8, 58.2, M.wood, cab, 0, 5.9, 0.9);
+  box(58.4, 61.4, 1.8, M.wood, cab, 0, 37.3, -29.1);
+  box(62, 1.8, 62, M.wood, cab, 0, 69.1, 1);
+  box(58.4, 1.8, 50, M.wood, cab, 0, 30, 4);
+  [[-15, 6.8], [12, 6.8], [-15, 30.9]].forEach(function (p) { box(21, 10, 29.7, M.ream, cab, p[0], p[1] + 5, 6); });
+  [-31.05, 31.05].forEach(function (x) { for (var i = 0; i < 5; i++) box(0.3, 0.9, 26, M.vent, cab, x, 54 + i * 1.8, 2); });
+  [[-26, -25], [26, -25], [-26, 25], [26, 25]].forEach(function (p) {
+    var f = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.8, 5, 20), M.metal); f.position.set(p[0], 2.5, p[1]); f.castShadow = true; cab.add(f);
+  });
+  var cdoor = group("cdoor");
+  var cPivot = new THREE.Group(); cPivot.position.set(-31, 37.5, 31.8); cdoor.add(cPivot);
+  function instructions() {
+    return textCanvas(610, 610, function (g) {
+      g.fillStyle = "#1b2430"; g.fillRect(70, 70, 470, 330);
+      g.fillStyle = "#f08a3c"; g.fillRect(70, 70, 470, 8);
+      g.fillStyle = "#ffffff"; g.font = "700 40px Archivo, Arial, sans-serif"; g.fillText("Como usar", 100, 135);
+      g.font = "400 25px 'IBM Plex Sans', Arial, sans-serif";
+      ["1  Entre com o QR ou o seu número", "2  Imprimir: escolha o ficheiro", "   Copiar: originais na ranhura 1", "3  Pague com a carteira", "4  Retire na ranhura 3"].forEach(function (s, i) { g.fillText(s, 100, 185 + i * 36); });
+      g.fillStyle = "#f08a3c"; g.font = "500 21px 'IBM Plex Mono', monospace"; g.fillText("strongprintao@gmail.com", 100, 372);
+    });
+  }
+  var doorFace = new THREE.MeshStandardMaterial({ map: instructions(), roughness: 0.7 });
+  var doorFront = new THREE.MeshStandardMaterial({ map: doorMap, roughness: 0.72 });
+  var cMesh = new THREE.Mesh(new THREE.BoxGeometry(61, 61, 1.8), [M.woodDoor, M.woodDoor, M.woodDoor, M.woodDoor, doorFace, M.woodDoor]);
+  cMesh.position.set(30.5, 0, -0.9); cMesh.castShadow = true; cPivot.add(cMesh);
+  var lk = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 1.2, 16), M.metal); lk.rotation.x = Math.PI / 2; lk.position.set(57, 0, 0.6); cPivot.add(lk);
+  var tray = group("tray");
+  box(50, 1.8, 45, M.wood, tray, 0, 50, 5);
+  box(9, 1.6, 6.5, M.pcb, tray, -13, 51.8, 12);
+  box(20, 3.2, 14, M.black, tray, 7, 52.5, 2);
+  box(32, 4, 6, M.hp, tray, 0, 52.9, 21);
+
+  // ---------- Caixa da impressora: y 70..118
+  var boxG = group("box");
+  sidePanel(sideShape([[-30.2, 70], [-30.2, 118], [28.2, 118], [28.2, 70], [-30.2, 70]]), M.box, boxG, -31);
+  var S1 = [-19, 102.5, 5, 106], S2 = [-19, 98, 5, 101.5];
+  sidePanel(sideShape([[-30.2, 70], [-30.2, 118], [28.2, 118], [28.2, 70], [-30.2, 70]], [S1, S2]), M.box, boxG, 29.2);
+  box(58.4, 48, 1.8, M.box, boxG, 0, 94, -29.1);
+  box(62, 1.8, 62, M.wood, boxG, 0, 118.9, 1);
+  for (var v = 0; v < 5; v++) box(26, 0.9, 0.3, M.vent, boxG, -10, 73 + v * 1.8, -30.05);
+  var fan = group("fan");
+  var fr = new THREE.Mesh(new THREE.CylinderGeometry(6.2, 6.2, 0.8, 32), M.black); fr.rotation.x = Math.PI / 2; fr.position.set(-14, 109, -30.4); fan.add(fr);
+  for (var k = 0; k < 4; k++) { var b = box(12, 0.5, 0.3, M.metal, fan, -14, 109, -30.9); b.rotation.z = k * Math.PI / 4; }
+  box(2, 3, 54, M.wood, boxG, -27, 71.5, 2);
+  box(2, 3, 54, M.wood, boxG, 28, 71.5, 2);
+
+  // Ranhuras 1 e 2 (lado direito): molduras, etiquetas e apoio
+  function sideSlot(name, s, text, labelY) {
+    var g = group(name);
+    var z0 = -s[2], z1 = -s[0], y0 = s[1], y1 = s[3], zc = (z0 + z1) / 2, len = z1 - z0;
+    box(0.6, 0.8, len + 1.6, M.trim, g, 31.3, y0 - 0.4, zc); box(0.6, 0.8, len + 1.6, M.trim, g, 31.3, y1 + 0.4, zc);
+    box(0.6, y1 - y0, 0.8, M.trim, g, 31.3, (y0 + y1) / 2, z0 - 0.4); box(0.6, y1 - y0, 0.8, M.trim, g, 31.3, (y0 + y1) / 2, z1 + 0.4);
+    label(text, 24, 2.6, g, 31.06, labelY, zc, Math.PI / 2);
+    return g;
+  }
+  sideSlot("slot1", S1, "1  Inserir originais", 108.4);
+  var slot2 = sideSlot("slot2", S2, "2  Retirar originais", 94.6);
+  box(10, 0.8, 24, M.wood, slot2, 36, 97.4, 7);
+  box(0.8, 2.5, 24, M.wood, slot2, 40.6, 98.6, 7);
+
+  // ---------- HP 3303sdw (41,8 × 41,9 × 34,1) na plataforma; encostada à direita
+  var printer = group("printer");
+  var PX = 6.8, PZ = 7.05;
+  box(50, 2, 54, M.wood, printer, 0.5, 71, 2);
+  box(41.8, 14, 41.9, M.hp, printer, PX, 79, PZ);
+  var paperTray = new THREE.Group(); printer.add(paperTray);
+  box(40, 10, 0.6, M.hpGrey, paperTray, PX, 78, 28.3);
+  box(18, 1.6, 0.6, M.hpDark, paperTray, PX, 80.5, 28.7);
+  box(40, 9, 30, M.hpGrey, paperTray, PX, 78, 13.2);
+  box(21, 5, 29.7, M.ream, paperTray, PX, 79, 12.5);
+  box(10, 8, 41.9, M.hp, printer, PX - 15.9, 90, PZ);
+  box(31.8, 8, 14, M.hp, printer, PX + 5, 90, -6.9);
+  box(21, 0.2, 29.7, M.paper, printer, PX + 4, 86.2, 14);
+  box(41.8, 6, 41.9, M.hpGrey, printer, PX, 97, PZ);
+  var cp = box(12, 4.5, 1, M.black, printer, PX - 12, 97.5, 28.1); cp.rotation.x = -0.35;
+  box(14, 6.1, 34, M.hp, printer, PX - 13.9, 103.05, 5);
+  box(27.8, 0.4, 24, M.hpDark, printer, PX + 7, 100.4, 7);
+  var inTray = box(27.8, 0.5, 24, M.hpGrey, printer, PX + 7, 104.2, 7); inTray.rotation.z = 0.04;
+  var orig = box(29.7, 0.3, 21, M.paper, printer, 19.6, 104.8, 7); orig.rotation.z = 0.04;
+  box(29.7, 0.3, 21, M.paper, printer, 19.6, 100.9, 7);
+
+  // ---------- Porta da impressora (local: x 0..62 a partir da dobradiça, y 0..48 a partir de 70 cm)
+  var pdoor = group("pdoor");
+  var dPivot = new THREE.Group(); dPivot.position.set(-31, 70, 30.2); pdoor.add(dPivot);
+  var D3 = [22.8, 16, 52.8, 24], D4 = [16.8, 1.5, 58.8, 13.5];
+  var dShape = new THREE.Shape(); dShape.moveTo(0, 0); dShape.lineTo(62, 0); dShape.lineTo(62, 48); dShape.lineTo(0, 48); dShape.lineTo(0, 0);
+  [D3, D4].forEach(function (h) { var p = new THREE.Path(); p.moveTo(h[0], h[1]); p.lineTo(h[0], h[3]); p.lineTo(h[2], h[3]); p.lineTo(h[2], h[1]); p.lineTo(h[0], h[1]); dShape.holes.push(p); });
+  var dMesh = new THREE.Mesh(new THREE.ExtrudeGeometry(dShape, { depth: 1.8, bevelEnabled: false }), M.boxDoor);
+  dMesh.castShadow = true; dMesh.receiveShadow = true; dPivot.add(dMesh);
+  box(1.6, 10, 2, M.metal, dPivot, 4, 36, 2.8);
+  var dl = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 1.2, 16), M.metal); dl.rotation.x = Math.PI / 2; dl.position.set(4, 29, 2.2); dPivot.add(dl);
+  var slot3 = group("slot3", dPivot);
+  box(31.6, 0.8, 0.6, M.trim, slot3, 37.8, 15.6, 2); box(31.6, 0.8, 0.6, M.trim, slot3, 37.8, 24.4, 2);
+  box(0.8, 8, 0.6, M.trim, slot3, 22.4, 20, 2); box(0.8, 8, 0.6, M.trim, slot3, 53.2, 20, 2);
+  box(30, 4, 0.3, M.trim, slot3, 37.8, 22, 0.9);
+  label("3  Retirar impressões", 26, 2.6, slot3, 37.8, 27, 1.86);
+  var slot4 = group("slot4", dPivot);
+  var flap = new THREE.Group(); flap.position.set(37.8, 0.8, 2.1); slot4.add(flap);
+  box(44, 13, 1.2, M.woodDoor, flap, 0, 6.5, 0);
+  var fl = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 1, 14), M.metal); fl.rotation.x = Math.PI / 2; fl.position.set(18, 10, 0.7); flap.add(fl);
+  label("Papel · equipa", 14, 2.2, flap, -12, 9.5, 0.62);
+
+  // ---------- Consola do ecrã: y 119.8..160, painel inclinado 20°
+  var con = group("console");
+  var prof = [[-30, 119.8], [-30, 122], [-16, 160], [30, 160], [30, 119.8], [-30, 119.8]];
+  sidePanel(sideShape(prof), M.wood, con, -31);
+  sidePanel(sideShape(prof), M.wood, con, 29.2);
+  box(62, 1.8, 46, M.wood, con, 0, 159.1, -7);
+  box(58.4, 40.2, 1.8, M.wood, con, 0, 140, -29.1);
+  box(58.4, 2.2, 1.8, M.wood, con, 0, 121, 29.1);
+  for (var cv = 0; cv < 4; cv++) box(30, 0.9, 0.3, M.vent, con, 0, 150 + cv * 1.8, -30.05);
+  var usb = group("usb");
+  box(0.8, 1.4, 3.2, M.black, usb, 31.2, 127, 22);
+  var ur = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.2, 0.4, 24), M.metal); ur.rotation.z = Math.PI / 2; ur.position.set(31.05, 127, 22); usb.add(ur);
+
+  var PHI = -Math.atan2(14, 38);
+  var screen = group("screen");
+  var hPivot = new THREE.Group(); hPivot.position.set(0, 160, 16); screen.add(hPivot);
+  box(62, 40.5, 1.8, M.woodDoor, hPivot, 0, -20.25, -0.9);
+  box(49, 29.5, 3.5, M.black, hPivot, 0, -20, -3.6);
+  function screenTexture() {
+    return textCanvas(1024, 576, function (g) {
+      g.fillStyle = "#0c1a2a"; g.fillRect(0, 0, 1024, 576);
+      g.fillStyle = "#ffffff"; g.font = "700 46px Archivo, Arial, sans-serif"; g.fillText("StrongPrint", 56, 92);
+      g.fillStyle = "#8fb3d6"; g.font = "400 26px 'IBM Plex Sans', Arial, sans-serif"; g.fillText("Leia o QR com o telemóvel ou entre com o seu número", 56, 140);
+      function tile(x, l, s) {
+        g.fillStyle = "#16314d"; g.fillRect(x, 190, 290, 250); g.strokeStyle = "#2e5c88"; g.lineWidth = 4; g.strokeRect(x, 190, 290, 250);
+        g.fillStyle = "#ffffff"; g.font = "700 44px Archivo, Arial, sans-serif"; g.fillText(l, x + 30, 330);
+        g.fillStyle = "#8fb3d6"; g.font = "400 22px 'IBM Plex Sans', Arial, sans-serif"; g.fillText(s, x + 30, 372);
+      }
+      tile(56, "Imprimir", "PDF, Word, fotos"); tile(372, "Copiar", "Ranhura 1, à direita");
+      g.fillStyle = "#ffffff"; g.fillRect(712, 190, 250, 250); g.fillStyle = "#0c1a2a";
+      for (var i = 0; i < 21; i++) for (var j = 0; j < 21; j++) if ((i * 7 + j * 13 + i * j) % 3 === 0) g.fillRect(722 + i * 11, 200 + j * 11, 11, 11);
+      [[722, 200], [886, 200], [722, 364]].forEach(function (p) {
+        g.fillStyle = "#0c1a2a"; g.fillRect(p[0], p[1], 66, 66); g.fillStyle = "#ffffff"; g.fillRect(p[0] + 10, p[1] + 10, 46, 46);
+        g.fillStyle = "#0c1a2a"; g.fillRect(p[0] + 20, p[1] + 20, 26, 26);
+      });
+    });
+  }
+  var screenMat = new THREE.MeshBasicMaterial({ map: screenTexture(), toneMapped: false });
+  var display = new THREE.Mesh(new THREE.PlaneGeometry(47.6, 26.8), screenMat);
+  display.position.set(0, -20, 0.05); hPivot.add(display);
+
+  var header = group("header");
+  function headerTex() {
+    return textCanvas(620, 140, function (g, w, h) {
+      g.fillStyle = "#1b2430"; g.fillRect(0, 0, w, h); g.fillStyle = "#f08a3c"; g.fillRect(0, h - 8, w, 8);
+      g.fillStyle = "#ffffff"; g.font = "700 64px Archivo, Arial, sans-serif"; g.fillText("StrongPrint", 30, 86);
+      g.fillStyle = "#c9d3dd"; g.font = "500 24px 'IBM Plex Sans', Arial, sans-serif"; g.fillText("Imprimir · Copiar", 400, 84);
+    });
+  }
+  var headerFace = new THREE.MeshStandardMaterial({ map: headerTex(), roughness: 0.7 });
+  var hb = new THREE.Mesh(new THREE.BoxGeometry(62, 14, 1.8), [M.wood, M.wood, M.wood, M.wood, headerFace, M.wood]);
+  hb.position.set(0, 167, 9); hb.castShadow = true; header.add(hb);
+
+  document.fonts && document.fonts.ready.then(function () {
+    screenMat.map = screenTexture(); screenMat.needsUpdate = true;
+    headerFace.map = headerTex(); headerFace.needsUpdate = true;
+    doorFace.map = instructions(); doorFace.needsUpdate = true;
+    redraws.forEach(function (f) { f(); });
+  });
+
+  // ---------- Estado e animação
+  var KEYS = ["pdoor", "slide", "paper", "hatch", "cdoor", "tray", "xray"];
+  var state = {}, target = {};
+  KEYS.forEach(function (k) { state[k] = 0; target[k] = 0; });
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function setToggle(name, on) {
+    target[name] = on ? 1 : 0;
+    if (name === "slide" && on) target.pdoor = 1;
+    if (name === "pdoor" && !on) target.slide = 0;
+    if (name === "tray" && on) target.cdoor = 1;
+    if (name === "cdoor" && !on) target.tray = 0;
+    KEYS.forEach(function (k) { var b = document.getElementById("t-" + k); if (b) b.setAttribute("aria-pressed", target[k] ? "true" : "false"); });
+  }
+  document.querySelectorAll("[data-toggle]").forEach(function (b) {
+    b.addEventListener("click", function () { setToggle(b.dataset.toggle, !target[b.dataset.toggle]); });
+  });
+  document.querySelector("[data-close]").addEventListener("click", function () { KEYS.forEach(function (k) { setToggle(k, false); }); });
+
+  var VIEWS = {
+    iso: [[190, 190, 260], [0, 95, 0]], front: [[0, 120, 320], [0, 100, 0]],
+    right: [[170, 110, 60], [28, 100, 8]], back: [[-170, 180, -280], [0, 100, 0]]
+  };
+  var camGoal = null;
+  document.querySelectorAll("[data-view]").forEach(function (b) {
+    b.addEventListener("click", function () { var v = VIEWS[b.dataset.view]; camGoal = { p: new THREE.Vector3().fromArray(v[0]), t: new THREE.Vector3().fromArray(v[1]) }; });
+  });
+
+  var legend = document.getElementById("legend");
+  var selected = null, helper = null, n = 0;
+  PARTS.forEach(function (p) {
+    var li = document.createElement("li");
+    if (p === "sep") { li.className = "sep"; li.setAttribute("aria-hidden", "true"); legend.appendChild(li); return; }
+    n += 1;
+    li.innerHTML = '<button data-part="' + p[0] + '" aria-pressed="false"><span class="n">' + String(n).padStart(2, "0") +
+      "</span><span>" + p[1] + '<span class="d">' + p[2] + "</span></span></button>";
+    legend.appendChild(li);
+  });
+  function select(name) {
+    selected = selected === name ? null : name;
+    if (helper) { scene.remove(helper); helper = null; }
+    if (selected && G[selected]) { helper = new THREE.BoxHelper(G[selected], 0xf08a3c); helper.material.depthTest = false; helper.renderOrder = 2; scene.add(helper); }
+    legend.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.part === selected ? "true" : "false"); });
+  }
+  legend.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) select(b.dataset.part); });
+
+  var ray = new THREE.Raycaster(), mouse = new THREE.Vector2(), downAt = null;
+  function partAt(ev) {
+    var r = renderer.domElement.getBoundingClientRect();
+    mouse.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(mouse, camera);
+    var hits = ray.intersectObjects(root.children, true);
+    for (var i = 0; i < hits.length; i++) {
+      var mat = hits[i].object.material;
+      if (state.xray > 0.5 && mat && mat.opacity !== undefined && mat.opacity < 0.5) continue;
+      var o = hits[i].object; while (o && !o.userData.part) o = o.parent;
+      if (o) return o.userData.part;
+    }
+    return null;
+  }
+  renderer.domElement.addEventListener("pointermove", function (ev) {
+    if (ev.pointerType !== "mouse") return;
+    var p = partAt(ev), r = stage.getBoundingClientRect();
+    if (p && LABEL[p]) { tip.textContent = LABEL[p]; tip.style.left = (ev.clientX - r.left) + "px"; tip.style.top = (ev.clientY - r.top) + "px"; tip.hidden = false; }
+    else tip.hidden = true;
+  });
+  renderer.domElement.addEventListener("pointerleave", function () { tip.hidden = true; });
+  renderer.domElement.addEventListener("pointerdown", function (ev) { downAt = [ev.clientX, ev.clientY]; });
+  renderer.domElement.addEventListener("pointerup", function (ev) {
+    if (!downAt || Math.hypot(ev.clientX - downAt[0], ev.clientY - downAt[1]) > 5) return;
+    var p = partAt(ev); if (p && PARTS.some(function (x) { return x !== "sep" && x[0] === p; })) select(p);
+  });
+
+  function resize() { var w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+  new ResizeObserver(resize).observe(stage); resize();
+
+  function apply() {
+    dPivot.rotation.y = -1.9 * state.pdoor;
+    printer.position.z = 46 * state.slide;
+    flap.rotation.x = 1.5 * state.paper;
+    paperTray.position.z = 24 * state.paper;
+    hPivot.rotation.x = PHI - 1.1 * state.hatch;
+    cPivot.rotation.y = -1.8 * state.cdoor;
+    tray.position.z = 40 * state.tray;
+    var o = 1 - 0.8 * state.xray;
+    M.box.opacity = o; M.boxDoor.opacity = o; M.box.depthWrite = o > 0.9; M.boxDoor.depthWrite = o > 0.9;
+  }
+  function tick() {
+    var k = reduce ? 1 : 0.12;
+    KEYS.forEach(function (n) { state[n] += (target[n] - state[n]) * k; if (Math.abs(target[n] - state[n]) < 0.001) state[n] = target[n]; });
+    apply();
+    if (camGoal) {
+      camera.position.lerp(camGoal.p, reduce ? 1 : 0.1); controls.target.lerp(camGoal.t, reduce ? 1 : 0.1);
+      if (camera.position.distanceTo(camGoal.p) < 0.5) camGoal = null;
+    }
+    if (helper) helper.update();
+    controls.update(); renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+  apply(); tick();
+})();
+</script>

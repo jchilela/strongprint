@@ -1,16 +1,20 @@
 /* Ecrã tátil do kiosk: alvos grandes, contraste alto, sem scroll de página. */
 :root {
-  --bg: #0b1724;
-  --panel: #12233a;
-  --panel-2: #183050;
-  --text: #f2f6fa;
-  --muted: #a9b8c8;
-  --brand: #3d9bff;
-  --brand-ink: #04121f;
+  /* Identidade StrongPrint: azul-noite, azul Strong, canto laranja. */
+  --bg: #0b1f40;
+  --panel: #12305e;
+  --panel-2: #1a3e75;
+  --text: #f4f8fd;
+  --muted: #b4c7e2;
+  --brand: #1e73e8;
+  --brand-ink: #ffffff;
+  --accent: #e8742a;
   --ok: #43c47a;
   --warn: #f2b84b;
   --bad: #ff7a6b;
-  --line: #24405f;
+  --line: #2a4f86;
+  --sp-word: #ffffff;
+  --sp-word-2: #7fb6ff;
   --radius: 20px;
 }
 
@@ -31,14 +35,14 @@ body {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   padding: 14px 28px; border-bottom: 1px solid var(--line); min-height: 72px;
 }
-.brand { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
-.brand span { color: var(--brand); }
+.brand { font-size: 24px; display: flex; align-items: center; gap: 14px; }
+.brand small { font-size: 16px; font-weight: 500; color: var(--muted); }
 .who { color: var(--muted); font-size: 18px; text-align: right; }
 .who strong { color: var(--text); }
 
 .body { flex: 1; display: flex; flex-direction: column; padding: 24px 28px; min-height: 0; overflow: hidden; }
 .center { align-items: center; justify-content: center; text-align: center; }
-h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; letter-spacing: -0.02em; }
+h1 { font-family: "Archivo", "Arial Black", system-ui, sans-serif; font-weight: 800; font-size: 40px; line-height: 1.15; margin: 0 0 12px; letter-spacing: -0.01em; }
 h2 { font-size: 28px; margin: 0 0 10px; }
 p { margin: 0 0 10px; }
 .muted { color: var(--muted); }
@@ -147,3 +151,8 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; touch-action
 #viewer { position: fixed; inset: 0; z-index: 60; background: rgba(4, 12, 20, 0.94); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 24px; }
 #viewer img { max-height: calc(100vh - 140px); max-width: 100%; background: #fff; border-radius: 6px; }
 #viewer .bar { display: flex; gap: 16px; align-items: center; color: #fff; font-size: 24px; }
+
+/* Ecrã de espera: símbolo animado ("folha a sair") por cima da frase. */
+.idle-mark { display: flex; align-items: center; gap: 22px; margin-bottom: 22px; }
+.idle-mark svg { height: 120px; width: auto; flex: 0 0 auto; }
+.idle-mark .sp-word { font-size: 52px; line-height: 0.92; }

@@ -1,0 +1,20 @@
+/* Identidade StrongPrint: logotipo "Fita S" + letra Archivo Black (família StrongBox). */
+.sp-logo { display: inline-flex; align-items: center; gap: 0.5em; text-decoration: none; color: inherit; }
+.sp-logo img { height: 2.1em; width: auto; display: block; }
+.sp-word {
+  font-family: "Archivo", "Arial Black", "Helvetica Neue", sans-serif;
+  font-weight: 900; letter-spacing: 0.01em; line-height: 1; white-space: nowrap;
+  color: var(--sp-word, #0F2A55);
+}
+.sp-word b { font-weight: 900; color: var(--sp-word-2, #1E73E8); }
+.sp-logo small { font-family: inherit; font-weight: 500; font-size: 0.7em; color: var(--muted, #5d6b78); margin-left: 0.2em; }
+.sp-logo--stacked { flex-direction: column; gap: 0.6em; }
+.sp-logo--stacked img { height: 4.5em; }
+.sp-display { font-family: "Archivo", "Arial Black", "Helvetica Neue", sans-serif; font-weight: 800; }
+
+/* Animação "folha a sair": cada dobra do S aparece por ordem. */
+.sp-feed polygon, .sp-feed .sp-nodes { transform-box: fill-box; transform-origin: 50% 0; animation: sp-feed 6s cubic-bezier(.2,.8,.2,1) infinite both; }
+.sp-feed .f2 { animation-delay: .18s } .sp-feed .f3 { animation-delay: .36s } .sp-feed .f4 { animation-delay: .54s }
+.sp-feed .f5 { animation-delay: .72s } .sp-feed .f6 { animation-delay: 1.05s } .sp-feed .sp-nodes { animation-delay: 1.25s }
+@keyframes sp-feed { 0% { opacity: 0; transform: translateY(-14px) scaleY(.2) } 10% { opacity: 1; transform: none } 86% { opacity: 1; transform: none } 97%, 100% { opacity: 0; transform: translateY(10px) } }
+@media (prefers-reduced-motion: reduce) { .sp-feed polygon, .sp-feed .sp-nodes { animation: none } }

@@ -1,0 +1,53 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+{% include "brand/head.html" %}
+<style>
+  /* Identidade StrongPrint no superadmin: cabeçalho azul-noite, botões azul Strong. */
+  :root, html[data-theme="light"] {
+    --primary: #1e73e8;
+    --secondary: #0f2a55;
+    --accent: #e8742a;
+    --primary-fg: #ffffff;
+    --header-color: #b4c7e2;
+    --header-branding-color: #ffffff;
+    --header-bg: #0f2a55;
+    --header-link-color: #ffffff;
+    --breadcrumbs-fg: #b4c7e2;
+    --breadcrumbs-link-fg: #ffffff;
+    --breadcrumbs-bg: #1565c0;
+    --link-fg: #1565c0;
+    --link-hover-color: #0f2a55;
+    --link-selected-fg: #0e4aa8;
+    --button-bg: #1565c0;
+    --button-hover-bg: #0f2a55;
+    --default-button-bg: #0e4aa8;
+    --default-button-hover-bg: #0f2a55;
+    --object-tools-bg: #52627a;
+    --object-tools-hover-bg: #0f2a55;
+    --selected-row: #e3eefc;
+    --sp-word: #ffffff;
+    --sp-word-2: #7fb6ff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --link-fg: #7fb6ff; --link-hover-color: #b9d6ff; --link-selected-fg: #9cc4f5; --selected-row: #16305a; }
+  }
+  html[data-theme="dark"] { --link-fg: #7fb6ff; --link-hover-color: #b9d6ff; --link-selected-fg: #9cc4f5; --selected-row: #16305a; }
+  #site-name a.sp-logo { font-size: 17px; gap: 10px; }
+  #site-name a.sp-logo img { height: 34px; }
+  #site-name small { color: #b4c7e2; font-size: 13px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+  #header { border-bottom: 4px solid var(--accent); }
+</style>
+{% endblock %}
+
+{% block branding %}
+<div id="site-name"><a class="sp-logo" href="{% url 'admin:index' %}" aria-label="StrongPrint Superadmin">{% include "brand/logo.html" with white=True %}<small>Superadmin</small></a></div>
+{% if user.is_anonymous %}
+  {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

@@ -1,12 +1,14 @@
+/* Identidade StrongPrint (família StrongBox): azul-noite, azul Strong, canto laranja. */
 :root {
-  --bg: #f4f6f8;
+  --bg: #f3f7fc;
   --surface: #ffffff;
-  --text: #14202b;
-  --muted: #5d6b78;
-  --line: #e2e7ec;
-  --brand: #0b5cad;
+  --text: #0f2240;
+  --muted: #52627a;
+  --line: #dde6f1;
+  --brand: #1565c0;
   --brand-ink: #ffffff;
-  --brand-soft: #e6f0fa;
+  --brand-soft: #e3eefc;
+  --accent: #e8742a;
   --ok: #17803d;
   --ok-soft: #e5f5ea;
   --warn: #9a5b00;
@@ -14,19 +16,22 @@
   --bad: #b42318;
   --bad-soft: #fde8e6;
   --radius: 14px;
-  --shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.08);
+  --shadow: 0 1px 2px rgba(15, 42, 85, 0.06), 0 1px 3px rgba(15, 42, 85, 0.08);
+  --sp-word: #0f2a55;
+  --sp-word-2: #1e73e8;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0f1419;
-    --surface: #182029;
-    --text: #e8edf2;
-    --muted: #9aa8b5;
-    --line: #2a3542;
-    --brand: #4a9be8;
-    --brand-ink: #0b1724;
-    --brand-soft: #16304a;
+    --bg: #0a1730;
+    --surface: #12213f;
+    --text: #e8eef7;
+    --muted: #9cadc4;
+    --line: #23365a;
+    --brand: #7fb6ff;
+    --brand-ink: #0a1730;
+    --brand-soft: #16305a;
+    --accent: #f0904a;
     --ok: #52c27a;
     --ok-soft: #173225;
     --warn: #f0b24a;
@@ -34,6 +39,8 @@
     --bad: #f27b70;
     --bad-soft: #3d1c19;
     --shadow: none;
+    --sp-word: #ffffff;
+    --sp-word-2: #7fb6ff;
   }
 }
 
@@ -64,8 +71,7 @@ a { color: var(--brand); text-decoration: none; }
   border-bottom: 1px solid var(--line);
 }
 
-.brand { font-weight: 700; font-size: 18px; color: var(--text); letter-spacing: -0.01em; }
-.brand span { color: var(--brand); }
+.brand { font-size: 19px; }
 
 .lang { display: flex; gap: 4px; }
 .lang button {
@@ -82,7 +88,7 @@ a { color: var(--brand); text-decoration: none; }
 
 main { max-width: 560px; margin: 0 auto; padding: 16px; }
 
-h1 { font-size: 24px; line-height: 1.25; margin: 8px 0 16px; letter-spacing: -0.01em; }
+h1 { font-family: "Archivo", "Arial Black", system-ui, sans-serif; font-weight: 800; font-size: 26px; line-height: 1.2; margin: 8px 0 16px; letter-spacing: -0.005em; color: var(--text); }
 h2 { font-size: 17px; margin: 24px 0 8px; }
 
 .card {
@@ -221,3 +227,6 @@ dialog.modal h2 { margin-top: 0; font-size: 20px; }
 .pages { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin: 16px 0; }
 .pages figure { margin: 0; text-align: center; }
 .pages img { width: 100%; border: 1px solid var(--line); border-radius: 4px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+
+/* Página inicial: logotipo grande. */
+.hero-logo { display: flex; justify-content: center; margin: 28px 0 8px; font-size: 26px; }

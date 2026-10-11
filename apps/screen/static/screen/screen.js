@@ -343,8 +343,9 @@
       right = langToggle();
     }
     return (
-      '<header class="bar"><div class="brand">Strong<span>Print</span>' +
-      (S.kiosk ? ' <small class="muted" style="font-size:16px;font-weight:500">' + esc(S.kiosk.code) + "</small>" : "") +
+      '<header class="bar"><div class="brand"><span class="sp-logo"><img src="' + CFG.brand + 'symbol-white.svg" alt="" width="34" height="43">' +
+      '<span class="sp-word">STRONG<b>PRINT</b></span></span>' +
+      (S.kiosk ? " <small>" + esc(S.kiosk.code) + "</small>" : "") +
       "</div>" + right + "</header>" +
       '<section class="body' + (opts.center ? " center" : "") + '">' + inner + "</section>"
     );
@@ -359,6 +360,7 @@
   }
 
   function render(name, html) {
+    if (name !== "idle") lastIdleHtml = null;
     if (name !== "options" && viewer) {
       viewer = null;
       paintViewer();
@@ -464,22 +466,37 @@
       });
   }
 
+  // Símbolo "Fita S" a montar-se dobra a dobra, como papel a sair da impressora.
+  var IDLE_MARK =
+    '<div class="idle-mark" aria-hidden="true"><svg class="sp-feed" viewBox="8 4 104 132">' +
+    '<polygon class="f1" points="16,10 92,10 104,22 104,36 42,36" fill="#FFFFFF"/>' +
+    '<polygon class="f2" points="16,10 42,36 42,83 16,57" fill="#9CC4F5"/>' +
+    '<polygon class="f3" points="16,57 78,57 104,83 42,83" fill="#FFFFFF"/>' +
+    '<polygon class="f4" points="78,57 104,83 104,130 78,104" fill="#9CC4F5"/>' +
+    '<polygon class="f5" points="16,104 78,104 104,130 16,130" fill="#FFFFFF"/>' +
+    '<polygon class="f6" points="92,10 92,22 104,22" fill="#E8742A"/>' +
+    '<g class="sp-nodes"><circle cx="16" cy="117" r="5.5" fill="#7FB6FF" stroke="#0B1F40" stroke-width="2"/>' +
+    '<circle cx="104" cy="29" r="5.5" fill="#7FB6FF" stroke="#0B1F40" stroke-width="2"/></g></svg>' +
+    '<span class="sp-word">STRONG<br><b>PRINT</b></span></div>';
+
   function paintIdle() {
     if (S.screen !== "idle") return;
     var prices = S.prices
       ? '<p class="muted">' + esc(t("priceFrom", { bw: kz(S.prices.bw_page_kz), color: kz(S.prices.color_from_kz) })) + "</p>"
       : "";
     var qr = S.pairing ? '<div class="qr">' + S.pairing.qr_svg + "</div>" : '<div class="spinner"></div>';
-    render(
-      "idle",
-      frame(
-        '<div class="split"><div><h1>' + esc(t("tagline")) + "</h1>" + prices +
+    var html = frame(
+        '<div class="split"><div>' + IDLE_MARK + "<h1>" + esc(t("tagline")) + "</h1>" + prices +
           '<ol class="steps"><li>' + esc(t("step1")) + "</li><li>" + esc(t("step2")) + "</li><li>" + esc(t("step3")) +
           '</li></ol></div><div style="text-align:center">' + qr + '<p class="big" style="margin-top:14px">' + esc(t("scan")) +
           '</p><button class="btn ghost" data-act="phone">' + esc(t("orPhone")) + "</button></div></div>"
-      )
     );
+    // Só redesenha quando muda (QR, preços, língua): a animação do símbolo não recomeça a meio.
+    if (S.screen === "idle" && lastIdleHtml === html) return;
+    lastIdleHtml = html;
+    render("idle", html);
   }
+  var lastIdleHtml = null;
 
   function pollPairing() {
     if (!S.pairing || S.screen !== "idle") return;

@@ -4,14 +4,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b5cad">
+  <meta name="theme-color" content="#0F2A55">
   <title>{% block title %}{% translate "Partners" %}{% endblock %} · StrongPrint</title>
+  {% include "brand/head.html" %}
   <link rel="stylesheet" href="{% static 'portal/portal.css' %}">
   <link rel="stylesheet" href="{% static 'partner/partner.css' %}">
 </head>
 <body class="partner">
   <header class="topbar">
-    <a class="brand" href="{% url 'partner:dashboard' %}">Strong<span>Print</span> <small class="muted">{% translate "Partners" %}</small></a>
+    <a class="brand sp-logo" href="{% url 'partner:dashboard' %}" aria-label="StrongPrint {% translate 'Partners' %}">{% include "brand/logo.html" %}<small>{% translate "Partners" %}</small></a>
     <form class="lang" action="{% url 'set_language' %}" method="post">{% csrf_token %}
       <input type="hidden" name="next" value="{{ request.get_full_path }}">
       <button name="language" value="pt" aria-pressed="{% if LANG == 'pt' %}true{% else %}false{% endif %}">PT</button>
