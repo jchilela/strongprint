@@ -39,7 +39,7 @@
       balance: "Saldo",
       whatToDo: "O que quer fazer?",
       printTile: "Imprimir",
-      printTileSub: "Um ficheiro seu: telemóvel, pen USB ou Meus ficheiros",
+      printTileSub: "Um ficheiro seu: telemóvel, e-mail ou Meus ficheiros",
       copyTile: "Copiar",
       copyTileSub: "Um documento em papel",
       copyTitle: "Fazer cópia",
@@ -63,7 +63,7 @@
       blankWarning: "Parece que a cópia está em branco. Confirme o documento.",
       chooseTitle: "O que quer imprimir?",
       myFiles: "Meus ficheiros",
-      myFilesSub: "Enviados no portal ou WhatsApp",
+      myFilesSub: "Enviados no portal ou por e-mail",
       usb: "Pen USB",
       usbSub: "Ligue a pen na entrada USB",
       usbNone: "Nenhuma pen detetada",
@@ -156,7 +156,7 @@
       balance: "Balance",
       whatToDo: "What would you like to do?",
       printTile: "Print",
-      printTileSub: "A file of yours: phone, USB pen drive or My files",
+      printTileSub: "A file of yours: phone, e-mail or My files",
       copyTile: "Copy",
       copyTileSub: "A paper document",
       copyTitle: "Make a copy",
@@ -180,7 +180,7 @@
       blankWarning: "The copy looks blank. Check the document.",
       chooseTitle: "What do you want to print?",
       myFiles: "My files",
-      myFilesSub: "Sent from the portal or WhatsApp",
+      myFilesSub: "Sent from the portal or by e-mail",
       usb: "USB pen drive",
       usbSub: "Plug it into the USB port",
       usbNone: "No pen drive detected",
@@ -670,9 +670,11 @@
     render(
       "printMenu",
       frame(
-        "<h1>" + esc(t("chooseTitle")) + '</h1><div class="tiles">' +
+        "<h1>" + esc(t("chooseTitle")) + '</h1><div class="tiles' + (CFG.agentUrl ? "" : " two") + '">' +
           '<button class="tile" data-act="docs"><div class="icon">📄</div><div><div class="t">' + esc(t("myFiles")) + '</div><div class="s">' + esc(t("myFilesSub")) + "</div></div></button>" +
-          '<button class="tile" data-act="usb"' + (S.agent ? "" : " disabled") + '><div class="icon">🔌</div><div><div class="t">' + esc(t("usb")) + '</div><div class="s">' + esc(S.agent ? t("usbSub") : t("usbNone")) + "</div></div></button>" +
+          (CFG.agentUrl
+            ? '<button class="tile" data-act="usb"' + (S.agent ? "" : " disabled") + '><div class="icon">🔌</div><div><div class="t">' + esc(t("usb")) + '</div><div class="s">' + esc(S.agent ? t("usbSub") : t("usbNone")) + "</div></div></button>"
+            : "") +
           '<button class="tile" data-act="upload"><div class="icon">📱</div><div><div class="t">' + esc(t("phoneUpload")) + '</div><div class="s">' + esc(t("phoneUploadSub")) + "</div></div></button>" +
           '</div><div class="row" style="margin-top:auto"><button class="btn ghost" data-act="home">' + esc(t("back")) + "</button></div>"
       )

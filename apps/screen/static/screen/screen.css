@@ -72,6 +72,7 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; touch-action
 .row > .btn { flex: 1; }
 
 .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 18px; }
+.tiles.two { grid-template-columns: repeat(2, 1fr); }
 .tile { background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius); padding: 26px 20px; text-align: left; min-height: 170px; display: flex; flex-direction: column; justify-content: space-between; }
 .tile:active { border-color: var(--brand); }
 .tile .icon { font-size: 44px; }
@@ -129,14 +130,29 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; touch-action
 #overlay[hidden] { display: none; }
 #overlay .box { background: var(--panel); border-radius: 24px; padding: 36px; max-width: 760px; }
 
+/* Tablets baratos (≈ 960×600 em CSS): tudo tem de caber sem scroll. */
 @media (max-height: 640px) {
   body { font-size: 17px; }
-  h1 { font-size: 32px; }
-  .btn { min-height: 64px; font-size: 21px; }
-  .keypad button { min-height: 58px; font-size: 26px; }
-  .tile { min-height: 130px; padding: 18px; }
+  .bar { min-height: 56px; padding: 8px 20px; }
+  .brand { font-size: 20px; }
+  .body { padding: 14px 22px; }
+  h1 { font-size: 28px; margin-bottom: 6px; }
+  p { margin-bottom: 6px; }
+  .big { font-size: 22px; }
+  .btn { min-height: 54px; font-size: 20px; }
+  .display { font-size: 34px; min-height: 46px; }
+  .keypad { gap: 8px; margin-top: 8px; width: min(400px, 100%); }
+  .keypad button { min-height: 46px; font-size: 24px; border-radius: 12px; }
+  .tile { min-height: 120px; padding: 16px; }
   .summary .total { font-size: 36px; }
   .ref dd { font-size: 36px; }
+  .idle-mark { margin-bottom: 12px; gap: 16px; }
+  .idle-mark svg { height: 84px; }
+  .idle-mark .sp-word { font-size: 38px; }
+  .steps li { font-size: 18px; padding: 4px 0 10px 50px; }
+  .steps li::before { width: 36px; height: 36px; }
+  .qr { width: min(34vh, 220px); padding: 10px; }
+  .strip .pg img { height: 18vh; }
 }
 
 /* pré-visualização das páginas */

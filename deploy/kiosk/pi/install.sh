@@ -2,7 +2,10 @@
 # Instalação StrongPrint num Raspberry Pi (corre no Pi, como root, via provision.sh).
 # Reexecutável: reinstala/atualiza sem duplicar nada.
 #
-#   sudo KIOSK_USER=<utilizador do ambiente gráfico> bash install.sh < config.json
+#   sudo KIOSK_USER=<utilizador do ambiente gráfico> SCREEN=tablet|pi bash install.sh < config.json
+#
+# SCREEN=tablet (predefinição): o ecrã é um tablet Android à parte; o Pi não abre browser.
+# SCREEN=pi: monitor ligado ao Pi, que abre o ecrã em Chromium modo kiosk.
 #
 # config.json (gerado pelo servidor): pi_vpn_ip, printer_vpn_ip, printer_lan_ip,
 # server_vpn_ip, server_public_key, endpoint, api_url, screen_url e (opcional) token.
@@ -10,6 +13,7 @@ set -euo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)
 KIOSK_USER=${KIOSK_USER:-${SUDO_USER:-pi}}
 PRINTER_IFACE=${PRINTER_IFACE:-}
+SCREEN=${SCREEN:-tablet}
 CONFIG=$(cat)
 get() { python3 -c 'import json,sys; print(json.loads(sys.argv[1]).get(sys.argv[2]) or "")' "$CONFIG" "$1"; }
 
@@ -23,7 +27,9 @@ echo "==> Pacotes"
 export DEBIAN_FRONTEND=noninteractive
 need=()
 for pkg in wireguard-tools iptables python3; do dpkg -s "$pkg" >/dev/null 2>&1 || need+=("$pkg"); done
-command -v chromium >/dev/null || command -v chromium-browser >/dev/null || need+=(chromium)
+if [[ $SCREEN == pi ]]; then
+    command -v chromium >/dev/null || command -v chromium-browser >/dev/null || need+=(chromium)
+fi
 if ((${#need[@]})); then apt-get update -q && apt-get install -y -q "${need[@]}"; fi
 
 echo "==> Configuração"
@@ -78,24 +84,33 @@ install -d -m 755 /opt/strongprint-agent
 install -m 755 "$HERE/agent.py" /opt/strongprint-agent/agent.py
 install -m 644 "$HERE/strongprint-agent.service" /etc/systemd/system/strongprint-agent.service
 
-echo "==> Ecrã em modo kiosk (utilizador $KIOSK_USER)"
-install -m 755 "$HERE/strongprint-kiosk" /usr/local/bin/strongprint-kiosk
 HOME_DIR=$(getent passwd "$KIOSK_USER" | cut -d: -f6)
-# Um só mecanismo de arranque: labwc (Raspberry Pi OS Bookworm) ou autostart XDG (X11/LXDE).
-if [[ -d $HOME_DIR/.config/labwc || -f /etc/xdg/labwc/autostart ]]; then
-    rm -f "$HOME_DIR/.config/autostart/strongprint-kiosk.desktop"
-    install -d -o "$KIOSK_USER" -g "$KIOSK_USER" "$HOME_DIR/.config/labwc"
-    touch "$HOME_DIR/.config/labwc/autostart"
-    grep -q strongprint-kiosk "$HOME_DIR/.config/labwc/autostart" || \
-        echo "/usr/local/bin/strongprint-kiosk &" >> "$HOME_DIR/.config/labwc/autostart"
-    chown "$KIOSK_USER:$KIOSK_USER" "$HOME_DIR/.config/labwc/autostart"
+if [[ $SCREEN == pi ]]; then
+    echo "==> Ecrã em modo kiosk (utilizador $KIOSK_USER)"
+    install -m 755 "$HERE/strongprint-kiosk" /usr/local/bin/strongprint-kiosk
+    # Um só mecanismo de arranque: labwc (Raspberry Pi OS Bookworm) ou autostart XDG (X11/LXDE).
+    if [[ -d $HOME_DIR/.config/labwc || -f /etc/xdg/labwc/autostart ]]; then
+        rm -f "$HOME_DIR/.config/autostart/strongprint-kiosk.desktop"
+        install -d -o "$KIOSK_USER" -g "$KIOSK_USER" "$HOME_DIR/.config/labwc"
+        touch "$HOME_DIR/.config/labwc/autostart"
+        grep -q strongprint-kiosk "$HOME_DIR/.config/labwc/autostart" || \
+            echo "/usr/local/bin/strongprint-kiosk &" >> "$HOME_DIR/.config/labwc/autostart"
+        chown "$KIOSK_USER:$KIOSK_USER" "$HOME_DIR/.config/labwc/autostart"
+    else
+        install -d -o "$KIOSK_USER" -g "$KIOSK_USER" "$HOME_DIR/.config/autostart"
+        install -m 644 -o "$KIOSK_USER" -g "$KIOSK_USER" "$HERE/strongprint-kiosk.desktop" \
+            "$HOME_DIR/.config/autostart/strongprint-kiosk.desktop"
+    fi
+    # Ecrã sempre ligado.
+    command -v raspi-config >/dev/null && raspi-config nonint do_blanking 1 || true
+
 else
-    install -d -o "$KIOSK_USER" -g "$KIOSK_USER" "$HOME_DIR/.config/autostart"
-    install -m 644 -o "$KIOSK_USER" -g "$KIOSK_USER" "$HERE/strongprint-kiosk.desktop" \
-        "$HOME_DIR/.config/autostart/strongprint-kiosk.desktop"
+    echo "==> Ecrã: tablet à parte (o Pi não abre browser)"
+    rm -f "$HOME_DIR/.config/autostart/strongprint-kiosk.desktop"
+    [[ -f $HOME_DIR/.config/labwc/autostart ]] && sed -i '/strongprint-kiosk/d' "$HOME_DIR/.config/labwc/autostart"
+    pkill -f /usr/local/bin/strongprint-kiosk >/dev/null 2>&1 || true
+    pkill -u "$KIOSK_USER" -f 'chromium.*--kiosk' >/dev/null 2>&1 || true
 fi
-# Ecrã sempre ligado.
-command -v raspi-config >/dev/null && raspi-config nonint do_blanking 1 || true
 
 systemctl daemon-reload
 systemctl enable --now strongprint-nat.service strongprint-agent.service >/dev/null 2>&1

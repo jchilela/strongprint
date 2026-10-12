@@ -178,7 +178,8 @@ SCAN_DPI = env.int("SCAN_DPI", default=200)
 SCAN_TIMEOUT_SECONDS = env.int("SCAN_TIMEOUT_SECONDS", default=180)
 
 # Ecrã do kiosk: agente local do Pi (pens USB) e tempo de inatividade da sessão.
-KIOSK_AGENT_URL = env("KIOSK_AGENT_URL", default="http://127.0.0.1:8800")
+# Agente local do Pi (pen USB). Vazio = sem impressão por pen (o ecrã é um tablet).
+KIOSK_AGENT_URL = env("KIOSK_AGENT_URL", default="")
 KIOSK_IDLE_SECONDS = env.int("KIOSK_IDLE_SECONDS", default=90)
 
 # Códigos de acesso por telefone: console (log; desenvolvimento) | strongx (SMS) | http (genérico)
