@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<title>StrongPrint — Imprima por e-mail (horizontal)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { margin: 0; }
+  body { width: 297mm; height: 210mm; font-family: "Public Sans", Arial, sans-serif; color: #0F2A55; background: #FFFFFF; display: flex; flex-direction: column; overflow: hidden; }
+  .top { background: #0F2A55; padding: 7mm 14mm 6mm; display: flex; align-items: center; justify-content: space-between; border-bottom: 2.5mm solid #E8742A; }
+  .logo { display: flex; align-items: center; gap: 5mm; }
+  .top svg { width: 12mm; height: auto; }
+  .word { font-family: "Archivo", "Arial Black", sans-serif; font-weight: 900; font-size: 10mm; line-height: 1; letter-spacing: .3mm; color: #FFFFFF; }
+  .word b { color: #7FB6FF; font-weight: 900; }
+  .tag { color: #BFD3EE; font-size: 5mm; font-weight: 500; }
+  main { flex: 1; padding: 9mm 14mm 0; display: grid; grid-template-columns: 1.15fr 1fr; gap: 10mm; }
+  .col { display: flex; flex-direction: column; gap: 6mm; min-width: 0; }
+  h1 { font-family: "Archivo", "Arial Black", sans-serif; font-weight: 800; font-size: 11mm; line-height: 1.08; margin: 0; letter-spacing: -.2mm; }
+  .email { background: #1565C0; color: #FFFFFF; border-radius: 5mm; padding: 6mm 6mm; text-align: center; }
+  .email small { display: block; font-size: 4.5mm; color: #D7E7FB; margin-bottom: 1.5mm; letter-spacing: .5mm; text-transform: uppercase; font-weight: 600; }
+  .email span { font-family: "Archivo", "Arial Black", sans-serif; font-weight: 800; font-size: 10mm; letter-spacing: -.2mm; white-space: nowrap; }
+  .subject { border: 1.1mm solid #E8742A; border-radius: 5mm; padding: 4.5mm 6mm; display: flex; gap: 5mm; align-items: center; }
+  .subject .warn { flex: 0 0 auto; width: 13mm; height: 13mm; border-radius: 50%; background: #E8742A; color: #FFFFFF; font-family: "Archivo", sans-serif; font-weight: 900; font-size: 9mm; display: flex; align-items: center; justify-content: center; }
+  .subject p { margin: 0; font-size: 6mm; line-height: 1.25; font-weight: 600; }
+  .subject p span { display: block; font-weight: 400; font-size: 4.6mm; color: #3D4F6B; margin-top: 1mm; }
+  .label { font-size: 4.2mm; font-weight: 600; letter-spacing: .5mm; text-transform: uppercase; color: #1565C0; margin: 0; }
+  .mail { border: .4mm solid #C9D6E8; border-radius: 4mm; overflow: hidden; font-size: 4.8mm; }
+  .mail div { display: flex; border-bottom: .4mm solid #E1E9F4; padding: 2.6mm 5mm; }
+  .mail div:last-child { border-bottom: 0; }
+  .mail .k { width: 25mm; color: #52627A; }
+  .mail .v { font-weight: 600; }
+  .mail .hl { background: #FDEBDD; }
+  .mail .hl .v { color: #B4561A; }
+  ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3mm; }
+  li { background: #F3F7FC; border-radius: 4mm; padding: 3.4mm 5mm; font-size: 4.8mm; line-height: 1.3; display: flex; gap: 4mm; align-items: center; }
+  li b { flex: 0 0 auto; font-family: "Archivo", sans-serif; font-weight: 900; font-size: 8mm; color: #1E73E8; width: 7mm; }
+  footer { padding: 5mm 14mm 7mm; display: flex; justify-content: space-between; align-items: flex-end; font-size: 4mm; color: #52627A; }
+  footer b { color: #0F2A55; }
+</style>
+</head>
+<body>
+  <div class="top">
+    <div class="logo">
+      <svg viewBox="8 4 104 132" aria-hidden="true"><polygon points="16,10 92,10 104,22 104,36 42,36" fill="#FFFFFF"/><polygon points="92,10 92,22 104,22" fill="#E8742A"/><polygon points="16,10 42,36 42,83 16,57" fill="#9CC4F5"/><polygon points="16,57 78,57 104,83 42,83" fill="#FFFFFF"/><polygon points="78,57 104,83 104,130 78,104" fill="#9CC4F5"/><polygon points="16,104 78,104 104,130 16,130" fill="#FFFFFF"/><circle cx="16" cy="117" r="5.5" fill="#7FB6FF" stroke="#0F2A55" stroke-width="2"/><circle cx="104" cy="29" r="5.5" fill="#7FB6FF" stroke="#0F2A55" stroke-width="2"/></svg>
+      <div class="word">STRONG<b>PRINT</b></div>
+    </div>
+    <span class="tag">Imprimir · Copiar · por e&#8209;mail</span>
+  </div>
+  <main>
+    <div class="col">
+      <h1>Envie os seus ficheiros por e&#8209;mail e imprima no kiosk</h1>
+      <div class="email"><small>Envie para</small><span>strongprintao@gmail.com</span></div>
+      <div class="subject">
+        <div class="warn">!</div>
+        <p>No assunto, escreva o seu número de telefone.<span>Sem o número no assunto, o ficheiro não chega à sua conta.</span></p>
+      </div>
+    </div>
+    <div class="col">
+      <p class="label">Exemplo</p>
+      <div class="mail" aria-label="Exemplo de e-mail">
+        <div><span class="k">Para</span><span class="v">strongprintao@gmail.com</span></div>
+        <div class="hl"><span class="k">Assunto</span><span class="v">923 456 789</span></div>
+        <div><span class="k">Anexo</span><span class="v">trabalho.pdf</span></div>
+      </div>
+      <p class="label">Depois</p>
+      <ol>
+        <li><b>1</b>Envie o e-mail com os ficheiros em anexo.</li>
+        <li><b>2</b>No kiosk, entre com o mesmo número.</li>
+        <li><b>3</b>Abra "Meus ficheiros" e imprima.</li>
+      </ol>
+    </div>
+  </main>
+  <footer>
+    <span>PDF, Word, Excel, PowerPoint e fotos · até 10 ficheiros por e-mail</span>
+    <span><b>client.strongprint.it.ao</b></span>
+  </footer>
+</body>
+</html>
