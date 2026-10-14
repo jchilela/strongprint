@@ -25,4 +25,6 @@ urlpatterns = [
     path("impressoes/", views.history, name="history"),
     path("impressoes/<uuid:job_id>/", views.job_view, name="job"),
     path("k/<str:code>/", views.kiosk_pair, name="kiosk_pair"),
+    # O QR do ecrã usa o endereço em maiúsculas (QR mais simples de ler).
+    path("K/<str:code>/", views.kiosk_pair),
 ]

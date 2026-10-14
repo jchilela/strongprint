@@ -129,8 +129,15 @@ def kiosk_state(request):
 # --- emparelhamento por QR --------------------------------------------------------
 
 
-def qr_svg(data: str) -> str:
-    return segno.make(data, error="m").svg_inline(scale=8, border=2, dark="#0b1724")
+def qr_svg(data: str, *, upper: bool = False) -> str:
+    """QR para o ecrã (não se estraga como papel: correção L = quadrados maiores).
+
+    ``upper``: endereço em maiúsculas cabe no modo alfanumérico do QR (25×25 em vez
+    de 33×33); só para caminhos que aceitam maiúsculas (o emparelhamento /K/).
+    """
+    if upper:
+        data = data.upper()
+    return segno.make(data, error="l").svg_inline(scale=8, border=4, dark="#0b1724")
 
 
 @device_view(["POST"])
@@ -146,7 +153,7 @@ def create_pairing(request):
             "id": str(pairing.id),
             "code": pairing.code,
             "url": url,
-            "qr_svg": qr_svg(url),
+            "qr_svg": qr_svg(url, upper=True),
             "expires_at": pairing.expires_at,
         },
         status=status.HTTP_201_CREATED,

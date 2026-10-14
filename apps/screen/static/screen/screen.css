@@ -151,7 +151,7 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; touch-action
   .idle-mark .sp-word { font-size: 38px; }
   .steps li { font-size: 18px; padding: 4px 0 10px 50px; }
   .steps li::before { width: 36px; height: 36px; }
-  .qr { width: min(34vh, 220px); padding: 10px; }
+  .qr { width: min(48vh, 290px); padding: 8px; }
   .strip .pg img { height: 18vh; }
 }
 

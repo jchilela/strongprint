@@ -96,8 +96,9 @@ def test_qr_pairing_flow(screen, kiosk, client):
     poll = f"/api/v1/kiosk/pairings/{pairing['id']}"
     assert screen.get(poll).json() == {"status": "PENDING"}
 
-    # telemóvel: sem sessão → vai entrar primeiro
-    url = reverse("portal:kiosk_pair", args=[pairing["code"]])
+    # telemóvel: o QR leva ao endereço em maiúsculas (QR mais simples); sem sessão → entrar
+    assert reverse("portal:kiosk_pair", args=[pairing["code"]]) == f"/k/{pairing['code']}/"
+    url = f"/K/{pairing['code']}/"
     assert "/entrar/" in client.get(url).url
 
     user = UserFactory(full_name="Ana")
