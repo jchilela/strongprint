@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin, messages
 from django.shortcuts import render
 from django.utils.translation import gettext as _
@@ -11,7 +12,16 @@ def dashboard(request):
         # Equipa sem acesso a finanças: vê só a lista de modelos do admin.
         return admin.site.index(request)
     query = request.GET.get("q", "")
+    from datetime import datetime
+
+    from apps.jobs import inbound_email
+
+    mail_problem = inbound_email.health()
+    if mail_problem:
+        mail_problem = {**mail_problem, "since": datetime.fromisoformat(mail_problem["since"])}
     context = {
+        "mail_problem": mail_problem,
+        "inbound_address": settings.INBOUND_EMAIL_ADDRESS,
         **admin.site.each_context(request),
         "title": _("Owner dashboard"),
         "sales": metrics.sales_summary(),

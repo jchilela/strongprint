@@ -35,6 +35,13 @@
 {% block breadcrumbs %}{% endblock %}
 {% block content %}
 <div class="sp">
+  {% if mail_problem %}
+  <div class="sp-card" style="border:2px solid #b42318;margin-bottom:14px">
+    <strong class="sp-bad">⚠ {% translate "Print by e-mail is stopped" %}</strong>
+    <div>{% blocktranslate with address=inbound_address since=mail_problem.since|timesince %}The server cannot open the mailbox {{ address }} (for {{ since }}). E-mails wait in the mailbox and are added as soon as access is back. Usually the app password was revoked: create a new one and update INBOUND_IMAP_PASSWORD.{% endblocktranslate %}</div>
+    <div class="sp-muted" style="font-size:12px;margin-top:4px">{{ mail_problem.error }}</div>
+  </div>
+  {% endif %}
   <p class="sp-muted" style="margin-top:0">{% translate "Updated" %} {% now "d/m/Y H:i" %} · {% translate "refreshes every minute" %} · <a href="{% url 'admin-models' %}">{% translate "All admin sections" %} →</a></p>
 
   {# ------------------------------------------------ vendas #}

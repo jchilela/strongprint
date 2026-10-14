@@ -161,6 +161,32 @@ def process_message(raw: bytes) -> InboundEmail | None:
     return record
 
 
+HEALTH_KEY = "inbound_email:error"
+
+
+def set_health_error(message: str) -> None:
+    """Guarda o erro de acesso à caixa (mostrado no painel); regista só a primeira vez."""
+    current = cache.get(HEALTH_KEY)
+    if not current:
+        log.error("inbound_email.mailbox_unavailable", error=message)
+        current = {"error": message, "since": timezone.now().isoformat()}
+    current["last"] = timezone.now().isoformat()
+    cache.set(HEALTH_KEY, current, None)
+
+
+def clear_health_error() -> None:
+    if cache.get(HEALTH_KEY):
+        log.info("inbound_email.mailbox_back")
+        cache.delete(HEALTH_KEY)
+
+
+def health() -> dict | None:
+    """Erro atual de acesso à caixa de e-mail, ou None se está a funcionar."""
+    if not enabled():
+        return None
+    return cache.get(HEALTH_KEY)
+
+
 def fetch_mailbox(imap_factory=imaplib.IMAP4_SSL) -> int:
     """Lê os e-mails por ler, trata-os e apaga-os da caixa (os ficheiros ficam connosco)."""
     if not enabled():
@@ -169,9 +195,15 @@ def fetch_mailbox(imap_factory=imaplib.IMAP4_SSL) -> int:
         return 0  # outra leitura em curso
     count = 0
     try:
-        imap = imap_factory(settings.INBOUND_IMAP_HOST, settings.INBOUND_IMAP_PORT)
         try:
+            imap = imap_factory(settings.INBOUND_IMAP_HOST, settings.INBOUND_IMAP_PORT)
             imap.login(settings.INBOUND_IMAP_USER, settings.INBOUND_IMAP_PASSWORD)
+        except (imaplib.IMAP4.error, OSError) as exc:
+            # Senha revogada ou caixa inacessível: avisar no painel, sem encher os registos.
+            set_health_error(str(exc)[:200])
+            return 0
+        clear_health_error()
+        try:
             imap.select(settings.INBOUND_IMAP_FOLDER)
             _, data = imap.uid("search", None, "UNSEEN")
             for uid in (data[0] or b"").split()[:50]:

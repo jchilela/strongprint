@@ -144,3 +144,36 @@ def test_portal_shows_address_and_sender(client, settings, s3, django_capture_on
     page = client.get("/ficheiros/").content.decode()
     assert "imprimir@strongprint.it.ao" in page and "931405768" in page
     assert "joao@example.com" in page
+
+
+def test_mailbox_login_failure_is_flagged_then_cleared(settings, s3):
+    import imaplib
+
+    from django.core.cache import cache
+
+    settings.INBOUND_IMAP_HOST, settings.INBOUND_IMAP_USER = "imap.example.com", "imprimir"
+    cache.delete(inbound_email.HEALTH_KEY)
+
+    class Refused(FakeImap):
+        def login(self, user, password):
+            raise imaplib.IMAP4.error(b"[AUTHENTICATIONFAILED] Invalid credentials (Failure)")
+
+    assert inbound_email.fetch_mailbox(lambda host, port: Refused({})) == 0
+    problem = inbound_email.health()
+    assert problem and "AUTHENTICATIONFAILED" in problem["error"]
+
+    assert inbound_email.fetch_mailbox(lambda host, port: FakeImap({})) == 0
+    assert inbound_email.health() is None
+
+
+def test_dashboard_shows_mail_problem(settings, s3, client):
+    from django.core.cache import cache
+    from django.utils import timezone
+
+    settings.INBOUND_IMAP_HOST, settings.INBOUND_IMAP_USER = "imap.example.com", "imprimir"
+    cache.set(inbound_email.HEALTH_KEY, {"error": "Invalid credentials", "since": timezone.now().isoformat()})
+    owner = UserFactory(is_staff=True, is_superuser=True)
+    client.force_login(owner)
+    page = client.get("/admin/").content.decode()
+    assert "Invalid credentials" in page
+    cache.delete(inbound_email.HEALTH_KEY)
