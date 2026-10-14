@@ -5,6 +5,7 @@ Dois níveis de autenticação:
 - ``Kiosk <token de sessão>`` (o cliente identificado): perfil, ficheiros, trabalhos.
 """
 
+import re
 from datetime import timedelta
 
 import segno
@@ -94,10 +95,26 @@ def fresh_printer(printer: Printer) -> Printer:
     return printer
 
 
+SCREEN_RE = re.compile(r"^(\d{2,5})x(\d{2,5})@(\d{1,2}(?:\.\d{1,2})?)$")
+
+
+def remember_screen(kiosk, value: str) -> None:
+    """Guarda o tamanho do ecrã reportado pelo kiosk (CSS px × densidade), para o admin."""
+    match = SCREEN_RE.match(value or "")
+    if match:
+        w, h, dpr = match.groups()
+        cache.set(
+            f"kiosk_screen:{kiosk.pk}",
+            {"w": int(w), "h": int(h), "dpr": float(dpr), "at": timezone.now().isoformat()},
+            7 * 24 * 3600,
+        )
+
+
 @device_view(["GET"])
 def kiosk_state(request):
     """O ecrã consulta a cada ~10 s: pode atender clientes? Se não, porquê?"""
     kiosk = _kiosk(request)
+    remember_screen(kiosk, request.query_params.get("screen", ""))
     printer: Printer = fresh_printer(request.auth.printer)
     if not kiosk.is_active or kiosk.status in ("MAINTENANCE", "OUT_OF_SERVICE"):
         reason = "maintenance"

@@ -112,7 +112,7 @@
       <tbody>
       {% for r in kiosks %}
         <tr>
-          <td><a href="{% url 'admin:partners_kiosk_change' r.kiosk.pk %}"><strong>{{ r.kiosk.code }}</strong></a>{% if not r.kiosk.is_active %} <span class="sp-pill sp-muted">{% translate "inactive" %}</span>{% endif %}<div class="sp-sub">{{ r.kiosk.name }}</div></td>
+          <td><a href="{% url 'admin:partners_kiosk_change' r.kiosk.pk %}"><strong>{{ r.kiosk.code }}</strong></a>{% if not r.kiosk.is_active %} <span class="sp-pill sp-muted">{% translate "inactive" %}</span>{% endif %}<div class="sp-sub">{{ r.kiosk.name }}</div>{% if r.screen %}<div class="sp-sub" title="{% translate 'Screen size reported by the kiosk (CSS pixels and density)' %}">{% translate "screen" %} {{ r.screen.w }}×{{ r.screen.h }} @{{ r.screen.dpr }}</div>{% endif %}</td>
           <td>{{ r.partner.name }}</td>
           <td><span class="sp-pill {% if r.kiosk.status == 'ONLINE' %}sp-ok{% elif r.kiosk.status == 'MAINTENANCE' %}sp-warn{% else %}sp-bad{% endif %}">{{ r.kiosk.get_status_display }}</span></td>
           <td>{% if r.printing %}<span class="sp-live"></span>{% translate "printing" %}{% elif r.in_use %}<span class="sp-live"></span>{% translate "customer" %}{% else %}<span class="sp-muted">—</span>{% endif %}</td>

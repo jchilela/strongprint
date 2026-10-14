@@ -387,7 +387,9 @@
   }
 
   function refreshState() {
-    return api("/kiosk/state")
+    // O tamanho real do ecrã (CSS px e densidade) vai para o admin: ajuda a afinar os tablets.
+    var screenSize = Math.round(window.innerWidth) + "x" + Math.round(window.innerHeight) + "@" + (Math.round((window.devicePixelRatio || 1) * 100) / 100);
+    return api("/kiosk/state?screen=" + encodeURIComponent(screenSize))
       .then(function (d) {
         S.kiosk = d.kiosk;
         S.prices = d.prices;
@@ -1015,7 +1017,7 @@
       frame(
         (blank ? '<p class="error">' + esc(t("blankWarning")) + "</p>" : "") +
         '<h2 style="overflow-wrap:anywhere">' + esc(job.original_filename) + ' <span class="muted" style="font-size:20px">· ' + esc(t("pages", { n: pages })) + "</span></h2>" +
-          '<div class="opts"><div style="min-width:0">' + previewStrip(job, opts.from, opts.to) + rows + '</div><div class="summary"><div class="muted">' + esc(t("total")) + '</div><div class="total num">' + kz(job.total_kz) +
+          '<div class="opts"><div class="opts-left">' + previewStrip(job, opts.from, opts.to) + rows + '</div><div class="summary"><div class="muted">' + esc(t("total")) + '</div><div class="total num">' + kz(job.total_kz) +
           '</div><div class="line"><span>' + esc(t("faces", { n: b.faces || 0 })) + "</span><span>" + esc(t("sheets", { n: b.sheets || 0 })) + "</span></div>" +
           '<div class="line"><span>' + esc(t("available")) + '</span><span class="num">' + kz(available) + '</span></div><div style="margin-top:auto">' + action +
           '</div><button class="btn ghost block" data-act="cancelJob" style="margin-top:10px">' + esc(t("back")) + "</button></div></div>"

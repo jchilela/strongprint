@@ -7,6 +7,7 @@
 
 from datetime import datetime, time, timedelta
 
+from django.core.cache import cache
 from django.db.models import Count, Max, Q, Sum
 from django.utils import timezone
 
@@ -164,6 +165,7 @@ def kiosk_rows() -> list[dict]:
                 "today": revenue.get(kiosk.pk, {}).get("today", 0),
                 "month": revenue.get(kiosk.pk, {}).get("month", 0),
                 "availability": availability.get(kiosk.pk),
+                "screen": cache.get(f"kiosk_screen:{kiosk.pk}"),
             }
         )
     return rows

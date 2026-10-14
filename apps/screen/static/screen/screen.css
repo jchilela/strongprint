@@ -29,7 +29,8 @@ body {
   -webkit-user-select: none;
 }
 
-#app { height: 100vh; display: flex; flex-direction: column; }
+/* dvh: a altura visível de verdade nos browsers Android (100vh pode incluir barras). */
+#app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
 
 .bar {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
@@ -99,7 +100,9 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; touch-action
 .kbd .wide { min-width: 300px; }
 .input-line { font-size: 36px; font-weight: 700; min-height: 56px; border-bottom: 3px solid var(--brand); padding: 4px 8px; min-width: 60%; display: inline-block; }
 
-.opts { flex: 1; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; min-height: 0; }
+.opts { flex: 1; display: grid; grid-template-columns: 1.2fr 0.8fr; grid-template-rows: minmax(0, 1fr); gap: 24px; min-height: 0; }
+/* As opções podem deslizar; o total e os botões (Imprimir/Voltar) ficam sempre à vista. */
+.opts-left { min-width: 0; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .opt { background: var(--panel); border-radius: 16px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .opt .label { font-size: 22px; font-weight: 600; }
 .seg { display: inline-flex; background: var(--bg); border-radius: 14px; padding: 4px; gap: 4px; }
@@ -108,7 +111,7 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; touch-action
 .stepper { display: inline-flex; align-items: center; gap: 14px; }
 .stepper button { width: 62px; height: 62px; border-radius: 14px; background: var(--panel-2); font-size: 30px; font-weight: 800; }
 .stepper .v { min-width: 44px; text-align: center; font-size: 28px; font-weight: 800; }
-.summary { background: var(--panel); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+.summary { background: var(--panel); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
 .summary .total { font-size: 46px; font-weight: 800; letter-spacing: -0.02em; }
 .summary .line { display: flex; justify-content: space-between; color: var(--muted); font-size: 18px; }
 
@@ -130,8 +133,8 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; touch-action
 #overlay[hidden] { display: none; }
 #overlay .box { background: var(--panel); border-radius: 24px; padding: 36px; max-width: 760px; }
 
-/* Tablets baratos (≈ 960×600 em CSS): tudo tem de caber sem scroll. */
-@media (max-height: 640px) {
+/* Tablets (≈ 850×530 a 1280×800 em CSS): tudo tem de caber sem scroll. */
+@media (max-height: 700px) {
   body { font-size: 17px; }
   .bar { min-height: 56px; padding: 8px 20px; }
   .brand { font-size: 20px; }
@@ -172,3 +175,65 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; touch-action
 .idle-mark { display: flex; align-items: center; gap: 22px; margin-bottom: 22px; }
 .idle-mark svg { height: 120px; width: auto; flex: 0 0 auto; }
 .idle-mark .sp-word { font-size: 52px; line-height: 0.92; }
+
+/* Opções de impressão e restantes ecrãs em tablets. */
+@media (max-height: 700px) {
+  .opts { gap: 14px; }
+  .opt { padding: 6px 12px; margin-bottom: 8px; border-radius: 12px; }
+  .opt .label { font-size: 18px; }
+  .seg { padding: 3px; border-radius: 11px; }
+  .seg button { min-height: 44px; min-width: 88px; font-size: 17px; border-radius: 9px; }
+  .stepper { gap: 8px; }
+  .stepper button { width: 46px; height: 46px; font-size: 24px; border-radius: 11px; }
+  .stepper .v { font-size: 22px; min-width: 32px; }
+  .summary { padding: 14px; gap: 4px; }
+  .summary .total { font-size: 34px; }
+  .summary .line { font-size: 16px; }
+  h2 { font-size: 22px; margin-bottom: 6px; }
+  .strip { gap: 8px; padding-bottom: 6px; margin-bottom: 6px; }
+  .strip .pg img { height: 14vh; }
+  .item { padding: 10px 14px; border-radius: 12px; }
+  .item .t { font-size: 19px; }
+  .item .s { font-size: 15px; }
+  .thumb { flex-basis: 46px; height: 62px; }
+  .list { gap: 8px; margin: 6px 0; }
+  .tiles { gap: 12px; margin-top: 10px; }
+  .tile .icon { font-size: 34px; }
+  .tile .t { font-size: 21px; }
+  .tile .s { font-size: 15px; }
+  .big-icon { font-size: 64px; margin-bottom: 6px; }
+  .spinner { width: 52px; height: 52px; border-width: 6px; margin: 10px auto; }
+  .progress { margin: 14px auto; height: 14px; }
+  .ref { gap: 6px 20px; margin: 10px 0; }
+  .ref dt { font-size: 18px; }
+  .ref dd { font-size: 32px; }
+  .row { gap: 10px; }
+}
+/* Tablets de 10" com ecrã 1280×800 a 150 % (≈ 853×533). */
+@media (max-height: 560px) {
+  body { font-size: 16px; }
+  .bar { min-height: 48px; padding: 6px 16px; }
+  .brand { font-size: 18px; }
+  .who { font-size: 15px; }
+  .body { padding: 10px 16px; }
+  h1 { font-size: 24px; }
+  .btn { min-height: 48px; font-size: 18px; border-radius: 12px; }
+  .btn.small { min-height: 44px; }
+  .keypad { gap: 6px; margin-top: 6px; width: min(360px, 100%); }
+  .keypad button { min-height: 40px; font-size: 22px; }
+  .display { font-size: 30px; min-height: 40px; }
+  .seg button { min-height: 40px; min-width: 76px; font-size: 16px; }
+  .stepper button { width: 42px; height: 42px; }
+  .opt { margin-bottom: 6px; }
+  .summary .total { font-size: 30px; }
+  .strip .pg img { height: 12vh; }
+  .tile { min-height: 96px; padding: 12px; }
+  .idle-mark svg { height: 64px; }
+  .idle-mark .sp-word { font-size: 30px; }
+  .idle-mark { margin-bottom: 8px; }
+  .steps { margin-top: 8px; }
+  .steps li { font-size: 16px; padding: 2px 0 8px 44px; }
+  .steps li::before { width: 32px; height: 32px; }
+  .qr { width: min(50vh, 250px); }
+  .big { font-size: 19px; }
+}

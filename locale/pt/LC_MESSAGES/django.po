@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-14 19:59+0100\n"
+"POT-Creation-Date: 2026-10-14 23:04+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -380,6 +380,14 @@ msgstr "Mês"
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:153
 msgid "inactive"
 msgstr "inativo"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:115
+msgid "Screen size reported by the kiosk (CSS pixels and density)"
+msgstr "Tamanho do ecrã reportado pelo kiosk (pontos e densidade)"
+
+#: apps/backoffice/templates/admin/strongprint/dashboard.html:115
+msgid "screen"
+msgstr "ecrã"
 
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:118
 msgid "printing"
@@ -1897,13 +1905,8 @@ msgid "Tap the screen of the kiosk to show a new QR code."
 msgstr "Toque no ecrã do kiosk para mostrar um novo código QR."
 
 #: apps/portal/templates/portal/kiosk_pair.html:23
-msgid ""
-"The kiosk will use your account and wallet until you finish or leave it idle."
-msgstr "O kiosk vai usar a sua conta e carteira até terminar ou o deixar sem uso."
-
-#: apps/portal/templates/portal/kiosk_pair.html:24
-msgid "Yes, use my account on this kiosk"
-msgstr "Sim, usar a minha conta neste kiosk"
+msgid "Tell us your name to continue."
+msgstr "Diga-nos o seu nome para continuar."
 
 #: apps/portal/templates/portal/landing.html:5
 msgid "Print at any StrongPrint kiosk"

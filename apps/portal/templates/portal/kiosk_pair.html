@@ -18,9 +18,8 @@
   <div class="card">
     <p class="muted small">{% translate "Kiosk" %}</p>
     <p style="font-size:22px;font-weight:700;margin:0">{{ pairing.kiosk.code }}</p>
-    <p class="muted">{{ pairing.kiosk.site.partner.name }} · {{ pairing.kiosk.site.name }}{% if pairing.kiosk.location_hint %} · {{ pairing.kiosk.location_hint }}{% endif %}</p>
+    <p class="muted">{{ pairing.kiosk.site.partner.name }} · {{ pairing.kiosk.site.name }}</p>
   </div>
-  <p class="small muted">{% translate "The kiosk will use your account and wallet until you finish or leave it idle." %}</p>
-  <form method="post">{% csrf_token %}<button class="btn block">{% translate "Yes, use my account on this kiosk" %}</button></form>
+  <p class="small muted">{% translate "Tell us your name to continue." %}</p>
 {% endif %}
 {% endblock %}

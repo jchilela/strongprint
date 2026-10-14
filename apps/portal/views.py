@@ -287,17 +287,23 @@ def job_view(request, job_id):
 
 @login_required
 def kiosk_pair(request, code):
+    """Ler o QR do ecrã = entrar nesse kiosk. Não há botão a confirmar: quem lê o QR
+    está à frente do kiosk. Só liga com sessão aberta no telemóvel (o login vem antes),
+    por isso pré-visualizações de links (sem sessão) nunca ligam ninguém."""
     from apps.devices.models import KioskPairing
 
-    pairing = KioskPairing.objects.select_related("kiosk__site").filter(code=code.upper()).first()
+    pairing = KioskPairing.objects.select_related("kiosk__site__partner").filter(
+        code=code.upper()
+    ).first()
+    template = "portal/kiosk_pair.html"
+    if pairing is not None and pairing.user_id == request.user.pk and not pairing.is_open:
+        return render(request, template, {"pairing": pairing, "done": True})  # recarregou
     if pairing is None or not pairing.is_open:
-        return render(request, "portal/kiosk_pair.html", {"pairing": None}, status=410)
-    if request.method == "POST":
-        if needs_name(request.user):
-            return redirect("portal:kiosk_pair", code=code)
-        updated = KioskPairing.objects.filter(
-            pk=pairing.pk, status=KioskPairing.Status.PENDING
-        ).update(status=KioskPairing.Status.CLAIMED, user=request.user, claimed_at=timezone.now())
-        context = {"pairing": pairing, "done": bool(updated)}
-        return render(request, "portal/kiosk_pair.html", context)
-    return render(request, "portal/kiosk_pair.html", {"pairing": pairing})
+        return render(request, template, {"pairing": None}, status=410)
+    if needs_name(request.user):
+        # O pedido do nome aparece por cima; ao guardar volta aqui e liga.
+        return render(request, template, {"pairing": pairing, "waiting_name": True})
+    updated = KioskPairing.objects.filter(
+        pk=pairing.pk, status=KioskPairing.Status.PENDING
+    ).update(status=KioskPairing.Status.CLAIMED, user=request.user, claimed_at=timezone.now())
+    return render(request, template, {"pairing": pairing, "done": bool(updated)})

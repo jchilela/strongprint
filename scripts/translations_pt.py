@@ -8,6 +8,9 @@ import sys
 from pathlib import Path
 
 PT = {
+    "Screen size reported by the kiosk (CSS pixels and density)": "Tamanho do ecrã reportado pelo kiosk (pontos e densidade)",
+    "screen": "ecrã",
+    "Tell us your name to continue.": "Diga-nos o seu nome para continuar.",
     "Print by e-mail is stopped": "A impressão por e-mail está parada",
     "The server cannot open the mailbox %(address)s (for %(since)s). E-mails wait in the mailbox and are added as soon as access is back. Usually the app password was revoked: create a new one and update INBOUND_IMAP_PASSWORD.": "O servidor não consegue abrir a caixa %(address)s (há %(since)s). Os e-mails esperam na caixa e entram assim que o acesso voltar. Normalmente a senha de aplicação foi anulada: crie uma nova e atualize INBOUND_IMAP_PASSWORD.",
     "Django site admin": "Administração StrongPrint",
