@@ -22,12 +22,17 @@ chain nat SP_PRE PREROUTING
 chain nat SP_POST POSTROUTING
 chain filter SP_FWD FORWARD
 
-# Impressora ligada por cabo diretamente ao Pi: rota só para ela por essa interface,
-# usando o IP do Pi na rede local como origem (a impressora não tem outro caminho).
+# Impressora ligada por cabo diretamente ao Pi: o Pi ganha um IP na MESMA rede da
+# impressora nesse cabo (ex.: impressora 192.168.1.59 → Pi 192.168.1.2) e fala com ela a
+# partir dele. Não depende da rede Wi-Fi onde o Pi estiver: as HP ignoram pedidos vindos
+# de endereços de outra rede (aprendido no Imetro, 2026-10-21).
 if [[ -n ${PRINTER_LAN_IP:-} && -n ${PRINTER_IFACE:-} ]]; then
-    SRC=$(ip route get 1.1.1.1 | grep -oP 'src \K\S+')
+    NET=${PRINTER_LAN_IP%.*}
+    LINK_IP=${PRINTER_LINK_IP:-$NET.2}
+    [[ $LINK_IP == "$PRINTER_LAN_IP" ]] && LINK_IP=$NET.3
     ip link set "$PRINTER_IFACE" up
-    ip route replace "$PRINTER_LAN_IP/32" dev "$PRINTER_IFACE" src "$SRC"
+    ip addr replace "$LINK_IP/24" dev "$PRINTER_IFACE"
+    ip route replace "$PRINTER_LAN_IP/32" dev "$PRINTER_IFACE" src "$LINK_IP"
 fi
 
 if [[ -n ${PRINTER_LAN_IP:-} && -n ${PRINTER_VPN_IP:-} ]]; then
