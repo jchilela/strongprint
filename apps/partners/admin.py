@@ -36,6 +36,7 @@ class PriceTableInline(admin.StackedInline):
         ("bw_page_kz", "min_transaction_kz"),
         ("color_low_kz", "color_mid_kz", "color_high_kz"),
         ("color_low_max_pct", "color_mid_max_pct"),
+        ("copy_bw_page_kz", "copy_min_transaction_kz"),
     )
     verbose_name_plural = _("Price overrides (empty fields inherit)")
 
@@ -167,6 +168,8 @@ class PriceTableAdmin(admin.ModelAdmin):
         "color_mid_kz",
         "color_high_kz",
         "min_transaction_kz",
+        "copy_bw_page_kz",
+        "copy_min_transaction_kz",
     )
     list_select_related = ("partner", "site", "kiosk")
     autocomplete_fields = ("partner", "site", "kiosk")

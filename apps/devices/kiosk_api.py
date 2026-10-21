@@ -22,6 +22,7 @@ from rest_framework.response import Response
 from apps.accounts import otp
 from apps.accounts.phone import normalize_phone
 from apps.jobs.models import Document
+from apps.jobs.library import printed_info
 from apps.jobs.previews import preview_urls
 from apps.partners.services import effective_price_rules
 from apps.wallets.services import wallet_for
@@ -136,6 +137,7 @@ def kiosk_state(request):
                 "bw_page_kz": rules.bw_page_kz,
                 "color_from_kz": rules.color_low_kz,
                 "min_transaction_kz": rules.min_transaction_kz,
+                "copy_bw_kz": rules.copy_bw_page_kz,
             },
             "portal_url": client_url(request, "/"),
             "server_time": timezone.now(),
@@ -307,9 +309,12 @@ def me(request):
 
 @api_view(["GET"])
 def documents(request):
-    docs = request.user.documents.filter(expires_at__gt=timezone.now()).exclude(
-        state=Document.State.REJECTED
-    )[:50]
+    docs = list(
+        request.user.documents.filter(expires_at__gt=timezone.now()).exclude(
+            state=Document.State.REJECTED
+        )[:50]
+    )
+    printed = printed_info(docs)
     return Response(
         [
             {
@@ -322,6 +327,8 @@ def documents(request):
                 "color_pages": d.color_pages,
                 "created_at": d.created_at,
                 "preview_urls": preview_urls(d),
+                "printed_count": printed.get(d.pk, {}).get("count", 0),
+                "last_printed_at": printed.get(d.pk, {}).get("last"),
             }
             for d in docs
         ]

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-14 23:04+0100\n"
+"POT-Creation-Date: 2026-10-21 22:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -181,7 +181,7 @@ msgstr "trabalhos"
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:51
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:52
 #: apps/backoffice/templates/admin/strongprint/dashboard.html:54
-#: apps/jobs/models.py:59 apps/jobs/models.py:143
+#: apps/jobs/models.py:59 apps/jobs/models.py:147
 #: apps/portal/templates/portal/preview.html:14
 msgid "pages"
 msgstr "páginas"
@@ -545,7 +545,7 @@ msgid "Out of service"
 msgstr "Fora de serviço"
 
 #: apps/devices/models.py:36 apps/devices/models.py:162
-#: apps/partners/admin.py:137
+#: apps/partners/admin.py:138
 msgid "printer"
 msgstr "impressora"
 
@@ -591,7 +591,7 @@ msgstr "chave pública WireGuard"
 msgid "installed at"
 msgstr "instalado em"
 
-#: apps/devices/models.py:56 apps/partners/admin.py:146
+#: apps/devices/models.py:56 apps/partners/admin.py:147
 msgid "last heartbeat"
 msgstr "último sinal"
 
@@ -615,7 +615,7 @@ msgstr "dispositivos (Pi)"
 msgid "Unknown"
 msgstr "Desconhecido"
 
-#: apps/devices/models.py:100 apps/jobs/models.py:124
+#: apps/devices/models.py:100 apps/jobs/models.py:128
 msgid "Ready"
 msgstr "Pronto"
 
@@ -627,7 +627,7 @@ msgstr "Ocupada"
 msgid "Warning"
 msgstr "Aviso"
 
-#: apps/devices/models.py:103 apps/jobs/models.py:171
+#: apps/devices/models.py:103 apps/jobs/models.py:175
 msgid "Error"
 msgstr "Erro"
 
@@ -706,7 +706,7 @@ msgid ""
 "affects the page counter used to verify jobs."
 msgstr "Uso direto do painel da impressora (cópia/USB). Desligado por omissão porque afeta o contador de páginas usado para verificar os trabalhos."
 
-#: apps/devices/models.py:153 apps/jobs/models.py:184
+#: apps/devices/models.py:153 apps/jobs/models.py:188
 #: apps/monitoring/admin.py:9 apps/monitoring/admin.py:51
 #: apps/partners/models.py:149 apps/payments/models.py:23
 #: apps/wallets/models.py:103
@@ -833,11 +833,11 @@ msgstr "Cópia (digitalizada no kiosk)"
 msgid "E-mail"
 msgstr "E-mail"
 
-#: apps/jobs/models.py:48 apps/jobs/models.py:141
+#: apps/jobs/models.py:48 apps/jobs/models.py:145
 msgid "state"
 msgstr "estado"
 
-#: apps/jobs/models.py:51 apps/jobs/models.py:132
+#: apps/jobs/models.py:51 apps/jobs/models.py:136
 msgid "source"
 msgstr "origem"
 
@@ -845,19 +845,19 @@ msgstr "origem"
 msgid "original filename"
 msgstr "nome do ficheiro"
 
-#: apps/jobs/models.py:55 apps/jobs/models.py:137
+#: apps/jobs/models.py:55 apps/jobs/models.py:141
 msgid "storage key"
 msgstr "chave de armazenamento"
 
-#: apps/jobs/models.py:56 apps/jobs/models.py:138
+#: apps/jobs/models.py:56 apps/jobs/models.py:142
 msgid "file size"
 msgstr "tamanho do ficheiro"
 
-#: apps/jobs/models.py:57 apps/jobs/models.py:139
+#: apps/jobs/models.py:57 apps/jobs/models.py:143
 msgid "MIME type"
 msgstr "tipo MIME"
 
-#: apps/jobs/models.py:60 apps/jobs/models.py:145
+#: apps/jobs/models.py:60 apps/jobs/models.py:149
 msgid "analysis"
 msgstr "análise"
 
@@ -877,168 +877,168 @@ msgstr "detalhe do preço"
 msgid "total (Kz)"
 msgstr "total (Kz)"
 
-#: apps/jobs/models.py:70
+#: apps/jobs/models.py:74
 msgid "printer job ID"
 msgstr "ID do trabalho na impressora"
 
-#: apps/jobs/models.py:71
+#: apps/jobs/models.py:75
 msgid "counter before"
 msgstr "contador antes"
 
-#: apps/jobs/models.py:72
+#: apps/jobs/models.py:76
 msgid "counter after"
 msgstr "contador depois"
 
-#: apps/jobs/models.py:73
+#: apps/jobs/models.py:77
 msgid "faces printed"
 msgstr "faces impressas"
 
-#: apps/jobs/models.py:74 apps/jobs/models.py:146
+#: apps/jobs/models.py:78 apps/jobs/models.py:150
 msgid "failure reason"
 msgstr "motivo da falha"
 
-#: apps/jobs/models.py:76 apps/jobs/models.py:147 apps/payments/models.py:30
+#: apps/jobs/models.py:80 apps/jobs/models.py:151 apps/payments/models.py:30
 msgid "expires at"
 msgstr "expira em"
 
-#: apps/jobs/models.py:77 apps/jobs/models.py:108 apps/jobs/models.py:148
+#: apps/jobs/models.py:81 apps/jobs/models.py:112 apps/jobs/models.py:152
 #: apps/payments/models.py:40 apps/wallets/models.py:22
 #: apps/wallets/models.py:69 apps/wallets/models.py:105 common/models.py:6
 msgid "created at"
 msgstr "criado em"
 
-#: apps/jobs/models.py:78 apps/payments/models.py:41 apps/wallets/models.py:23
+#: apps/jobs/models.py:82 apps/payments/models.py:41 apps/wallets/models.py:23
 #: common/models.py:7
 msgid "updated at"
 msgstr "atualizado em"
 
-#: apps/jobs/models.py:79
+#: apps/jobs/models.py:83
 msgid "finished at"
 msgstr "terminado em"
 
-#: apps/jobs/models.py:80
+#: apps/jobs/models.py:84
 msgid "file purged at"
 msgstr "ficheiro apagado em"
 
-#: apps/jobs/models.py:82
+#: apps/jobs/models.py:86
 msgid "preview purged at"
 msgstr "imagens apagadas em"
 
-#: apps/jobs/models.py:86
+#: apps/jobs/models.py:90
 msgid "print job"
 msgstr "trabalho de impressão"
 
-#: apps/jobs/models.py:87
+#: apps/jobs/models.py:91
 msgid "print jobs"
 msgstr "trabalhos de impressão"
 
-#: apps/jobs/models.py:102 apps/jobs/models.py:174
+#: apps/jobs/models.py:106 apps/jobs/models.py:178
 msgid "from"
 msgstr "de"
 
-#: apps/jobs/models.py:103
+#: apps/jobs/models.py:107
 msgid "to"
 msgstr "para"
 
-#: apps/jobs/models.py:105 apps/wallets/models.py:67
+#: apps/jobs/models.py:109 apps/wallets/models.py:67
 msgid "actor"
 msgstr "autor"
 
-#: apps/jobs/models.py:105
+#: apps/jobs/models.py:109
 msgid "e.g. system, user:<id>, task:print"
 msgstr "ex.: system, user:<id>, task:print"
 
-#: apps/jobs/models.py:107 apps/monitoring/models.py:30
+#: apps/jobs/models.py:111 apps/monitoring/models.py:30
 msgid "data"
 msgstr "dados"
 
-#: apps/jobs/models.py:111
+#: apps/jobs/models.py:115
 msgid "job event"
 msgstr "evento do trabalho"
 
-#: apps/jobs/models.py:112
+#: apps/jobs/models.py:116
 msgid "job events"
 msgstr "eventos do trabalho"
 
-#: apps/jobs/models.py:123
+#: apps/jobs/models.py:127
 msgid "Analysing"
 msgstr "A analisar"
 
-#: apps/jobs/models.py:125
+#: apps/jobs/models.py:129
 msgid "Rejected"
 msgstr "Recusado"
 
-#: apps/jobs/models.py:134
+#: apps/jobs/models.py:138
 msgid "filename"
 msgstr "nome do ficheiro"
 
-#: apps/jobs/models.py:136
+#: apps/jobs/models.py:140
 msgid "sent by (e-mail)"
 msgstr "enviado por (e-mail)"
 
-#: apps/jobs/models.py:144
+#: apps/jobs/models.py:148
 msgid "colour pages"
 msgstr "páginas a cores"
 
-#: apps/jobs/models.py:151
+#: apps/jobs/models.py:155
 msgid "document"
 msgstr "documento"
 
-#: apps/jobs/models.py:152
+#: apps/jobs/models.py:156
 msgid "documents"
 msgstr "documentos"
 
-#: apps/jobs/models.py:167
+#: apps/jobs/models.py:171
 msgid "Files added"
 msgstr "Ficheiros adicionados"
 
-#: apps/jobs/models.py:168
+#: apps/jobs/models.py:172
 msgid "No valid phone number in the subject"
 msgstr "Sem número de telefone válido no assunto"
 
-#: apps/jobs/models.py:169
+#: apps/jobs/models.py:173
 msgid "No printable attachments"
 msgstr "Sem anexos imprimíveis"
 
-#: apps/jobs/models.py:170
+#: apps/jobs/models.py:174
 msgid "Too many e-mails for this number"
 msgstr "Demasiados e-mails para este número"
 
-#: apps/jobs/models.py:173
+#: apps/jobs/models.py:177
 msgid "message ID"
 msgstr "ID da mensagem"
 
-#: apps/jobs/models.py:175
+#: apps/jobs/models.py:179
 msgid "subject"
 msgstr "assunto"
 
-#: apps/jobs/models.py:176
+#: apps/jobs/models.py:180
 msgid "phone"
 msgstr "telefone"
 
-#: apps/jobs/models.py:185
+#: apps/jobs/models.py:189
 msgid "files added"
 msgstr "ficheiros adicionados"
 
-#: apps/jobs/models.py:186
+#: apps/jobs/models.py:190
 msgid "skipped attachments"
 msgstr "anexos ignorados"
 
-#: apps/jobs/models.py:187
+#: apps/jobs/models.py:191
 msgid "received at"
 msgstr "recebido em"
 
-#: apps/jobs/models.py:190
+#: apps/jobs/models.py:194
 msgid "received e-mail"
 msgstr "e-mail recebido"
 
-#: apps/jobs/models.py:191
+#: apps/jobs/models.py:195
 msgid "received e-mails"
 msgstr "e-mails recebidos"
 
 #: apps/monitoring/admin.py:13
 #: apps/partner_portal/templates/partner/alerts.html:5
-#: apps/partners/admin.py:117
+#: apps/partners/admin.py:118
 msgid "Open"
 msgstr "Abrir"
 
@@ -1410,28 +1410,28 @@ msgstr "Esta alteração não é possível agora."
 msgid "Kiosk status updated."
 msgstr "Estado do kiosk atualizado."
 
-#: apps/partners/admin.py:40
+#: apps/partners/admin.py:41
 msgid "Price overrides (empty fields inherit)"
 msgstr "Preços próprios (campos vazios herdam)"
 
-#: apps/partners/admin.py:83 apps/partners/models.py:105
+#: apps/partners/admin.py:84 apps/partners/models.py:105
 msgid "sites"
 msgstr "locais"
 
-#: apps/partners/admin.py:108 apps/partners/models.py:24
+#: apps/partners/admin.py:109 apps/partners/models.py:24
 #: apps/partners/models.py:140
 msgid "code"
 msgstr "código"
 
-#: apps/partners/admin.py:112
+#: apps/partners/admin.py:113
 msgid "map"
 msgstr "mapa"
 
-#: apps/partners/admin.py:142
+#: apps/partners/admin.py:143
 msgid "open alerts"
 msgstr "alertas abertos"
 
-#: apps/partners/admin.py:174
+#: apps/partners/admin.py:177
 msgid "scope"
 msgstr "âmbito"
 
@@ -1575,27 +1575,35 @@ msgstr "cobertura média até (%)"
 msgid "minimum per transaction (Kz)"
 msgstr "mínimo por transação (Kz)"
 
-#: apps/partners/models.py:228
+#: apps/partners/models.py:217
+msgid "copy, B&W page (Kz)"
+msgstr "cópia, página P&B (Kz)"
+
+#: apps/partners/models.py:219
+msgid "copy, minimum per transaction (Kz)"
+msgstr "cópia, mínimo por operação (Kz)"
+
+#: apps/partners/models.py:235
 msgid "price table"
 msgstr "tabela de preços"
 
-#: apps/partners/models.py:229
+#: apps/partners/models.py:236
 msgid "price tables"
 msgstr "tabelas de preços"
 
-#: apps/partners/models.py:257
+#: apps/partners/models.py:264
 msgid "Price table"
 msgstr "Tabela de preços"
 
-#: apps/partners/models.py:273
+#: apps/partners/models.py:280
 msgid "A price table applies to only one partner, site or kiosk."
 msgstr "Uma tabela de preços aplica-se a um só parceiro, local ou kiosk."
 
-#: apps/partners/models.py:277
+#: apps/partners/models.py:284
 msgid "The global price table must define every field."
 msgstr "A tabela global tem de definir todos os campos."
 
-#: apps/partners/models.py:280
+#: apps/partners/models.py:287
 msgid "Coverage thresholds must satisfy 0 < low < mid ≤ 100."
 msgstr "Os limites de cobertura têm de cumprir 0 < baixo < médio ≤ 100."
 
@@ -1703,7 +1711,17 @@ msgstr "Indique o seu nome."
 msgid "Amount (Kz)"
 msgstr "Valor (Kz)"
 
-#: apps/portal/forms.py:63
+#: apps/portal/forms.py:59
+#, python-format
+msgid "The minimum to top up the wallet is %(limit_value)s Kz."
+msgstr "O valor mínimo para carregar a carteira é %(limit_value)s Kz."
+
+#: apps/portal/forms.py:60
+#, python-format
+msgid "The maximum to top up at once is %(limit_value)s Kz."
+msgstr "O valor máximo por carregamento é %(limit_value)s Kz."
+
+#: apps/portal/forms.py:67
 msgid "Document"
 msgstr "Documento"
 
@@ -1783,10 +1801,19 @@ msgstr "Ver"
 
 #: apps/portal/templates/portal/documents.html:24
 #, python-format
+msgid "Printed %(n)s× · last %(when)s"
+msgstr "Impresso %(n)s× · último %(when)s"
+
+#: apps/portal/templates/portal/documents.html:24
+msgid "Printed on %(when)s"
+msgstr "Impresso em %(when)s"
+
+#: apps/portal/templates/portal/documents.html:25
+#, python-format
 msgid "by e-mail from %(sender)s"
 msgstr "por e-mail de %(sender)s"
 
-#: apps/portal/templates/portal/documents.html:27
+#: apps/portal/templates/portal/documents.html:28
 #: apps/portal/templates/portal/preview.html:19
 #, python-format
 msgid "%(n)s page"
@@ -1794,31 +1821,31 @@ msgid_plural "%(n)s pages"
 msgstr[0] "%(n)s página"
 msgstr[1] "%(n)s páginas"
 
-#: apps/portal/templates/portal/documents.html:27
+#: apps/portal/templates/portal/documents.html:28
 #, python-format
 msgid "%(c)s in colour"
 msgid_plural "%(c)s in colour"
 msgstr[0] "%(c)s a cores"
 msgstr[1] "%(c)s a cores"
 
-#: apps/portal/templates/portal/documents.html:27
+#: apps/portal/templates/portal/documents.html:28
 #, python-format
 msgid "B&amp;W from %(price)s"
 msgstr "P&amp;B desde %(price)s"
 
-#: apps/portal/templates/portal/documents.html:28
+#: apps/portal/templates/portal/documents.html:29
 msgid "Checking…"
 msgstr "A verificar…"
 
-#: apps/portal/templates/portal/documents.html:29
+#: apps/portal/templates/portal/documents.html:30
 msgid "Cannot be printed"
 msgstr "Não pode ser impresso"
 
-#: apps/portal/templates/portal/documents.html:32
+#: apps/portal/templates/portal/documents.html:33
 msgid "Delete"
 msgstr "Apagar"
 
-#: apps/portal/templates/portal/documents.html:35
+#: apps/portal/templates/portal/documents.html:36
 msgid "No files yet."
 msgstr "Ainda não tem ficheiros."
 
@@ -1833,7 +1860,16 @@ msgid_plural "%(n)s pages printed"
 msgstr[0] "%(n)s página impressa"
 msgstr[1] "%(n)s páginas impressas"
 
-#: apps/portal/templates/portal/history.html:18
+#: apps/portal/templates/portal/history.html:13
+msgid "Interrupted"
+msgstr "Interrompido"
+
+#: apps/portal/templates/portal/history.html:14
+#, python-format
+msgid "Charged %(charged)s · %(refunded)s back to your wallet"
+msgstr "Cobrado %(charged)s · %(refunded)s devolvidos à carteira"
+
+#: apps/portal/templates/portal/history.html:19
 msgid "You have not printed anything yet."
 msgstr "Ainda não imprimiu nada."
 
@@ -2077,6 +2113,11 @@ msgid ""
 "You will get a Multicaixa reference to pay at an ATM or in your banking app."
 msgstr "Vai receber uma referência Multicaixa para pagar no multibanco ou na app do banco."
 
+#: apps/portal/templates/portal/topup_new.html:11
+#, python-format
+msgid "Minimum %(min)s."
+msgstr "Mínimo %(min)s."
+
 #: apps/portal/templates/portal/topup_new.html:13
 msgid "Get payment reference"
 msgstr "Obter referência de pagamento"
@@ -2135,7 +2176,7 @@ msgstr "O ficheiro é demasiado grande (máx. %(mb)s MB)."
 msgid "File saved. We are checking it now."
 msgstr "Ficheiro guardado. Estamos a verificá-lo."
 
-#: apps/portal/views.py:243
+#: apps/portal/views.py:245
 msgid "File deleted."
 msgstr "Ficheiro apagado."
 

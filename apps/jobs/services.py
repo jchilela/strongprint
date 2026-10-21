@@ -72,7 +72,10 @@ def transition(job_id, to_state: JobState, *, actor: str, data: dict | None = No
 
 def quote(job: Job, options: PrintOptions) -> dict:
     analysis = DocumentAnalysis.from_dict(job.analysis)
-    return price_job(analysis, options, effective_price_rules(job.kiosk))
+    rules = effective_price_rules(job.kiosk)
+    if job.source == Job.Source.COPY:
+        rules = rules.for_copy()
+    return price_job(analysis, options, rules)
 
 
 def update_options(job_id, raw_options: dict, *, actor: str) -> Job:

@@ -5,7 +5,10 @@ O estado vive em memória por impressora (``key``) e pode ser configurado:
     FakePrinterGateway.configure("12", behaviour="partial", partial_faces=3)
 
 Comportamentos: ``complete`` (imprime tudo), ``partial`` (imprime N faces e aborta),
-``fail`` (aborta sem imprimir), ``offline`` (inalcançável), ``stuck`` (nunca termina).
+``fail`` (aborta sem imprimir), ``offline`` (inalcançável), ``stuck`` (nunca termina),
+``lost`` (imprime N faces e esquece o trabalho, como depois de reiniciar),
+``jam`` (imprime N faces e fica parada em erro, sem terminar).
+``offline_calls``: as próximas N chamadas falham como inalcançável (a impressora "volta" depois).
 """
 
 import io
@@ -18,6 +21,7 @@ from .gateway import (
     JobOutcome,
     JobProgress,
     PrinterGateway,
+    PrinterJobLost,
     PrinterState,
     PrinterStatus,
     PrinterUnavailable,
@@ -33,6 +37,7 @@ DEFAULTS = {
     "behaviour": "complete",
     "partial_faces": 0,
     "counter_available": True,
+    "offline_calls": 0,
 }
 
 
@@ -61,6 +66,9 @@ class FakePrinterGateway(PrinterGateway):
     def _check_online(self):
         if self.state["behaviour"] == "offline":
             raise PrinterUnavailable("Fake printer is offline")
+        if self.state.get("offline_calls", 0) > 0:
+            self.state["offline_calls"] -= 1
+            raise PrinterUnavailable("Fake printer is offline for a while")
 
     def get_status(self) -> PrinterStatus:
         self._check_online()
@@ -77,6 +85,9 @@ class FakePrinterGateway(PrinterGateway):
     def get_page_counter(self) -> int | None:
         if self.state["behaviour"] == "offline" or not self.state["counter_available"]:
             return None
+        if self.state.get("offline_calls", 0) > 0:
+            self.state["offline_calls"] -= 1
+            return None
         return self.state["counter"]
 
     def submit(self, request: PrintRequest) -> str:
@@ -91,10 +102,16 @@ class FakePrinterGateway(PrinterGateway):
             printed, outcome = min(self.state["partial_faces"], faces), JobOutcome.ABORTED
         elif behaviour == "stuck":
             printed, outcome = 0, JobOutcome.PROCESSING
+        elif behaviour == "lost":
+            printed, outcome = min(self.state["partial_faces"], faces), None
+        elif behaviour == "jam":
+            printed, outcome = min(self.state["partial_faces"], faces), JobOutcome.PROCESSING
+            self.state.update(state=PrinterState.ERROR, reasons=["media-jam-error"])
         else:
             printed, outcome = 0, JobOutcome.ABORTED
         self.state["counter"] += printed
-        self.state["jobs"][job_id] = JobProgress(outcome=outcome, impressions=printed)
+        if outcome is not None:
+            self.state["jobs"][job_id] = JobProgress(outcome=outcome, impressions=printed)
         self.state["submitted"].append(
             {
                 "job_id": job_id,
@@ -109,4 +126,15 @@ class FakePrinterGateway(PrinterGateway):
 
     def get_job_state(self, printer_job_id: str) -> JobProgress:
         self._check_online()
-        return self.state["jobs"].get(printer_job_id, JobProgress(outcome=JobOutcome.UNKNOWN))
+        if printer_job_id not in self.state["jobs"]:
+            raise PrinterJobLost(f"Fake printer does not know job {printer_job_id}")
+        return self.state["jobs"][printer_job_id]
+
+    def cancel(self, printer_job_id: str) -> None:
+        self._check_online()
+        job = self.state["jobs"].get(printer_job_id)
+        if job is not None:
+            self.state["jobs"][printer_job_id] = JobProgress(
+                outcome=JobOutcome.CANCELED, impressions=job.impressions
+            )
+        self.state.setdefault("canceled", []).append(printer_job_id)

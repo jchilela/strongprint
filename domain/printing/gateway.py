@@ -30,6 +30,10 @@ class PrinterUnavailable(Exception):
     """Impressora inalcançável (VPN, desligada) ou a recusar trabalhos."""
 
 
+class PrinterJobLost(Exception):
+    """A impressora já não conhece o trabalho (ex.: reiniciou a meio). O contador decide."""
+
+
 @dataclass(frozen=True)
 class PrinterStatus:
     state: PrinterState

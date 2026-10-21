@@ -117,3 +117,16 @@ def test_faces_value_for_partial_prints():
     assert faces_value(breakdown, 8) == breakdown["total_kz"]
     assert faces_value(breakdown, 99) == breakdown["total_kz"]
     assert faces_value({}, 3) == 0
+
+
+def test_copy_rules_use_copy_price_and_minimum():
+    rules = PriceRules(
+        bw_page_kz=100, color_low_kz=200, color_mid_kz=350, color_high_kz=500,
+        color_low_max_pct=10, color_mid_max_pct=30, min_transaction_kz=100,
+        copy_bw_page_kz=30, copy_min_transaction_kz=0,
+    )
+    copy = rules.for_copy()
+    assert (copy.bw_page_kz, copy.min_transaction_kz, copy.color_low_kz) == (30, 0, 200)
+    one_page = DocumentAnalysis(pages=[page(1, 5, color=False)])
+    assert price_job(one_page, PrintOptions(color=False), copy)["total_kz"] == 30
+    assert price_job(one_page, PrintOptions(color=False), rules)["total_kz"] == 100

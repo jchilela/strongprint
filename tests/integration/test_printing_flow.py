@@ -213,3 +213,82 @@ def test_resume_stuck_printing_requeues(
     assert tasks.resume_stuck_printing() == 1
     job.refresh_from_db()
     assert job.state == JobState.FAILED  # contador não mexeu → nada impresso, valor libertado
+
+
+# --- erros durante a impressão: cobrar só o que saiu, nunca ficar preso ---------------
+
+
+def test_printer_restarts_mid_job_charges_only_printed(
+    api, ready_job, customer, kiosk, django_capture_on_commit_callbacks
+):
+    """A HP reinicia a meio e esquece o trabalho: termina já, o contador decide."""
+    FakePrinterGateway.configure(str(kiosk.printer.pk), behaviour="lost", partial_faces=2)
+    _, job = checkout(api, ready_job, django_capture_on_commit_callbacks)
+    assert (job.state, job.pages_printed, job.failure_reason) == (
+        JobState.PARTIAL,
+        2,
+        "printer_error",
+    )
+    hold = WalletHold.objects.get(job=job)
+    assert hold.captured_kz == 350 + 200  # só as 2 faces que saíram
+    assert wallet.wallet_for(customer).held_kz == 0
+
+
+def test_printer_error_mid_job_is_interrupted_and_canceled(
+    api, ready_job, customer, kiosk, django_capture_on_commit_callbacks
+):
+    """Papel encravado a meio: interrompe, cancela na impressora, cobra só o que saiu."""
+    key = str(kiosk.printer.pk)
+    FakePrinterGateway.configure(key, behaviour="jam", partial_faces=1)
+    _, job = checkout(api, ready_job, django_capture_on_commit_callbacks)
+    assert (job.state, job.pages_printed, job.failure_reason) == (
+        JobState.PARTIAL,
+        1,
+        "printer_error",
+    )
+    assert FakePrinterGateway(key).state["canceled"] == [job.printer_job_id]
+    assert WalletHold.objects.get(job=job).captured_kz == 350
+
+
+def test_nothing_printed_before_error_refunds_everything(
+    api, ready_job, customer, kiosk, django_capture_on_commit_callbacks
+):
+    FakePrinterGateway.configure(str(kiosk.printer.pk), behaviour="lost", partial_faces=0)
+    _, job = checkout(api, ready_job, django_capture_on_commit_callbacks)
+    assert (job.state, job.pages_printed) == (JobState.FAILED, 0)
+    w = wallet.wallet_for(customer)
+    assert (w.balance_kz, w.held_kz) == (5000, 0)
+
+
+def test_counter_read_when_printer_comes_back(ready_job, kiosk, settings):
+    """Sem contador logo após o erro: espera que a impressora volte e lê-o então."""
+    settings.PRINT_RECOVERY_SECONDS = 60
+    key = str(kiosk.printer.pk)
+    gateway = FakePrinterGateway(key)
+    Job.objects.filter(pk=ready_job.pk).update(state=JobState.PRINTING, counter_before=10_000)
+    job = Job.objects.get(pk=ready_job.pk)
+    FakePrinterGateway.configure(key, counter=10_003, offline_calls=3)
+    after = printing.read_counter_when_back(job, gateway)
+    assert after == 10_003
+    assert Job.objects.get(pk=job.pk).failure_reason == "printer_error"
+
+
+def test_printer_never_comes_back_charges_nothing(ready_job, kiosk):
+    key = str(kiosk.printer.pk)
+    gateway = FakePrinterGateway(key)
+    Job.objects.filter(pk=ready_job.pk).update(state=JobState.PRINTING, counter_before=10_000)
+    job = Job.objects.get(pk=ready_job.pk)
+    FakePrinterGateway.configure(key, behaviour="offline")
+    assert printing.read_counter_when_back(job, gateway) is None
+
+
+def test_history_shows_interrupted_charge(
+    api, ready_job, customer, kiosk, client, django_capture_on_commit_callbacks
+):
+    FakePrinterGateway.configure(str(kiosk.printer.pk), behaviour="lost", partial_faces=1)
+    _, job = checkout(api, ready_job, django_capture_on_commit_callbacks)
+    client.force_login(customer)
+    page = client.get("/impressoes/").content.decode()
+    # 1.ª face a cores pouca tinta (350) cobrada; o resto (1 750 - 350) devolvido.
+    assert "350" in page and "1" in page
+    assert job.total_kz - WalletHold.objects.get(job=job).captured_kz > 0

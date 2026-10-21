@@ -10,6 +10,7 @@ from .gateway import (
     PrinterGateway,
     PrinterState,
     PrinterStatus,
+    PrinterJobLost,
     PrinterUnavailable,
     PrintRequest,
 )
@@ -27,6 +28,7 @@ from .ipp import (
 )
 from .snmp import PAGE_COUNTER_OID, SnmpError, snmp_get_int
 
+IPP_NOT_FOUND = 0x0406  # client-error-not-found: trabalho desconhecido (ex.: impressora reiniciou)
 PRINTER_STATE = {3: PrinterState.READY, 4: PrinterState.BUSY, 5: PrinterState.ERROR}
 JOB_STATE = {
     3: JobOutcome.PENDING,
@@ -149,17 +151,22 @@ class IppPrinterGateway(PrinterGateway):
         return str(job_id)
 
     def get_job_state(self, printer_job_id: str) -> JobProgress:
-        response = self._call(
-            GET_JOB_ATTRIBUTES,
-            [
-                (INTEGER, "job-id", int(printer_job_id)),
-                (
-                    KEYWORD,
-                    "requested-attributes",
-                    ["job-state", "job-state-reasons", "job-impressions-completed"],
-                ),
-            ],
-        )
+        try:
+            response = self.client.call(
+                GET_JOB_ATTRIBUTES,
+                [
+                    (INTEGER, "job-id", int(printer_job_id)),
+                    (
+                        KEYWORD,
+                        "requested-attributes",
+                        ["job-state", "job-state-reasons", "job-impressions-completed"],
+                    ),
+                ],
+            )
+        except IppError as exc:
+            if exc.status_code == IPP_NOT_FOUND:
+                raise PrinterJobLost(f"Printer does not know job {printer_job_id}") from exc
+            raise PrinterUnavailable(str(exc)) from exc
         state = response.get("job", "job-state")
         return JobProgress(
             outcome=JOB_STATE.get(state, JobOutcome.UNKNOWN),

@@ -90,7 +90,7 @@ def test_full_copy_flow(session, kiosk, s3, django_capture_on_commit_callbacks):
     job = session.get(f"/api/v1/jobs/{job_id}").json()
     assert job["state"] == "ANALYZED" and job["pages"] == 5
     assert job["original_filename"] == "Cópia (5 pág.)"
-    assert job["total_kz"] == 500  # 5 páginas P&B
+    assert job["total_kz"] == 150  # 5 páginas P&B a 30 Kz (preço de cópia)
 
     # imprimir: igual a uma impressão normal
     with django_capture_on_commit_callbacks(execute=True):
@@ -99,7 +99,7 @@ def test_full_copy_flow(session, kiosk, s3, django_capture_on_commit_callbacks):
     final = Job.objects.get(pk=job_id)
     assert final.state == JobState.COMPLETED and final.pages_printed == 5
     assert final.source == Job.Source.COPY
-    assert wallet.wallet_for(session.user).balance_kz == 4500
+    assert wallet.wallet_for(session.user).balance_kz == 4850
 
 
 def test_copy_errors(session, kiosk, s3, django_capture_on_commit_callbacks):

@@ -22,7 +22,7 @@
       step3: "Escolha o ficheiro e imprima",
       scan: "Leia com o telemóvel",
       orPhone: "Entrar com o número de telefone",
-      priceFrom: "P&B {bw} · cor desde {color} por página",
+      priceFrom: "Impressão P&B {bw} · cor desde {color} · cópia {copy} por página",
       phoneTitle: "O seu número de telefone",
       phoneHint: "Vamos enviar um código por SMS.",
       send: "Enviar código",
@@ -109,6 +109,15 @@
       printing: "A imprimir…",
       done: "Impresso! Recolha as suas folhas.",
       partial: "A impressão parou a meio.",
+      interruptedTitle: "A impressora teve um problema.",
+      printedOnce: "Impresso {when}",
+      printedMany: "Impresso {n}× · último {when}",
+      todayAt: "hoje às {t}",
+      alreadyPrinted: "Já imprimiu este ficheiro",
+      alreadyPrintedHint: "Imprimiu-o {when}. Quer imprimir de novo? Vai pagar outra vez.",
+      printAgain: "Imprimir de novo",
+      interruptedHint: "Só vai pagar as páginas que saíram; o resto volta para a sua carteira.",
+      autoLogout: "A sessão termina em {s} s.",
       failed: "Não foi possível imprimir.",
       charged: "Debitado: {kz}",
       notCharged: "Nada foi debitado.",
@@ -139,7 +148,7 @@
       step3: "Choose your file and print",
       scan: "Scan with your phone",
       orPhone: "Sign in with phone number",
-      priceFrom: "B&W {bw} · colour from {color} per page",
+      priceFrom: "Print B&W {bw} · colour from {color} · copy {copy} per page",
       phoneTitle: "Your phone number",
       phoneHint: "We will send you a code by SMS.",
       send: "Send code",
@@ -226,6 +235,15 @@
       printing: "Printing…",
       done: "Printed! Collect your pages.",
       partial: "Printing stopped half-way.",
+      interruptedTitle: "The printer had a problem.",
+      printedOnce: "Printed {when}",
+      printedMany: "Printed {n}× · last {when}",
+      todayAt: "today at {t}",
+      alreadyPrinted: "You already printed this file",
+      alreadyPrintedHint: "You printed it {when}. Print it again? You will pay again.",
+      printAgain: "Print again",
+      interruptedHint: "You only pay for the sides that came out; the rest goes back to your wallet.",
+      autoLogout: "Your session ends in {s} s.",
       failed: "We could not print.",
       charged: "Charged: {kz}",
       notCharged: "Nothing was charged.",
@@ -484,7 +502,7 @@
   function paintIdle() {
     if (S.screen !== "idle") return;
     var prices = S.prices
-      ? '<p class="muted">' + esc(t("priceFrom", { bw: kz(S.prices.bw_page_kz), color: kz(S.prices.color_from_kz) })) + "</p>"
+      ? '<p class="muted">' + esc(t("priceFrom", { bw: kz(S.prices.bw_page_kz), color: kz(S.prices.color_from_kz), copy: kz(S.prices.copy_bw_kz || 30) })) + "</p>"
       : "";
     var qr = S.pairing ? '<div class="qr">' + S.pairing.qr_svg + "</div>" : '<div class="spinner"></div>';
     var html = frame(
@@ -712,9 +730,28 @@
         '<button class="item" data-doc="' + esc(d.id) + '"' + (d.state === "READY" ? "" : " disabled") + ">" + thumb((d.preview_urls || [])[0]) +
         '<div style="flex:1;min-width:0"><div class="t">' + esc(d.filename) + '</div><div class="s">' + meta + "</div>" +
         (d.email_from ? '<div class="s">✉ ' + esc(t("fromEmail", { who: d.email_from })) + "</div>" : "") +
+        printedBadge(d) +
         '</div><span class="pill">›</span></button>'
       );
     }).join("");
+  }
+
+  // "hoje às 18:30" ou "21/10 18:30" (hora local do kiosk).
+  function whenText(iso) {
+    if (!iso) return "";
+    var d = new Date(iso), now = new Date();
+    var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+    var hm = pad(d.getHours()) + ":" + pad(d.getMinutes());
+    if (d.toDateString() === now.toDateString()) return t("todayAt", { t: hm });
+    return pad(d.getDate()) + "/" + pad(d.getMonth() + 1) + " " + hm;
+  }
+
+  function printedBadge(d) {
+    if (!d.printed_count) return "";
+    var text = d.printed_count > 1
+      ? t("printedMany", { n: d.printed_count, when: whenText(d.last_printed_at) })
+      : t("printedOnce", { when: whenText(d.last_printed_at) });
+    return '<div class="s printed">✓ ' + esc(text) + "</div>";
   }
 
   function thumb(url) {
@@ -783,7 +820,27 @@
     paintDocs();
   }
 
+  // Ficheiro já impresso: o cliente confirma antes de pagar outra vez.
   function pickDoc(id) {
+    var doc = docs.filter(function (d) { return String(d.id) === String(id); })[0];
+    if (doc && doc.printed_count) {
+      clearTimer("docs");
+      render(
+        "reprint",
+        frame(
+          '<div class="big-icon">✓</div><h1>' + esc(t("alreadyPrinted")) + '</h1><p class="big muted" style="overflow-wrap:anywhere">' + esc(doc.filename) +
+            "</p><p class=\"big\">" + esc(t("alreadyPrintedHint", { when: whenText(doc.last_printed_at) })) +
+            '</p><div class="row" style="width:min(720px,100%);margin:24px auto 0"><button class="btn ghost" data-act="docs">' + esc(t("back")) +
+            '</button><button class="btn" data-reprint="' + esc(doc.id) + '">' + esc(t("printAgain")) + "</button></div>",
+          { center: true }
+        )
+      );
+      return;
+    }
+    startDocJob(id);
+  }
+
+  function startDocJob(id) {
     clearTimer("docs");
     showPreparing();
     api("/kiosks/" + encodeURIComponent(S.kiosk.code) + "/jobs", { method: "POST", auth: "session", body: { document_id: id } })
@@ -1044,7 +1101,8 @@
   // ---------------------------------------------------------------- carregar carteira
   function showTopup() {
     var missing = (S.job.wallet && S.job.wallet.missing_kz) || 0;
-    var base = Math.max(100, Math.ceil(missing / 100) * 100);
+    // Carregamento mínimo (500 Kz): sugere o que falta, mas nunca abaixo do mínimo.
+    var base = Math.max(CFG.topupMin || 500, Math.ceil(missing / 100) * 100);
     var amounts = [base].concat([500, 1000, 2000, 5000].filter(function (a) { return a > base; })).slice(0, 4);
     render(
       "topup",
@@ -1134,8 +1192,15 @@
   function pollPrint() {
     refreshJob().then(function () {
       var job = S.job;
+      var interrupted = job.failure_reason === "printer_error";
       if (job.state === "QUEUED" || job.state === "PRINTING" || job.state === "RESERVED") {
-        paintPrinting();
+        if (!interrupted) {
+          paintPrinting();
+          return;
+        }
+        // Erro na impressora: o servidor acerta o valor sozinho (só o que saiu).
+        clearTimer("job");
+        showResult("⚠️", t("interruptedTitle"), t("interruptedHint"), { autoLogout: 20 });
         return;
       }
       clearTimer("job");
@@ -1148,25 +1213,43 @@
           api("/wallet", { auth: "session" }).then(function (w) {
             var last = (w.entries || []).filter(function (e) { return String(e.job) === String(job.id); })[0];
             var charged = last ? -last.amount_kz : 0;
-            showResult("⚠️", t("partial"), t("partialCharged", { n: printed, kz: kz(charged) }));
+            showResult("⚠️", interrupted ? t("interruptedTitle") : t("partial"), t("partialCharged", { n: printed, kz: kz(charged) }),
+              interrupted ? { autoLogout: 20 } : null);
           });
         } else {
-          showResult("❌", t("failed"), t("notCharged"));
+          showResult("❌", interrupted ? t("interruptedTitle") : t("failed"), t("notCharged"), interrupted ? { autoLogout: 20 } : null);
         }
       });
     }).catch(function () {});
   }
 
-  function showResult(icon, title, sub) {
-    render(
-      "result",
-      frame(
-        '<div class="big-icon">' + icon + "</div><h1>" + esc(title) + '</h1><p class="big muted">' + esc(sub) +
-          '</p><div class="row" style="width:min(720px,100%);margin:24px auto 0"><button class="btn ghost" data-act="logout">' + esc(t("finish")) +
-          '</button><button class="btn" data-act="home">' + esc(t("printAnother")) + "</button></div>",
-        { center: true }
-      )
-    );
+  // opts.autoLogout = N: depois de um erro de impressão a sessão termina sozinha em N s.
+  function showResult(icon, title, sub, opts) {
+    opts = opts || {};
+    var paint = function (left) {
+      render(
+        "result",
+        frame(
+          '<div class="big-icon">' + icon + "</div><h1>" + esc(title) + '</h1><p class="big muted">' + esc(sub) + "</p>" +
+            (left !== undefined ? '<p class="muted">' + esc(t("autoLogout", { s: left })) + "</p>" : "") +
+            '<div class="row" style="width:min(720px,100%);margin:24px auto 0"><button class="btn ghost" data-act="logout">' + esc(t("finish")) +
+            "</button>" + (opts.autoLogout ? "" : '<button class="btn" data-act="home">' + esc(t("printAnother")) + "</button>") + "</div>",
+          { center: true }
+        )
+      );
+    };
+    clearTimer("autoLogout");
+    if (!opts.autoLogout) return paint();
+    var left = opts.autoLogout;
+    paint(left);
+    S.timers.autoLogout = setInterval(function () {
+      left -= 1;
+      if (S.screen !== "result") return clearTimer("autoLogout");
+      if (left <= 0) {
+        clearTimer("autoLogout");
+        logout();
+      } else paint(left);
+    }, 1000);
   }
 
   function showMessage(icon, text, toHome, toOptions) {
@@ -1261,6 +1344,7 @@
       viewer.i = Math.min(viewer.urls.length - 1, Math.max(0, viewer.i + Number(d.vnav)));
       return paintViewer();
     }
+    if (d.reprint) return startDocJob(d.reprint);
     if (d.doc) return pickDoc(d.doc);
     if (d.usb !== undefined) return pickUsb(Number(d.usb));
     if (d.amount) return createTopup(Number(d.amount));

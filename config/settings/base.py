@@ -147,6 +147,12 @@ PRINT_POLL_SECONDS = env.float("PRINT_POLL_SECONDS", default=3)
 PRINT_COUNTER_SETTLE_SECONDS = env.float("PRINT_COUNTER_SETTLE_SECONDS", default=8)
 PRINT_JOB_TIMEOUT_SECONDS = env.int("PRINT_JOB_TIMEOUT_SECONDS", default=900)
 PRINT_RETRY_SECONDS = env.int("PRINT_RETRY_SECONDS", default=30)
+# Erro durante a impressão: ao fim deste tempo com a impressora em erro/sem resposta o
+# trabalho é interrompido (cancelado na impressora, cliente informado, cobra-se só o que saiu).
+PRINT_ERROR_GRACE_SECONDS = env.int("PRINT_ERROR_GRACE_SECONDS", default=60)
+# Sem contador (impressora desligada): espera-se até este tempo que volte; depois cobra 0.
+PRINT_RECOVERY_SECONDS = env.int("PRINT_RECOVERY_SECONDS", default=1800)
+PRINT_RECOVERY_POLL_SECONDS = env.float("PRINT_RECOVERY_POLL_SECONDS", default=15)
 # Monitorização
 KIOSK_OFFLINE_AFTER_SECONDS = env.int("KIOSK_OFFLINE_AFTER_SECONDS", default=90)
 TONER_LOW_PCT = env.int("TONER_LOW_PCT", default=10)
@@ -213,7 +219,8 @@ MOCK_PAYMENT_SECRET = env("MOCK_PAYMENT_SECRET", default="mock-secret")
 STRONGPAY_BASE_URL = env("STRONGPAY_BASE_URL", default="https://strongpay.strongbox.ao")
 STRONGPAY_API_KEY = env("STRONGPAY_API_KEY", default="")
 STRONGPAY_WEBHOOK_SECRET = env("STRONGPAY_WEBHOOK_SECRET", default="")
-TOPUP_MIN_KZ = env.int("TOPUP_MIN_KZ", default=100)
+# Carregamento mínimo da carteira por referência (decisão do negócio: 500 Kz).
+TOPUP_MIN_KZ = env.int("TOPUP_MIN_KZ", default=500)
 TOPUP_MAX_KZ = env.int("TOPUP_MAX_KZ", default=500_000)
 
 from common.logging import configure_logging  # noqa: E402

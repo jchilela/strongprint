@@ -21,6 +21,7 @@
       <a class="thumb" href="{% url 'portal:document' d.pk %}" aria-label="{% translate 'See' %} {{ d.original_filename }}">{% if d.thumb %}<img src="{{ d.thumb }}" alt="" loading="lazy">{% else %}<span>📄</span>{% endif %}</a>
       <div class="grow">
         <a class="title" href="{% url 'portal:document' d.pk %}">{{ d.original_filename }}</a>
+        {% if d.printed %}<div class="small printed">✓ {% if d.printed.count > 1 %}{% blocktranslate with n=d.printed.count when=d.printed.last|date:"d/m H:i" %}Printed {{ n }}× · last {{ when }}{% endblocktranslate %}{% else %}{% blocktranslate with when=d.printed.last|date:"d/m H:i" %}Printed on {{ when }}{% endblocktranslate %}{% endif %}</div>{% endif %}
         {% if d.email_from %}<div class="muted small">✉ {% blocktranslate with sender=d.email_from %}by e-mail from {{ sender }}{% endblocktranslate %}</div>{% endif %}
         <div class="muted small">
           {% if d.state == 'READY' %}

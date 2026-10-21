@@ -23,6 +23,7 @@ from domain.printing.gateway import (
     PrinterGateway,
     PrinterUnavailable,
     PrintRequest,
+    PrinterJobLost,
 )
 from domain.printing.ipp_gateway import IppPrinterGateway
 from domain.printing.verification import decide
@@ -124,30 +125,98 @@ def start(job: Job, gateway: PrinterGateway | None = None) -> Job:
     return track(job, gateway)
 
 
+INTERRUPTED = "printer_error"  # failure_reason enquanto PRINTING = o ecrã termina a sessão
+
+
+def printer_trouble(gateway: PrinterGateway) -> str | None:
+    """Motivo pelo qual a impressora não está a imprimir agora (None = tudo bem)."""
+    try:
+        status = gateway.get_status()
+    except PrinterUnavailable:
+        return "offline"
+    return block_reason(status.state.value, status.to_dict())
+
+
+def interrupt(job: Job, gateway: PrinterGateway, reason: str) -> None:
+    """Marca o trabalho como interrompido (o ecrã avisa e termina a sessão) e tenta
+    cancelá-lo na impressora, para não continuar sozinha quando voltar."""
+    log.warning("print.interrupted", reason=reason)
+    Job.objects.filter(pk=job.pk).update(failure_reason=INTERRUPTED, updated_at=timezone.now())
+    job.failure_reason = INTERRUPTED
+    try:
+        gateway.cancel(job.printer_job_id)
+    except (PrinterUnavailable, PrinterJobLost):
+        pass
+
+
 def track(job: Job, gateway: PrinterGateway) -> Job:
+    """Acompanha o trabalho na impressora até terminar, ou até um erro prolongado.
+
+    - trabalho desconhecido (impressora reiniciou): termina já, o contador decide;
+    - impressora em erro / sem resposta mais de PRINT_ERROR_GRACE_SECONDS: interrompe;
+    - nunca reenvia: o que se cobra sai sempre do contador.
+    """
     deadline = time.monotonic() + settings.PRINT_JOB_TIMEOUT_SECONDS
     progress = JobProgress(outcome=JobOutcome.UNKNOWN)
+    trouble_since = None
     while True:
+        trouble = None
         try:
             progress = gateway.get_job_state(job.printer_job_id)
+        except PrinterJobLost:
+            log.warning("print.job_lost", printer_job_id=job.printer_job_id)
+            interrupt(job, gateway, "job_lost")
+            progress = JobProgress(outcome=JobOutcome.ABORTED, reasons=["job-lost"])
+            break
         except PrinterUnavailable as exc:
             log.warning("print.poll_failed", reason=str(exc))
+            trouble = "offline"
         if progress.outcome.is_final:
             break
-        if time.monotonic() > deadline:
+        trouble = trouble or printer_trouble(gateway)
+        now = time.monotonic()
+        if trouble is None:
+            trouble_since = None
+        elif trouble_since is None:
+            trouble_since = now
+            log.warning("print.trouble", reason=trouble)
+        if trouble_since is not None and now - trouble_since >= settings.PRINT_ERROR_GRACE_SECONDS:
+            interrupt(job, gateway, trouble)
+            progress = JobProgress(outcome=JobOutcome.ABORTED, reasons=[trouble])
+            break
+        if now > deadline:
             log.warning("print.timeout", last=progress.outcome.value)
             try:
                 gateway.cancel(job.printer_job_id)
-            except PrinterUnavailable:
+            except (PrinterUnavailable, PrinterJobLost):
                 pass
             break
         time.sleep(settings.PRINT_POLL_SECONDS)
     return verify(job, gateway, progress)
 
 
+def read_counter_when_back(job: Job, gateway: PrinterGateway) -> int | None:
+    """Sem contador (impressora desligada/reiniciar): espera que volte, até ao limite.
+    Mantém a impressora ocupada (lock) entretanto: outro trabalho misturaria as contas."""
+    deadline = time.monotonic() + settings.PRINT_RECOVERY_SECONDS
+    if job.failure_reason != INTERRUPTED:
+        Job.objects.filter(pk=job.pk).update(failure_reason=INTERRUPTED, updated_at=timezone.now())
+        job.failure_reason = INTERRUPTED
+    while time.monotonic() < deadline:
+        time.sleep(settings.PRINT_RECOVERY_POLL_SECONDS)
+        after = gateway.get_page_counter()
+        if after is not None:
+            log.info("print.counter_back", counter=after)
+            return after
+    log.warning("print.counter_never_back")
+    return None
+
+
 def verify(job: Job, gateway: PrinterGateway, progress: JobProgress) -> Job:
     time.sleep(settings.PRINT_COUNTER_SETTLE_SECONDS)  # o contador atualiza depois da folha sair
     after = gateway.get_page_counter()
+    if after is None and job.counter_before is not None and progress.outcome != JobOutcome.COMPLETED:
+        after = read_counter_when_back(job, gateway)
     verdict = decide(
         job.price_breakdown,
         counter_before=job.counter_before,
@@ -158,7 +227,12 @@ def verify(job: Job, gateway: PrinterGateway, progress: JobProgress) -> Job:
     if verdict.overflow:
         log.warning("print.counter_overflow", overflow=verdict.overflow)
     log.info("print.verdict", **verdict.to_dict(), printer_outcome=progress.outcome.value)
-    reason = "" if verdict.state == JobState.COMPLETED else f"printer_{progress.outcome.value}"
+    if verdict.state == JobState.COMPLETED:
+        reason = ""
+    elif job.failure_reason == INTERRUPTED:
+        reason = INTERRUPTED
+    else:
+        reason = f"printer_{progress.outcome.value}"
     return services.finish(
         job.pk,
         verdict.state,

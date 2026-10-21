@@ -55,6 +55,10 @@ class TopUpForm(forms.Form):
         label=_("Amount (Kz)"),
         min_value=settings.TOPUP_MIN_KZ,
         max_value=settings.TOPUP_MAX_KZ,
+        error_messages={
+            "min_value": _("The minimum to top up the wallet is %(limit_value)s Kz."),
+            "max_value": _("The maximum to top up at once is %(limit_value)s Kz."),
+        },
         widget=forms.NumberInput(attrs={"inputmode": "numeric", "step": 50}),
     )
 

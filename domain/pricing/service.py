@@ -10,7 +10,7 @@ Regras (Kz inteiros):
 """
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from domain.analysis.page_range import parse_page_range
 from domain.analysis.types import AnalysisError, DocumentAnalysis, PageAnalysis
@@ -33,6 +33,16 @@ class PriceRules:
     color_low_max_pct: int
     color_mid_max_pct: int
     min_transaction_kz: int
+    copy_bw_page_kz: int = 30
+    copy_min_transaction_kz: int = 0
+
+    def for_copy(self) -> "PriceRules":
+        """Preços aplicados a uma cópia: preto e mínimo próprios, cores iguais."""
+        return replace(
+            self,
+            bw_page_kz=self.copy_bw_page_kz,
+            min_transaction_kz=self.copy_min_transaction_kz,
+        )
 
 
 @dataclass(frozen=True)

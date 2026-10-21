@@ -63,6 +63,10 @@ class Job(models.Model):
     options = models.JSONField(_("options"), default=default_options)
     price_breakdown = models.JSONField(_("price breakdown"), default=dict, blank=True)
     total_kz = models.PositiveIntegerField(_("total (Kz)"), null=True, blank=True)
+    # Ficheiro de "Meus ficheiros" de onde veio (para mostrar "já impresso").
+    document = models.ForeignKey(
+        "Document", null=True, blank=True, on_delete=models.SET_NULL, related_name="jobs"
+    )
 
     printer = models.ForeignKey(
         Printer, null=True, blank=True, on_delete=models.SET_NULL, related_name="jobs"

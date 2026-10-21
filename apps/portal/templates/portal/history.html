@@ -10,8 +10,9 @@
       <div class="grow"><a class="title" href="{% url 'portal:job' j.pk %}">{{ j.original_filename|default:"—" }}</a>
         <div class="muted small">{{ j.created_at|date:"d/m/Y H:i" }} · {{ j.kiosk.site.partner.name }}{% if j.pages_printed %} · {% blocktranslate count n=j.pages_printed %}{{ n }} page printed{% plural %}{{ n }} pages printed{% endblocktranslate %}{% endif %}</div></div>
       <div style="text-align:right">
-        <span class="pill {% if j.state == 'COMPLETED' %}ok{% elif j.state == 'PARTIAL' %}warn{% elif j.state in 'FAILED REJECTED EXPIRED CANCELLED' %}bad{% endif %}">{{ j.get_state_display }}</span>
-        {% if j.total_kz %}<div class="num small muted">{{ j.total_kz|kz }}</div>{% endif %}
+        <span class="pill {% if j.state == 'COMPLETED' %}ok{% elif j.state == 'PARTIAL' %}warn{% elif j.state in 'FAILED REJECTED EXPIRED CANCELLED' %}bad{% endif %}">{% if j.interrupted %}{% translate "Interrupted" %}{% else %}{{ j.get_state_display }}{% endif %}</span>
+        {% if j.interrupted %}<div class="num small muted">{% blocktranslate with charged=j.charged_kz|kz refunded=j.refunded_kz|kz %}Charged {{ charged }} · {{ refunded }} back to your wallet{% endblocktranslate %}</div>
+        {% elif j.total_kz %}<div class="num small muted">{{ j.total_kz|kz }}</div>{% endif %}
       </div>
     </li>
     {% endfor %}

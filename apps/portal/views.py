@@ -217,7 +217,9 @@ def documents(request):
             messages.success(request, _("File saved. We are checking it now."))
             return redirect("portal:documents")
     docs = list(request.user.documents.all())
+    printed = library.printed_info(docs)
     for doc in docs:
+        doc.printed = printed.get(doc.pk)
         doc.estimate_kz = bw_estimate(doc.pages)
         doc.thumb = (preview_urls(doc) or [None])[0]
     return render(
@@ -259,9 +261,20 @@ def document_view(request, document_id):
 
 @login_required
 def history(request):
+    from apps.wallets.models import WalletHold
+
     jobs = list(request.user.print_jobs.select_related("kiosk__site__partner")[:50])
+    charged = dict(
+        WalletHold.objects.filter(job__in=jobs).values_list("job_id", "captured_kz")
+    )
     for job in jobs:
         job.thumb = (preview_urls(job) or [None])[0]
+        # Impressão interrompida (erro da impressora): só se cobram as faces que saíram.
+        job.interrupted = job.state in (Job.State.PARTIAL, Job.State.FAILED) and (
+            job.failure_reason == "printer_error" or job.state == Job.State.PARTIAL
+        )
+        job.charged_kz = charged.get(job.pk, 0)
+        job.refunded_kz = max(0, (job.total_kz or 0) - job.charged_kz)
     return render(request, "portal/history.html", {"jobs": jobs, "States": Job.State})
 
 

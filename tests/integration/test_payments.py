@@ -188,7 +188,7 @@ def test_reconcile_pending(strongpay, customer):
         ]
     )
     paid = services.create_topup(customer, 1000, actor="t")
-    old = services.create_topup(customer, 300, actor="t")
+    old = services.create_topup(customer, 500, actor="t")
     TopUp.objects.update(created_at=timezone.now() - timedelta(minutes=5))
     TopUp.objects.filter(pk=old.pk).update(expires_at=timezone.now() - timedelta(hours=2))
     strongpay.get("/api/v1/payments/sp-paid").mock(
@@ -212,3 +212,21 @@ def test_reconcile_survives_provider_outage(strongpay, customer):
     TopUp.objects.update(created_at=timezone.now() - timedelta(minutes=5))
     strongpay.get("/api/v1/payments/sp-x").mock(return_value=httpx.Response(503))
     assert tasks.reconcile_topups() == 0
+
+
+def test_topup_minimum_is_500(api, client, settings):
+    """Carregamento mínimo 500 Kz: API (kiosk) e portal."""
+    from django.urls import reverse
+
+    from apps.wallets import services as wallet_services
+    from tests.factories import UserFactory
+
+    assert settings.TOPUP_MIN_KZ == 500
+    assert api.post("/api/v1/wallet/topups", {"amount_kz": 499}, format="json").status_code == 400
+    assert api.post("/api/v1/wallet/topups", {"amount_kz": 500}, format="json").status_code == 201
+
+    user = UserFactory(full_name="Cliente")
+    client.force_login(user)
+    page = client.post(reverse("portal:topup_new"), {"amount_kz": 400, "idempotency_key": "k1"})
+    assert page.status_code == 200 and "500" in page.content.decode()
+    assert not wallet_services.wallet_for(user).topups.exists()

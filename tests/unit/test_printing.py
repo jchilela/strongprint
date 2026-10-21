@@ -12,6 +12,7 @@ from domain.printing import ipp, snmp
 from domain.printing.fake import FakePrinterGateway
 from domain.printing.gateway import (
     JobOutcome,
+    PrinterJobLost,
     PrinterState,
     PrinterUnavailable,
     PrintRequest,
@@ -324,7 +325,8 @@ def test_fake_gateway_behaviours(behaviour, extra, outcome, printed):
     assert progress.outcome == outcome
     assert gateway.get_page_counter() - before == printed
     assert gateway.state["submitted"][0]["pages"] == 2
-    assert gateway.get_job_state("missing").outcome == JobOutcome.UNKNOWN
+    with pytest.raises(PrinterJobLost):  # trabalho que a impressora não conhece
+        gateway.get_job_state("missing")
 
 
 def test_fake_gateway_offline_and_status():
@@ -337,3 +339,13 @@ def test_fake_gateway_offline_and_status():
     with pytest.raises(PrinterUnavailable):
         gateway.get_status()
     assert gateway.get_page_counter() is None
+
+
+def test_ipp_gateway_job_not_found_is_job_lost():
+    """Depois de reiniciar, a HP responde client-error-not-found (0x0406) ao trabalho."""
+    import struct
+
+    body = struct.pack(">BBHI", 2, 0, 0x0406, 1) + bytes([0x03])
+    gateway = make_gateway(lambda r: httpx.Response(200, content=body))
+    with pytest.raises(PrinterJobLost):
+        gateway.get_job_state("3")

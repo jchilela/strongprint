@@ -237,3 +237,6 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; touch-action
   .qr { width: min(50vh, 250px); }
   .big { font-size: 19px; }
 }
+
+/* Ficheiro já impresso em "Meus ficheiros". */
+.item .s.printed { color: var(--ok); font-weight: 600; }

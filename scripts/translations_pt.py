@@ -8,6 +8,15 @@ import sys
 from pathlib import Path
 
 PT = {
+    "copy, B&W page (Kz)": "cópia, página P&B (Kz)",
+    "copy, minimum per transaction (Kz)": "cópia, mínimo por operação (Kz)",
+    "Printed %(n)s× · last %(when)s": "Impresso %(n)s× · último %(when)s",
+    "Printed on %(when)s": "Impresso em %(when)s",
+    "Interrupted": "Interrompido",
+    "Charged %(charged)s · %(refunded)s back to your wallet": "Cobrado %(charged)s · %(refunded)s devolvidos à carteira",
+    "The minimum to top up the wallet is %(limit_value)s Kz.": "O valor mínimo para carregar a carteira é %(limit_value)s Kz.",
+    "The maximum to top up at once is %(limit_value)s Kz.": "O valor máximo por carregamento é %(limit_value)s Kz.",
+    "Minimum %(min)s.": "Mínimo %(min)s.",
     "Screen size reported by the kiosk (CSS pixels and density)": "Tamanho do ecrã reportado pelo kiosk (pontos e densidade)",
     "screen": "ecrã",
     "Tell us your name to continue.": "Diga-nos o seu nome para continuar.",

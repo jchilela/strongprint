@@ -58,7 +58,7 @@ class CreateTopUpSerializer(serializers.Serializer):
     def validate_amount_kz(self, value):
         if not settings.TOPUP_MIN_KZ <= value <= settings.TOPUP_MAX_KZ:
             raise serializers.ValidationError(
-                f"Between {settings.TOPUP_MIN_KZ} and {settings.TOPUP_MAX_KZ} Kz"
+                f"The amount must be between {settings.TOPUP_MIN_KZ} and {settings.TOPUP_MAX_KZ} Kz"
             )
         return value
 

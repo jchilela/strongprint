@@ -13,5 +13,6 @@ def screen(request):
         {
             "agent_url": settings.KIOSK_AGENT_URL,
             "idle_seconds": settings.KIOSK_IDLE_SECONDS,
+            "topup_min": settings.TOPUP_MIN_KZ,
         },
     )

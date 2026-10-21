@@ -8,7 +8,7 @@
   <div class="presets">
     {% for p in presets %}<button type="button" onclick="document.getElementById('id_amount_kz').value={{ p }}">{{ p|kz }}</button>{% endfor %}
   </div>
-  <div class="field">{{ form.amount_kz.label_tag }}{{ form.amount_kz }}{{ form.amount_kz.errors }}</div>
+  <div class="field">{{ form.amount_kz.label_tag }}{{ form.amount_kz }}<div class="muted small">{% blocktranslate with min=form.amount_kz.field.min_value|kz %}Minimum {{ min }}.{% endblocktranslate %}</div>{{ form.amount_kz.errors }}</div>
   <input type="hidden" name="idempotency_key" value="{% now 'U' %}-{{ csrf_token|slice:':8' }}">
   <button class="btn block">{% translate "Get payment reference" %}</button>
 </form>

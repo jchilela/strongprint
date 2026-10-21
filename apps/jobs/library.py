@@ -96,9 +96,26 @@ def job_from_document(doc: Document, kiosk, *, actor: str) -> Job:
             file_key=key,
             file_size=doc.file_size,
             mime_type=doc.mime_type,
+            document=doc,
         )
         job = services.transition(
             job.pk, JobState.FILE_RECEIVED, actor=actor, data={"document": str(doc.pk)}
         )
         transaction.on_commit(lambda: tasks.analyze_job.delay(str(job.pk)))
     return job
+
+
+def printed_info(documents) -> dict:
+    """Por documento: quantas vezes saiu impresso (concluído ou parcial) e a última vez."""
+    from django.db.models import Count, Max
+
+    rows = (
+        Job.objects.filter(
+            document__in=documents,
+            state__in=[JobState.COMPLETED, JobState.PARTIAL],
+            pages_printed__gt=0,
+        )
+        .values("document")
+        .annotate(count=Count("id"), last=Max("finished_at"))
+    )
+    return {row["document"]: {"count": row["count"], "last": row["last"]} for row in rows}

@@ -213,6 +213,11 @@ class PriceTable(TimeStampedModel):
     min_transaction_kz = models.PositiveIntegerField(
         _("minimum per transaction (Kz)"), null=True, blank=True
     )
+    # Cópias têm preço próprio a preto (mercado: ~30 Kz); a cores usam os escalões acima.
+    copy_bw_page_kz = models.PositiveIntegerField(_("copy, B&W page (Kz)"), null=True, blank=True)
+    copy_min_transaction_kz = models.PositiveIntegerField(
+        _("copy, minimum per transaction (Kz)"), null=True, blank=True
+    )
 
     PRICE_FIELDS = (
         "bw_page_kz",
@@ -222,6 +227,8 @@ class PriceTable(TimeStampedModel):
         "color_low_max_pct",
         "color_mid_max_pct",
         "min_transaction_kz",
+        "copy_bw_page_kz",
+        "copy_min_transaction_kz",
     )
 
     class Meta:
