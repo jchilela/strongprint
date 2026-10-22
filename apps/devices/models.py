@@ -29,6 +29,7 @@ class EdgeDevice(TimeStampedModel):
         NONE = "", _("None")
         RELOAD = "reload", _("Reload screen")
         REBOOT = "reboot", _("Reboot")
+        RESTART_VPN = "restart_vpn", _("Restart VPN")
         OUT_OF_SERVICE = "out_of_service", _("Out of service")
 
     # O Pi pertence a uma impressora; o kiosk vem da impressora.

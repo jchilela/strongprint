@@ -2,7 +2,7 @@
 """Agente StrongPrint do Raspberry Pi (só biblioteca padrão do Python).
 
 1. Heartbeat a cada 30 s para a API (token do Pi); executa os comandos devolvidos:
-   ``reload`` (reinicia o ecrã), ``reboot``.
+   ``reload`` (reinicia o ecrã), ``reboot``, ``restart_vpn`` (religa o túnel VPN).
 2. Servidor local em 127.0.0.1:8800 para o ecrã do kiosk ler a pen USB:
    GET /health · GET /files · POST /upload {path, url, authorization}
    Só aceita pedidos vindos do ecrã (CORS) e só envia ficheiros para a API StrongPrint.
@@ -25,7 +25,7 @@ import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 ENV_FILE = Path(os.environ.get("STRONGPRINT_ENV", "/etc/strongprint/agent.env"))
 USB_ROOTS = [Path(p) for p in os.environ.get("USB_ROOTS", "/media").split(":")]
 EXTENSIONS = {
@@ -243,6 +243,9 @@ def run_command(command: str):
         subprocess.run(["pkill", "-f", "chromium"], check=False)
     elif command == "reboot":
         subprocess.run(["systemctl", "reboot"], check=False)
+    elif command == "restart_vpn":
+        subprocess.run(["systemctl", "restart", "wg-quick@wgsp"], check=False)
+        subprocess.run(["systemctl", "restart", "strongprint-nat"], check=False)
 
 
 def heartbeat_once(config: dict) -> list[str]:
@@ -272,7 +275,7 @@ def heartbeat_loop(config: dict, interval: int = 30):
     while True:
         try:
             for command in heartbeat_once(config):
-                if command in ("reload", "reboot"):
+                if command in ("reload", "reboot", "restart_vpn"):
                     run_command(command)
         except Exception as exc:  # rede em baixo: tenta no próximo ciclo
             print(f"heartbeat failed: {exc}", flush=True)

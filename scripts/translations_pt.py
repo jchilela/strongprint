@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 PT = {
+    "Restart VPN": "Reiniciar VPN",
     "copy, B&W page (Kz)": "cópia, página P&B (Kz)",
     "copy, minimum per transaction (Kz)": "cópia, mínimo por operação (Kz)",
     "Printed %(n)s× · last %(when)s": "Impresso %(n)s× · último %(when)s",

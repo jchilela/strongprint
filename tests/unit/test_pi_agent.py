@@ -128,3 +128,64 @@ def test_heartbeat_payload(agent, monkeypatch):
     assert agent.heartbeat_once(agent.CONFIG) == ["reload"]
     assert captured["url"] == "https://api.strongprint.it.ao/api/v1/edge/heartbeat"
     assert captured["auth"] == "Device tok" and captured["body"]["vpn_ip"] == "10.77.1.1"
+
+
+def test_restart_vpn_command(agent, monkeypatch):
+    calls = []
+    monkeypatch.setattr(agent.subprocess, "run", lambda cmd, check=False: calls.append(cmd))
+    agent.run_command("restart_vpn")
+    assert calls == [
+        ["systemctl", "restart", "wg-quick@wgsp"],
+        ["systemctl", "restart", "strongprint-nat"],
+    ]
+
+
+# --- vigia da VPN (deploy/kiosk/pi/strongprint-vpn-watchdog) -------------------------
+
+WATCHDOG = Path(__file__).resolve().parents[2] / "deploy/kiosk/pi/strongprint-vpn-watchdog"
+
+
+def run_watchdog(tmp_path, *, last_handshake, now=10_000):
+    """Corre a vigia com wg/ip/systemctl/getent/date simulados; devolve as chamadas."""
+    import os
+    import subprocess
+
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir(exist_ok=True)
+    calls = tmp_path / "calls.log"
+    fakes = {
+        "wg": f'if [ "$2" = "wgsp" ] && [ "$3" = "latest-handshakes" ]; then echo "PEERKEY= {last_handshake}"; else echo "wg $*" >> {calls}; fi',
+        "ip": "exit 0",
+        "systemctl": f'echo "systemctl $*" >> {calls}',
+        "getent": 'echo "64:ff9b::add4:dbf8 STREAM strongprint.it.ao"',
+        "date": f"echo {now}",
+        "logger": "exit 0",
+    }
+    for name, body in fakes.items():
+        path = bin_dir / name
+        path.write_text(f"#!/usr/bin/env bash\n{body}\n")
+        path.chmod(0o755)
+    conf = tmp_path / "wgsp.conf"
+    conf.write_text("[Peer]\nEndpoint = strongprint.it.ao:51820\n")
+    env = {
+        **os.environ,
+        "PATH": f"{bin_dir}:{os.environ['PATH']}",
+        "CONF": str(conf),
+        "STATE": str(tmp_path / "fails"),
+    }
+    subprocess.run(["bash", str(WATCHDOG)], env=env, check=True, capture_output=True)
+    return calls.read_text().splitlines() if calls.exists() else []
+
+
+def test_watchdog_does_nothing_when_vpn_is_fresh(tmp_path):
+    assert run_watchdog(tmp_path, last_handshake=9_950) == []
+
+
+def test_watchdog_reresolves_then_restarts(tmp_path):
+    first = run_watchdog(tmp_path, last_handshake=1_000)
+    assert first == ["wg set wgsp peer PEERKEY= endpoint [64:ff9b::add4:dbf8]:51820"]
+    run_watchdog(tmp_path, last_handshake=1_000)
+    third = run_watchdog(tmp_path, last_handshake=1_000)
+    assert third[-2:] == ["systemctl restart wg-quick@wgsp", "systemctl restart strongprint-nat"]
+    # depois de reiniciar, a contagem recomeça
+    assert not (tmp_path / "fails").exists()

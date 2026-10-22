@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# Vigia da VPN StrongPrint no Pi (corre a cada 2 minutos, via systemd timer).
+#
+# O WireGuard só resolve o endereço do servidor quando arranca. Se a rede do Pi mudar
+# (router 4G a religar, IPv6 ↔ IPv4), o túnel fica a falar para um endereço antigo e não
+# volta sozinho — o Pi continua "online" (heartbeat por HTTPS) mas a impressora deixa de
+# estar acessível ao servidor (aprendido no Imetro, 2026-10-22).
+#
+# Sem contacto com o servidor há mais de STALE segundos:
+#   1.ª e 2.ª vez → volta a resolver o endereço do servidor e atualiza-o no túnel;
+#   3.ª vez       → reinicia a VPN (e o encaminhamento para a impressora).
+set -uo pipefail
+
+IFACE=${IFACE:-wgsp}
+CONF=${CONF:-/etc/wireguard/$IFACE.conf}
+STALE=${STALE:-180}
+STATE=${STATE:-/run/strongprint-vpn-watchdog.fails}
+
+log() {
+    echo "strongprint-vpn-watchdog: $*"
+    logger -t strongprint-vpn "$*" 2>/dev/null || true
+}
+
+restart_vpn() {
+    log "$1: a reiniciar a VPN"
+    systemctl restart "wg-quick@$IFACE"
+    systemctl restart strongprint-nat 2>/dev/null || true
+    rm -f "$STATE"
+}
+
+if ! ip link show "$IFACE" >/dev/null 2>&1; then
+    restart_vpn "interface $IFACE em baixo"
+    exit 0
+fi
+
+read -r PEER LAST < <(wg show "$IFACE" latest-handshakes | head -1)
+if [[ -z ${PEER:-} ]]; then
+    log "sem servidor configurado em $IFACE"
+    exit 0
+fi
+NOW=$(date +%s)
+AGE=$((NOW - ${LAST:-0}))
+if ((${LAST:-0} > 0 && AGE < STALE)); then
+    rm -f "$STATE"  # tudo bem
+    exit 0
+fi
+
+FAILS=$(($(cat "$STATE" 2>/dev/null || echo 0) + 1))
+echo "$FAILS" >"$STATE"
+WHY="sem contacto com o servidor há ${AGE}s"
+((${LAST:-0} == 0)) && WHY="ainda sem contacto com o servidor"
+
+if ((FAILS >= 3)); then
+    restart_vpn "$WHY (tentativa $FAILS)"
+    exit 0
+fi
+
+ENDPOINT=$(awk -F'[[:space:]]*=[[:space:]]*' '/^[[:space:]]*Endpoint/ {print $2; exit}' "$CONF")
+HOST=${ENDPOINT%:*}
+PORT=${ENDPOINT##*:}
+HOST=${HOST#[}
+HOST=${HOST%]}
+# getent devolve primeiro o endereço da família que esta rede consegue usar (IPv6/NAT64 ou IPv4).
+ADDR=$(getent ahosts "$HOST" 2>/dev/null | awk 'NR==1 {print $1}')
+if [[ -z $ADDR ]]; then
+    log "$WHY: não consegui resolver $HOST (tentativa $FAILS)"
+    exit 0
+fi
+[[ $ADDR == *:* ]] && NEW="[$ADDR]:$PORT" || NEW="$ADDR:$PORT"
+wg set "$IFACE" peer "$PEER" endpoint "$NEW"
+log "$WHY: endereço do servidor atualizado para $NEW (tentativa $FAILS)"

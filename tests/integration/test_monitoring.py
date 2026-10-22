@@ -225,3 +225,10 @@ def test_kiosk_offline_downtime(device, kiosk):
     device.save()
     tasks.mark_offline_kiosks()
     assert Downtime.objects.get(ended_at__isnull=True).reason == "kiosk_offline"
+
+
+def test_heartbeat_delivers_restart_vpn(device):
+    device.pending_command = EdgeDevice.Command.RESTART_VPN
+    device.save()
+    response = pi(device).post("/api/v1/edge/heartbeat", {}, format="json")
+    assert response.json()["commands"] == ["restart_vpn"]

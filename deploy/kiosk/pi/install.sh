@@ -79,6 +79,11 @@ echo "==> Encaminhamento VPN → impressora ($PRINTER_VPN_IP → ${PRINTER_LAN_I
 install -m 755 "$HERE/strongprint-nat" /usr/local/sbin/strongprint-nat
 install -m 644 "$HERE/strongprint-nat.service" /etc/systemd/system/strongprint-nat.service
 
+echo "==> Vigia da VPN (religa o túnel se perder contacto com o servidor)"
+install -m 755 "$HERE/strongprint-vpn-watchdog" /usr/local/sbin/strongprint-vpn-watchdog
+install -m 644 "$HERE/strongprint-vpn-watchdog.service" /etc/systemd/system/strongprint-vpn-watchdog.service
+install -m 644 "$HERE/strongprint-vpn-watchdog.timer" /etc/systemd/system/strongprint-vpn-watchdog.timer
+
 echo "==> Agente (heartbeat + pen USB)"
 install -d -m 755 /opt/strongprint-agent
 install -m 755 "$HERE/agent.py" /opt/strongprint-agent/agent.py
@@ -114,5 +119,6 @@ fi
 
 systemctl daemon-reload
 systemctl enable --now strongprint-nat.service strongprint-agent.service >/dev/null 2>&1
+systemctl enable --now strongprint-vpn-watchdog.timer >/dev/null 2>&1
 systemctl restart strongprint-nat.service strongprint-agent.service
 echo "==> Instalação concluída"

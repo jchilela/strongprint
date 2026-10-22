@@ -1,0 +1,7 @@
+[Unit]
+Description=StrongPrint: vigia da VPN (religa o túnel se perder contacto com o servidor)
+After=wg-quick@wgsp.service network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/strongprint-vpn-watchdog
