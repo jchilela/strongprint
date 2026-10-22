@@ -803,7 +803,7 @@
     var upload = S.screen === "upload";
     var head = upload
       ? '<div class="split" style="flex:0 0 auto;align-items:start"><div><h1>' + esc(t("uploadTitle")) + '</h1><p class="muted">' + esc(t("uploadHint")) +
-        '</p></div><div style="text-align:center">' + (S.uploadSvg ? '<div class="qr" style="width:min(26vh,240px)">' + S.uploadSvg + "</div>" : "") + "</div></div>"
+        '</p></div><div style="text-align:center">' + (S.uploadSvg ? '<div class="qr qr-upload">' + S.uploadSvg + "</div>" : "") + "</div></div>"
       : "<h1>" + esc(t("myFiles")) + "</h1>";
     $app.innerHTML = frame(
       head + '<div class="list">' + docItems() + '</div><div class="row"><button class="btn ghost" data-act="printMenu">' + esc(t("back")) + "</button></div>"
