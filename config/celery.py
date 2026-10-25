@@ -21,6 +21,7 @@ app.conf.beat_schedule = {
     "resume-stuck-printing": {"task": "apps.jobs.tasks.resume_stuck_printing", "schedule": 300.0},
     "poll-printers": {"task": "apps.monitoring.tasks.poll_printers", "schedule": 60.0},
     "mark-offline-kiosks": {"task": "apps.monitoring.tasks.mark_offline_kiosks", "schedule": 30.0},
+    "notify-downtimes": {"task": "apps.monitoring.tasks.notify_downtimes", "schedule": 60.0},
 }
 
 

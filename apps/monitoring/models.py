@@ -88,6 +88,8 @@ class Downtime(models.Model):
     detail = models.JSONField(_("printer detail"), default=dict, blank=True)
     started_at = models.DateTimeField(_("started at"), db_index=True)
     ended_at = models.DateTimeField(_("ended at"), null=True, blank=True)
+    notified_at = models.DateTimeField(_("alert e-mail sent at"), null=True, blank=True)
+    recovery_notified_at = models.DateTimeField(_("recovery e-mail sent at"), null=True, blank=True)
 
     class Meta:
         verbose_name = _("unavailability")

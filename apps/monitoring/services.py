@@ -219,8 +219,12 @@ def record_availability(kiosk, printer=None) -> Downtime | None:
         return current
     if current:
         Downtime.objects.filter(pk=current.pk).update(ended_at=now)
-        log.info("kiosk.available" if not reason else "kiosk.downtime_changed",
-                 kiosk=kiosk.code, previous=current.reason, reason=reason)
+        log.info(
+            "kiosk.available" if not reason else "kiosk.downtime_changed",
+            kiosk=kiosk.code,
+            previous=current.reason,
+            reason=reason,
+        )
     if not reason:
         return None
     detail = {}

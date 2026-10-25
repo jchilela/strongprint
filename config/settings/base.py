@@ -173,6 +173,23 @@ INBOUND_IMAP_FOLDER = env("INBOUND_IMAP_FOLDER", default="INBOX")
 INBOUND_MAX_ATTACHMENTS = env.int("INBOUND_MAX_ATTACHMENTS", default=10)
 INBOUND_MAX_PER_HOUR = env.int("INBOUND_MAX_PER_HOUR", default=30)
 
+# E-mails enviados (alertas): por omissão pela mesma conta Gmail da caixa de entrada.
+EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = env("EMAIL_HOST", default="smtp.gmail.com")
+EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default=INBOUND_IMAP_USER)
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default=INBOUND_IMAP_PASSWORD)
+EMAIL_TIMEOUT = 20
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL", default=f"StrongPrint <{EMAIL_HOST_USER or 'noreply@strongprint.it.ao'}>"
+)
+
+# Alertas por e-mail quando um kiosk fica parado (vazio = desligado).
+ALERT_EMAILS = env.list("ALERT_EMAILS", default=[])
+DOWNTIME_ALERT_AFTER_SECONDS = env.int("DOWNTIME_ALERT_AFTER_SECONDS", default=180)
+DOWNTIME_ALERT_MAX_PER_HOUR = env.int("DOWNTIME_ALERT_MAX_PER_HOUR", default=6)
+
 # VPN WireGuard (servidor = hub). Cada kiosk usa 10.77.N.0/24: Pi .1, impressora .2.
 VPN_PREFIX = env("VPN_PREFIX", default="10.77")
 VPN_SERVER_IP = env("VPN_SERVER_IP", default="10.77.0.1")

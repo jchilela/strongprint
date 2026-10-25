@@ -26,6 +26,14 @@ def poll_printers() -> int:
 
 
 @shared_task(queue="monitoring")
+def notify_downtimes() -> int:
+    """A cada 60 s: e-mail quando um kiosk fica parado e quando volta."""
+    from .notify import notify_downtimes
+
+    return notify_downtimes()
+
+
+@shared_task(queue="monitoring")
 def mark_offline_kiosks() -> int:
     count = services.mark_offline_kiosks()
     services.record_all_availability()

@@ -64,7 +64,15 @@ class DowntimeOpenFilter(admin.SimpleListFilter):
 
 @admin.register(Downtime)
 class DowntimeAdmin(admin.ModelAdmin):
-    list_display = ("started_at", "kiosk", "reason", "printer_reasons", "ended_at", "duration_display")
+    list_display = (
+        "started_at",
+        "kiosk",
+        "reason",
+        "printer_reasons",
+        "ended_at",
+        "duration_display",
+        "emailed",
+    )
     list_filter = (DowntimeOpenFilter, "reason", "kiosk__site__partner", "kiosk")
     search_fields = ("kiosk__code",)
     list_select_related = ("kiosk",)
@@ -84,3 +92,7 @@ class DowntimeAdmin(admin.ModelAdmin):
     def duration_display(self, obj):
         text = format_duration(obj.duration)
         return f"{text} ({_('ongoing')})" if obj.is_open else text
+
+    @admin.display(description=_("e-mail"), boolean=True)
+    def emailed(self, obj):
+        return obj.notified_at is not None
